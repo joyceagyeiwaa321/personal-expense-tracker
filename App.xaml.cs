@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace FinancyApp
+namespace FinancyApplication
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
