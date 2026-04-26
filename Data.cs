@@ -287,7 +287,118 @@ namespace FinancyApplication
 			this.ExecuteSimple(query);
 		}
 
-		private void ExecuteSimple(string query)
+		public int InsertBudget(Budget budget)
+		{
+			string limitAmount = budget.LimitAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			string query = "INSERT INTO budget(UserID, CategoryID, LimitAmount, Month) VALUES(" +
+						   budget.UserId + ", " + budget.CategoryId + ", " + limitAmount + ", '" + budget.Month + "');";
+			return this.Insert(query);
+        }
+
+		public void UpdateBudget(Budget budget)
+        {
+			string limitAmount = budget.LimitAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			string query = "UPDATE budget SET CategoryID = " + budget.CategoryId + 
+				", LimitAmount = " + limitAmount + 
+				", Month = '" + budget.Month +
+				"' WHERE BudgetID = " + budget.BudgetId;
+			this.ExecuteSimple(query);
+        }
+
+		public void DeleteBudget(int budgetId)
+        {
+			string query = "DELETE FROM budget WHERE BudgetID = " + budgetId;
+			this.ExecuteSimple(query);
+        }
+
+		public decimal GetSpentAmount(int userId, int categoryId, string month)
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT SUM(Amount) FROM `transaction` WHERE UserID = " + userId +
+					" AND CategoryID = " + categoryId +
+					" AND Type = 'Expense' " +
+					" AND DATE_FORMAT(`Date`, '%Y-%m') = '" + month + "'";
+
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+
+				try
+				{
+					connection.Open();
+					object result = cmd.ExecuteScalar();
+
+					if (result == DBNull.Value || result == null)
+					{
+						return 0;
+					}
+					return Convert.ToDecimal(result);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("GetSpentAmount error: " + ex.Message);
+					return 0;
+				}
+			}
+		}
+
+		public int InsertRecurringTransaction(RecurringTransaction rt)
+        {
+			string amount = rt.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			int active = rt.IsActive ? 1 : 0;
+
+			string query = "INSERT INTO recurring_transaction (AccountID, CategoryID, Type, Amount, Frequency, StartDate, NextRunDate, IsActive) " +
+						   "VALUES (" + 
+						   rt.AccountId + ", " +
+						   rt.CategoryId + ", '" +
+						   rt.Type + "', " +
+						   amount + ", '" + 
+						   rt.Frequency + "', '" +
+						   rt.StartDate.ToString("yyyy-MM-dd HH:mm:ss") + "', '" +
+						   rt.NextRunDate.ToString("yyyy-MM-dd HH:mm:ss") + "', " +
+						   active + ");";
+			return this.Insert(query);
+        }	
+
+		public void UpdateRecurringTransaction(RecurringTransaction rt)
+        {
+			string amount = rt.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			int active = rt.IsActive ? 1 : 0;
+
+			string query = "UPDATE recurring_transaction SET " +
+						   "CategoryID = " + rt.CategoryId + ", " +
+						   "Type = '" + rt.Type + "', " +
+						   "Amount = " + amount + ", " +
+						   "Frequency = '" + rt.Frequency + "', " +
+						   "StartDate = '" + rt.StartDate.ToString("yyyy-MM-dd HH:mm:ss") + "', " +
+						   "NextRunDate = '" + rt.NextRunDate.ToString("yyyy-MM-dd HH:mm:ss") + "', " +
+						   "IsActive = " + active +
+						   " WHERE RecurringID = " + rt.RecurringId;
+			this.ExecuteSimple(query);
+        }
+
+		public void DeleteRecurringTransaction(int recurringId)
+        {
+			string query = "DELETE FROM recurring_transaction WHERE RecurringID = " + recurringId;
+			this.ExecuteSimple(query);
+        }
+
+		public int InsertReceipt(Receipt receipt)
+        {
+			string query = "INSERT INTO receipt(TransactionID, FilePath, FileType, UploadedAt) VALUES(" +
+						   receipt.TransactionID + ", '" +
+						   receipt.FilePath + "', '" +
+						   receipt.FileType +  "', '" +
+						   DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');";
+			return this.Insert(query);
+		}
+
+		public void DeleteReceipt(int receiptId)
+        {
+			string query = "DELETE FROM receipt WHERE ReceiptID = " + receiptId;
+			this.ExecuteSimple(query);
+        }
+
+        private void ExecuteSimple(string query)
 		{
 			using (MySqlConnection conn = new MySqlConnection(connectionString))
 			{

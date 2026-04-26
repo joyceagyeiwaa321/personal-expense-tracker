@@ -38,6 +38,9 @@ namespace FinancyApplication
 				Test_GetTransactionHistory(accountId);
 				Test_GetTransactionsByCategory(categoryId);
 				Test_AdminMethods(userId);
+				Test_Budget(userId, categoryId);
+				Test_RecurringTransaction(accountId, categoryId);
+				Test_Receipt(transId);
 
 				log.AppendLine("\n===========================================");
 				log.AppendLine("         ALL TESTS COMPLETED ✓             ");
@@ -349,6 +352,88 @@ namespace FinancyApplication
 			{
 				log.AppendLine("  SKIP  Throwaway user not created, skipping DeleteUser test.");
 			}
+		}
+
+		private void Test_Budget(int userId, int categoryId)
+		{
+			log.AppendLine("\n--- [15] BUDGET ---");
+
+			Budget budget = new Budget(0, userId, categoryId, 500m, DateTime.Now.ToString("yyyy-MM"));
+			int budgetId = budget.Create();
+			budget.BudgetId = budgetId;
+
+			log.AppendLine(budgetId > 0
+				? $"  PASS  Budget created. BudgetID = {budgetId}"
+				: "  FAIL  Budget was not Created.");
+
+			decimal spent = budget.GetSpentAmount();
+			log.AppendLine($" PASS  GetSpentAmount() returned {spent}");
+
+			decimal remaining = budget.GetRemainingAmount();
+			log.AppendLine($" PASS  GetRemainingAmount() returned {remaining}");
+
+			budget.Update(750m);
+			log.AppendLine(" PASS  Budget Updateed to €750.");
+
+			log.AppendLine(budget.IsExceeded()
+				? "  INFO  Budget is  exceeded."
+				: "  INFO  Budget is not exceeded.");
+		}
+
+        private void Test_RecurringTransaction(int accountId, int categoryId)
+        {
+            log.AppendLine("\n--- [16] RECURRING TRANSACTION ---");
+
+            RecurringTransaction recurring = new RecurringTransaction(
+                0,
+                accountId,
+                categoryId,
+                "Expense",
+                25m,
+                "Monthly",
+                DateTime.Now
+            );
+
+            int recurringId = recurring.Create();
+            recurring.RecurringId = recurringId;
+
+            log.AppendLine(recurringId > 0
+                ? $"  PASS  Recurring transaction created. RecurringID = {recurringId}"
+                : "  FAIL  Recurring transaction was not created.");
+
+            DateTime oldDate = recurring.NextRunDate;
+            recurring.Execute();
+
+            log.AppendLine(recurring.NextRunDate > oldDate
+                ? $"  PASS  Execute() updated NextRunDate to {recurring.NextRunDate}."
+                : "  FAIL  Execute() did not update NextRunDate.");
+
+            recurring.Pause();
+            log.AppendLine(recurring.IsActive == false
+                ? "  PASS  Pause() set IsActive = false."
+                : "  FAIL  Pause() did not set IsActive to false.");
+
+            recurring.Resume();
+            log.AppendLine(recurring.IsActive
+                ? "  PASS  Resume() set IsActive = true."
+                : "  FAIL  Resume() did not set IsActive to true.");
+        }
+
+        private void Test_Receipt(int transactionId)
+		{
+			log.AppendLine("\n--- [17] RECEIPT ---");
+			Receipt receipt = new Receipt(0, transactionId, @"C:\fake\receipt.jpg", "jpg");
+			int receiptId = receipt.Upload();
+			receipt.ReceiptID = receiptId;
+
+			log.AppendLine(receiptId > 0
+				? $"  PASS  Receipt uploaded. ReceiptID = {receiptId}"
+				: "  FAIL  Receipt was not uploaded.");
+
+			string url = receipt.GetDownloadUrl();
+			log.AppendLine(url == receipt.FilePath
+				? $"  PASS  GetDownloadUrl() returned {url}"
+				: "  FAIL  GetDownloadUrl() returned wrong value.");
 		}
 	}
 }

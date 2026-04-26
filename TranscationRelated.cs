@@ -153,14 +153,4 @@ namespace FinancyApplication
 			return data.GetTransactionsByCategory(this.CategoryID);
 		}
 	}
-
-	// Receipt is your teammate's class but Transaction needs to reference it — keeping it minimal here
-	public class Receipt
-	{
-		public int ReceiptID { get; set; }
-		public int TransactionID { get; set; }
-		public string FilePath { get; set; }
-		public string FileType { get; set; }
-		public DateTime UploadedAt { get; set; }
-	}
 }
