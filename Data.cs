@@ -21,8 +21,24 @@ namespace FinancyApplication
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("Insert error: " + ex.Message);
-					return -1;
+					throw new Exception("Insert failed: " + ex.Message);
+				}
+			}
+		}
+
+		private void ExecuteSimple(string query)
+		{
+			using (MySqlConnection conn = new MySqlConnection(connectionString))
+			{
+				MySqlCommand cmd = new MySqlCommand(query, conn);
+				try
+				{
+					conn.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("ExecuteSimple failed: " + ex.Message);
 				}
 			}
 		}
@@ -40,10 +56,58 @@ namespace FinancyApplication
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("GetUserCount error: " + ex.Message);
-					return 0;
+					throw new Exception("GetUserCount failed: " + ex.Message);
 				}
 			}
+		}
+
+		public int GetActiveUserCount()
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT COUNT(*) FROM user WHERE IsActive = 1";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					return Convert.ToInt32(cmd.ExecuteScalar());
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetActiveUserCount failed: " + ex.Message);
+				}
+			}
+		}
+
+		public List<User> GetAllUsers()
+		{
+			List<User> users = new List<User>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT * FROM user";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						User u = new User();
+						u.UserID = Convert.ToInt32(reader["UserID"]);
+						u.Username = reader["Username"].ToString();
+						u.Email = reader["Email"].ToString();
+						u.Role = reader["Role"].ToString() == "Admin" ? UserRole.Admin : UserRole.User;
+						u.IsActive = Convert.ToInt32(reader["IsActive"]) == 1;
+						u.CreatedAt = Convert.ToDateTime(reader["CreatedAt"]);
+						users.Add(u);
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetAllUsers failed: " + ex.Message);
+				}
+			}
+			return users;
 		}
 
 		public int InsertUser(User user, string password)
@@ -54,7 +118,6 @@ namespace FinancyApplication
 			return this.Insert(query);
 		}
 
-		// Returns the stored BCrypt hash for a given email so we can verify it in User.Login()
 		public string GetPasswordHash(string email)
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -65,17 +128,19 @@ namespace FinancyApplication
 				{
 					connection.Open();
 					object result = cmd.ExecuteScalar();
-					return result != null ? result.ToString() : null;
+
+					if (result != null)
+						return result.ToString();
+					else
+						return null;
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("GetPasswordHash error: " + ex.Message);
-					return null;
+					throw new Exception("GetPasswordHash failed: " + ex.Message);
 				}
 			}
 		}
 
-		// Rewrote to use BCrypt — fetches the stored hash and verifies against it
 		public bool ValidateLogin(string email, string password)
 		{
 			string storedHash = GetPasswordHash(email);
@@ -87,8 +152,7 @@ namespace FinancyApplication
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("ValidateLogin error: " + ex.Message);
-				return false;
+				throw new Exception("ValidateLogin failed: " + ex.Message);
 			}
 		}
 
@@ -100,7 +164,12 @@ namespace FinancyApplication
 
 		public void UpdateUserStatus(int userId, bool isActive)
 		{
-			int status = isActive ? 1 : 0;
+			int status;
+			if (isActive == true)
+				status = 1;
+			else
+				status = 0;
+
 			string query = "UPDATE user SET IsActive = " + status + " WHERE UserID = " + userId;
 			this.ExecuteSimple(query);
 		}
@@ -108,6 +177,12 @@ namespace FinancyApplication
 		public void UpdateUserRole(int userId, string role)
 		{
 			string query = "UPDATE user SET Role = '" + role + "' WHERE UserID = " + userId;
+			this.ExecuteSimple(query);
+		}
+
+		public void UpdateUserPassword(int userId, string newHashedPassword)
+		{
+			string query = "UPDATE user SET Password = '" + newHashedPassword + "' WHERE UserID = " + userId;
 			this.ExecuteSimple(query);
 		}
 
@@ -132,6 +207,7 @@ namespace FinancyApplication
 						   profile.PhoneNumber + "', '" + profile.AvatarUrl + "', '" + profile.PreferredCurrency + "');";
 			return this.Insert(query);
 		}
+
 
 		public int InsertAccount(Account acc)
 		{
@@ -161,6 +237,25 @@ namespace FinancyApplication
 			this.ExecuteSimple(query);
 		}
 
+		public int GetTotalAccountCount()
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT COUNT(*) FROM account";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					return Convert.ToInt32(cmd.ExecuteScalar());
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetTotalAccountCount failed: " + ex.Message);
+				}
+			}
+		}
+
+
 		public List<Transaction> GetTransactionsByAccount(int accountId)
 		{
 			List<Transaction> transactions = new List<Transaction>();
@@ -189,30 +284,10 @@ namespace FinancyApplication
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("GetTransactionsByAccount error: " + ex.Message);
+					throw new Exception("GetTransactionsByAccount failed: " + ex.Message);
 				}
 			}
 			return transactions;
-		}
-
-		public int InsertCategory(Category cat)
-		{
-			int defaultVal = cat.IsDefault ? 1 : 0;
-			string query = "INSERT INTO category(UserID, Name, Type, IsDefault) VALUES(" +
-						   cat.UserID + ", '" + cat.Name + "', '" + cat.Type + "', " + defaultVal + ");";
-			return this.Insert(query);
-		}
-
-		public void UpdateCategory(int categoryId, string newName)
-		{
-			string query = "UPDATE category SET Name = '" + newName + "' WHERE CategoryID = " + categoryId;
-			this.ExecuteSimple(query);
-		}
-
-		public void DeleteCategory(int categoryId)
-		{
-			string query = "DELETE FROM category WHERE CategoryID = " + categoryId;
-			this.ExecuteSimple(query);
 		}
 
 		public List<Transaction> GetTransactionsByCategory(int categoryId)
@@ -243,10 +318,62 @@ namespace FinancyApplication
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("GetTransactionsByCategory error: " + ex.Message);
+					throw new Exception("GetTransactionsByCategory failed: " + ex.Message);
 				}
 			}
 			return transactions;
+		}
+
+		public List<Transaction> GetAllTransactions()
+		{
+			List<Transaction> transactions = new List<Transaction>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT * FROM `transaction` ORDER BY Date DESC";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						transactions.Add(new Transaction
+						{
+							TransactionID = Convert.ToInt32(reader["TransactionID"]),
+							UserID = Convert.ToInt32(reader["UserID"]),
+							AccountID = Convert.ToInt32(reader["AccountID"]),
+							CategoryID = Convert.ToInt32(reader["CategoryID"]),
+							Type = reader["Type"].ToString(),
+							Amount = Convert.ToDecimal(reader["Amount"]),
+							Description = reader["Description"].ToString(),
+							Date = Convert.ToDateTime(reader["Date"])
+						});
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetAllTransactions failed: " + ex.Message);
+				}
+			}
+			return transactions;
+		}
+
+		public int GetTotalTransactionCount()
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT COUNT(*) FROM `transaction`";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					return Convert.ToInt32(cmd.ExecuteScalar());
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetTotalTransactionCount failed: " + ex.Message);
+				}
+			}
 		}
 
 		public int InsertTransaction(Transaction t)
@@ -287,19 +414,105 @@ namespace FinancyApplication
 			this.ExecuteSimple(query);
 		}
 
-		private void ExecuteSimple(string query)
+
+		public int InsertCategory(Category cat)
 		{
-			using (MySqlConnection conn = new MySqlConnection(connectionString))
+			int defaultVal;
+			if (cat.IsDefault == true)
+				defaultVal = 1;
+			else
+				defaultVal = 0;
+
+			string query = "INSERT INTO category(UserID, Name, Type, IsDefault) VALUES(" +
+						   cat.UserID + ", '" + cat.Name + "', '" + cat.Type + "', " + defaultVal + ");";
+			return this.Insert(query);
+		}
+
+		public void UpdateCategory(int categoryId, string newName)
+		{
+			string query = "UPDATE category SET Name = '" + newName + "' WHERE CategoryID = " + categoryId;
+			this.ExecuteSimple(query);
+		}
+
+		public void DeleteCategory(int categoryId)
+		{
+			string query = "DELETE FROM category WHERE CategoryID = " + categoryId;
+			this.ExecuteSimple(query);
+		}
+
+		public List<Category> GetDefaultCategories()
+		{
+			List<Category> categories = new List<Category>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				MySqlCommand cmd = new MySqlCommand(query, conn);
+				string query = "SELECT * FROM category WHERE IsDefault = 1";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
 				try
 				{
-					conn.Open();
-					cmd.ExecuteNonQuery();
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						Category c = new Category();
+						c.CategoryID = Convert.ToInt32(reader["CategoryID"]);
+						c.UserID = Convert.ToInt32(reader["UserID"]);
+						c.Name = reader["Name"].ToString();
+						c.Type = reader["Type"].ToString();
+						c.IsDefault = Convert.ToInt32(reader["IsDefault"]) == 1;
+						categories.Add(c);
+					}
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("ExecuteSimple error: " + ex.Message);
+					throw new Exception("GetDefaultCategories failed: " + ex.Message);
+				}
+			}
+			return categories;
+		}
+		public void DeleteProfile(int userId)
+		{
+			string query = "DELETE FROM user_profile WHERE UserID = " + userId;
+			this.ExecuteSimple(query);
+		}
+		public void UpdateVerificationStatus(int userId, bool isVerified)
+		{
+			int val = isVerified ? 1 : 0;
+			string query = "UPDATE user SET IsVerified = " + val + " WHERE UserID = " + userId;
+			this.ExecuteSimple(query);
+		}
+
+		public bool GetVerificationStatus(int userId)
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT IsVerified FROM user WHERE UserID = " + userId;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					return Convert.ToInt32(cmd.ExecuteScalar()) == 1;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetVerificationStatus failed: " + ex.Message);
+				}
+			}
+		}
+		public string GetResetToken(string email)
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT ResetToken FROM user WHERE Email = '" + email + "' LIMIT 1";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					object result = cmd.ExecuteScalar();
+					return result != null ? result.ToString() : null;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetResetToken failed: " + ex.Message);
 				}
 			}
 		}
