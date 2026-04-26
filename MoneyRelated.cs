@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ExpenseTracker
+namespace FinancyApplication
 {
     public class Budget
     {

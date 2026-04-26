@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 
 namespace FinancyApplication
@@ -14,18 +15,61 @@ namespace FinancyApplication
 		public string AccountType { get; set; }
 		public decimal Balance { get; set; }
 		public string Currency { get; set; }
+		public string CurrencySymbol { get; set; }
 		public DateTime CreatedAt { get; set; }
 
 		public Account() { }
 
-		public Account(int userId, string name, string type, decimal initialBalance, string currency)
+		public Account(int userId, string name, string type, decimal initialBalance, string dropdownValue)
 		{
 			this.UserID = userId;
 			this.Name = name;
 			this.AccountType = type;
 			this.Balance = initialBalance;
-			this.Currency = currency;
+			this.Currency = ExtractCurrencyCode(dropdownValue);
+			this.CurrencySymbol = ExtractCurrencySymbol(dropdownValue);
 			this.CreatedAt = DateTime.Now;
+		}
+
+		public static List<string> GetCurrencies()
+		{
+			List<string> currencies = new List<string>();
+			List<string> alreadyAdded = new List<string>();
+
+			foreach (CultureInfo culture in CultureInfo.GetCultures(CultureTypes.SpecificCultures))
+			{
+				try
+				{
+					RegionInfo region = new RegionInfo(culture.Name);
+					string code = region.ISOCurrencySymbol;
+					string symbol = region.CurrencySymbol;
+					string name = region.CurrencyEnglishName;
+					string entry = $"{code} - {symbol} - {name}";
+
+					if (!alreadyAdded.Contains(code))
+					{
+						alreadyAdded.Add(code);
+						currencies.Add(entry);
+					}
+				}
+				catch (Exception)
+				{
+					// Some cultures don't have valid region data, skip them
+				}
+			}
+
+			currencies.Sort();
+			return currencies;
+		}
+
+		public static string ExtractCurrencyCode(string dropdownValue)
+		{
+			return dropdownValue.Split("-")[0].Trim();
+		}
+
+		public static string ExtractCurrencySymbol(string dropdownValue)
+		{
+			return dropdownValue.Split("-")[1].Trim();
 		}
 
 		public bool Save()
@@ -36,42 +80,118 @@ namespace FinancyApplication
 				return false;
 			}
 
-			this.AccountID = data.InsertAccount(this);
-			return this.AccountID > 0;
+			if (this.UserID <= 0)
+			{
+				MessageBox.Show("Invalid user. Please log in again.");
+				return false;
+			}
+
+			if (this.Balance < 0)
+			{
+				MessageBox.Show("Initial balance cannot be negative.");
+				return false;
+			}
+
+			if (string.IsNullOrWhiteSpace(Currency))
+			{
+				MessageBox.Show("Please select a currency.");
+				return false;
+			}
+
+			try
+			{
+				this.AccountID = data.InsertAccount(this);
+				return this.AccountID > 0;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Save account error: " + ex.Message);
+				return false;
+			}
 		}
 
-		// Fixed: passes the delta (amount) to Data — SQL now does Balance = Balance + amount
 		public void UpdateBalance(decimal amount)
 		{
-			this.Balance += amount;
-			data.UpdateAccountBalance(this.AccountID, amount);
+			if (this.AccountID <= 0)
+			{
+				MessageBox.Show("This account has not been saved yet.");
+				return;
+			}
+
+			try
+			{
+				this.Balance += amount;
+				data.UpdateAccountBalance(this.AccountID, amount);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("UpdateBalance error: " + ex.Message);
+			}
 		}
 
-		// Returns the full transaction history for this account
 		public List<Transaction> GetTransactionHistory()
 		{
-			return data.GetTransactionsByAccount(this.AccountID);
+			if (this.AccountID <= 0)
+			{
+				MessageBox.Show("This account has not been saved yet.");
+				return new List<Transaction>();
+			}
+
+			try
+			{
+				return data.GetTransactionsByAccount(this.AccountID);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("GetTransactionHistory error: " + ex.Message);
+				return new List<Transaction>();
+			}
 		}
 
-		// Renames the account both in memory and in the DB
-		public void Rename(string newName)
+		public void Rename(string name)
 		{
-			if (string.IsNullOrWhiteSpace(newName))
+			if (this.AccountID <= 0)
+			{
+				MessageBox.Show("This account has not been saved yet.");
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
 			{
 				MessageBox.Show("Please provide a valid account name.");
 				return;
 			}
 
-			this.Name = newName;
-			data.RenameAccount(this.AccountID, newName);
+			try
+			{
+				this.Name = name;
+				data.RenameAccount(this.AccountID, name);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Rename error: " + ex.Message);
+			}
 		}
 
-		// Deletes the account from the DB
 		public void Delete()
 		{
-			data.DeleteAccount(this.AccountID);
+			if (this.AccountID <= 0)
+			{
+				MessageBox.Show("This account has not been saved yet.");
+				return;
+			}
+
+			try
+			{
+				data.DeleteAccount(this.AccountID);
+				this.AccountID = 0;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Delete account error: " + ex.Message);
+			}
 		}
 
-		public override string ToString() => $"{Name}: {Balance} {Currency}";
+		public override string ToString() => $"{Name}: {CurrencySymbol}{Balance} ({Currency})";
 	}
 }
