@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ExpenseTracker
+namespace FinancyApplication
 {
     public class Budget
     {
@@ -23,25 +23,33 @@ namespace ExpenseTracker
             Month = month;
         }
 
-        public void Create()
+        public int Create()
         {
+            Data db = new Data();
             Console.WriteLine("Budget created successfully.");
+            return db.InsertBudget(this);
         }
 
         public void Update(decimal newLimitAmount)
         {
             LimitAmount = newLimitAmount;
-            Console.WriteLine("Budget updated successfully.");
+            
+            Data db = new Data();
+            db.UpdateBudget(this);
+             Console.WriteLine("Budget updated successfully.");
         }
 
         public void Delete()
         {
+            Data db = new Data();
+            db.DeleteBudget(BudgetId);
             Console.WriteLine("Budget deleted successfully.");
         }
 
         public decimal GetSpentAmount()
         {
-            return 0;
+            Data db = new Data();
+            return db.GetSpentAmount(UserId, CategoryId, Month);
         }
 
         public decimal GetRemainingAmount()
@@ -61,8 +69,7 @@ namespace ExpenseTracker
     }
 
     public class RecurringTransaction
-
-        {
+    {
         public int RecurringId { get; set; }
         public int AccountId { get; set; }
         public int CategoryId { get; set; }
@@ -72,9 +79,11 @@ namespace ExpenseTracker
         public DateTime StartDate { get; set; }
         public DateTime NextRunDate { get; set; }
         public bool IsActive { get; set; }
+
         public RecurringTransaction()
         {
         }
+
         public RecurringTransaction(int recurringId, int accountId, int categoryId, string type, decimal amount, string frequency, DateTime startDate)
         {
             RecurringId = recurringId;
@@ -89,23 +98,32 @@ namespace ExpenseTracker
 
         }
 
-        public void Create()
+        public int Create()
         {
+            Data db = new Data();
             Console.WriteLine("Recurring transaction created successfully.");
+            return db.InsertRecurringTransaction(this);
         }
         public void Pause()
         {
             IsActive = false;
+            Data db = new Data();
+            db.UpdateRecurringTransaction(this);
             Console.WriteLine("Recurring transaction paused.");
         }
         public void Resume()
         {
             IsActive = true;
+            Data db = new Data();
+            db.UpdateRecurringTransaction(this);
             Console.WriteLine("Recurring transaction resumed.");
         }
         public void Cancel()
         {
             IsActive = false;
+
+            Data db = new Data();
+            db.DeleteRecurringTransaction(RecurringId);
             Console.WriteLine("Recurring transaction cancelled.");
         }
 
@@ -115,16 +133,20 @@ namespace ExpenseTracker
             {
                 Console.WriteLine($"Recurring transaction executed: {Type} €{Amount}");
                 UpdateNextRunDate();
+                Data db = new Data();
+                db.UpdateRecurringTransaction(this);
             }
             else
             {
+                Data db = new Data();
+                db.UpdateRecurringTransaction(this);
                 Console.WriteLine("Recurring transaction is not active.");
             }
         }
 
         public void UpdateNextRunDate()
         {
-            switch (Frequency.ToLower())
+            switch (Frequency?.ToLower())
             {
                 case "daily":
                     NextRunDate = NextRunDate.AddDays(1);
@@ -152,8 +174,8 @@ namespace ExpenseTracker
 
     public class Receipt
     {
-        public int ReceiptId { get; set; }
-        public int TransactionId { get; set; }
+        public int ReceiptID { get; set; }
+        public int TransactionID { get; set; }
         public string FilePath { get; set; }
         public string FileType { get; set; }
         public DateTime UploadedAt { get; set; }
@@ -164,20 +186,24 @@ namespace ExpenseTracker
          
         public Receipt(int receiptId, int transactionId, string filePath, string fileType)
         {
-            ReceiptId = receiptId;
-            TransactionId = transactionId;
+            ReceiptID = receiptId;
+            TransactionID = transactionId;
             FilePath = filePath;
             FileType = fileType;
             UploadedAt = DateTime.Now;
         }
 
-        public void Upload()
+        public int Upload()
         {
+            Data db = new Data();
             Console.WriteLine("Receipt uploaded successfully.");
+            return db.InsertReceipt(this);
         }
 
         public void Delete()
         {
+            Data db = new Data();
+            db.DeleteReceipt(ReceiptID);
             Console.WriteLine("Receipt deleted successfully.");
         }
 
@@ -188,7 +214,7 @@ namespace ExpenseTracker
 
         public override string ToString()
         {
-            return $"ReceiptId: {ReceiptId}, TransactionId: {TransactionId}, File: {FilePath}";
+            return $"ReceiptId: {ReceiptID}, TransactionId: {TransactionID}, File: {FilePath}";
         }
     }
 
