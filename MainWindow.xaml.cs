@@ -8,16 +8,17 @@ namespace FinancyApplication
 	public partial class MainWindow : Window
 	{
 		private StringBuilder log = new StringBuilder();
-		private Data db = new Data();
 
 		public MainWindow()
 		{
 			InitializeComponent();
-			RunAllTests();
 		}
 
-		private void RunAllTests()
+		private void Log(string message)
 		{
+			log.AppendLine(message);
+			OutputBox.Text = log.ToString();
+		}
 			log.AppendLine("===========================================");
 			log.AppendLine("       FINANCY - FULL SYSTEM TEST          ");
 			log.AppendLine("===========================================\n");
@@ -51,307 +52,220 @@ namespace FinancyApplication
 				log.AppendLine("\n[CRASH] Unexpected error: " + ex.Message);
 			}
 
-			MessageBox.Show(log.ToString(), "Test Results", MessageBoxButton.OK);
-		}
-
-		private int Test_UserRegistration()
+		private void RunTests_Click(object sender, RoutedEventArgs e)
 		{
-			log.AppendLine("--- [1] USER REGISTRATION ---");
+			log.Clear();
+			Log("========== FINANCY FULL TEST ==========\n");
 
-			User user = new User("TestUser_" + DateTime.Now.Ticks, "test_" + DateTime.Now.Ticks + "@financy.com", "SecurePass123!");
+			// ── 1. REGISTER USER ──────────────────────────────────────
+			Log("--- 1. Registering new user ---");
+			User user = new User("TestUser", "chimc8699@gmail.com", "Password123");
+			Log("User created: " + user);
+			// ── 1B. VERIFY ACCOUNT ────────────────────────────────────
+			Log("\n--- 1B. Verify account ---");
+			Log("Check your email for the verification code, then enter it below.");
+			string verificationCode = Microsoft.VisualBasic.Interaction.InputBox("Enter your verification code:", "Account Verification");
+			bool verified = user.VerifyAccount(verificationCode);
+			Log("Account verified (should be true): " + verified);
 
-			if (user.UserID > 0)
-				log.AppendLine($"  PASS  User created. UserID = {user.UserID}, Role = {user.Role}");
-			else
-				log.AppendLine("  FAIL  User was NOT inserted into the database.");
+			// ── 2. LOGIN ──────────────────────────────────────────────
+			Log("\n--- 2. Login test ---");
+			bool loginResult = user.Login("chimc8699@gmail.com", "Password123");
+			Log("Login success (should be true): " + loginResult);
 
-			return user.UserID;
-		}
+			bool badLogin = user.Login("chimc8699@gmail.com", "WrongPassword");
+			Log("Bad login (should be false): " + badLogin);
 
-		private int Test_UserProfile(int userId)
-		{
-			log.AppendLine("\n--- [2] USER PROFILE ---");
+			// ── 3. RESET PASSWORD EMAIL ───────────────────────────────
+			Log("\n--- 3. Reset password (sends email) ---");
+			user.ResetPassword("chimc8699@gmail.com", "TestUser");
 
-			UserProfile profile = new UserProfile
-			{
-				UserID = userId,
-				FirstName = "John",
-				LastName = "Doe",
-				PhoneNumber = "0479123456",
-				PreferredCurrency = "EUR"
-			};
+			// ── 4. USER PROFILE - INSERT ──────────────────────────────
+			Log("\n--- 4. Insert user profile ---");
+			UserProfile profile = new UserProfile();
+			profile.UserID = user.UserID;
+			profile.FirstName = "Test";
+			profile.LastName = "User";
+			profile.PhoneNumber = "0123456789";
+			profile.AvatarUrl = "";
+			profile.PreferredCurrency = Account.ExtractCurrencyCode("EUR - € - Euro");
+			Data db = new Data();
+			db.InsertProfile(profile);
+			Log("Profile inserted. Full name: " + profile.GetFullName());
+			Log("Preferred currency: " + profile.PreferredCurrency);
 
-			int profileId = db.InsertProfile(profile);
-
-			log.AppendLine(profileId > 0
-				? $"  PASS  Profile inserted into user_profile table. ProfileID = {profileId}"
-				: "  FAIL  Profile was NOT inserted into user_profile table.");
-
-			string fullName = profile.GetFullName();
-			log.AppendLine(fullName == "John Doe"
-				? $"  PASS  GetFullName() = '{fullName}'"
-				: $"  FAIL  GetFullName() returned unexpected value: '{fullName}'");
-
-			profile.FirstName = "Jane";
+			// ── 5. USER PROFILE - UPDATE ──────────────────────────────
+			Log("\n--- 5. Update user profile ---");
+			profile.FirstName = "UpdatedTest";
+			profile.PreferredCurrency = Account.ExtractCurrencyCode("USD - $ - US Dollar");
 			profile.Save();
-			log.AppendLine("  PASS  Save() called. Check user_profile table: FirstName should now be 'Jane'.");
+			Log("Profile updated. Full name: " + profile.GetFullName());
+			Log("Preferred currency updated to: " + profile.PreferredCurrency);
 
-			return profileId;
-		}
+			// ── 6. UPLOAD AVATAR ──────────────────────────────────────
+			Log("\n--- 6. Upload avatar ---");
+			profile.UploadAvatar(@"C:\Users\namoq\Pictures\phpto.png");
+			Log("Avatar URL set to: " + profile.AvatarUrl);
 
-		private void Test_Login_Logout(int userId)
-		{
-			log.AppendLine("\n--- [3] LOGIN & LOGOUT ---");
+			// ── 7. GET CURRENCIES LIST ────────────────────────────────
+			Log("\n--- 7. Get currencies list ---");
+			List<string> currencies = Account.GetCurrencies();
+			Log("Total currencies loaded: " + currencies.Count);
+			Log("First currency: " + currencies[0]);
+			Log("Last currency: " + currencies[currencies.Count - 1]);
 
-			string testEmail = "logintest_" + DateTime.Now.Ticks + "@financy.com";
-			string testPassword = "LoginPass99!";
-			User loginUser = new User("LoginTester", testEmail, testPassword);
+			// ── 8. CREATE ACCOUNT ─────────────────────────────────────
+			Log("\n--- 8. Creating account ---");
+			Account account = new Account(user.UserID, "My Wallet", "Personal", 500m, "EUR - € - Euro");
+			bool accountSaved = account.Save();
+			Log("Account saved (should be true): " + accountSaved);
+			Log(account.ToString());
 
-			bool loginResult = loginUser.Login(testEmail, testPassword);
-			log.AppendLine(loginResult
-				? "  PASS  Login with correct password succeeded."
-				: "  FAIL  Login with correct password FAILED.");
+			// ── 9. UPDATE BALANCE ─────────────────────────────────────
+			Log("\n--- 9. Updating balance ---");
+			account.UpdateBalance(200m);
+			Log("Balance after +200 (should be 700): " + account.Balance);
+			account.UpdateBalance(-50m);
+			Log("Balance after -50 (should be 650): " + account.Balance);
 
-			bool wrongLogin = loginUser.Login(testEmail, "WrongPassword!");
-			log.AppendLine(!wrongLogin
-				? "  PASS  Login with wrong password correctly rejected."
-				: "  FAIL  Login with wrong password was incorrectly accepted!");
+			// ── 10. RENAME ACCOUNT ────────────────────────────────────
+			Log("\n--- 10. Renaming account ---");
+			account.Rename("Main Wallet");
+			Log("Account renamed to: " + account.Name);
 
-			loginUser.Logout();
-			log.AppendLine("  PASS  Logout() called successfully.");
-		}
+			// ── 11. CREATE CATEGORY ───────────────────────────────────
+			Log("\n--- 11. Creating category ---");
+			Category category = new Category(user.UserID, "Food", "Expense");
+			bool categorySaved = category.Create();
+			Log("Category saved (should be true): " + categorySaved);
 
-		private void Test_ResetPassword()
-		{
-			log.AppendLine("\n--- [4] RESET PASSWORD ---");
+			// ── 12. UPDATE CATEGORY ───────────────────────────────────
+			Log("\n--- 12. Updating category ---");
+			category.Update("Groceries");
+			Log("Category renamed to: " + category.Name);
 
-			string testEmail = "resettest_" + DateTime.Now.Ticks + "@financy.com";
-			User u = new User("ResetTester", testEmail, "SomePass1!");
+			// ── 13. GET DEFAULT CATEGORIES ────────────────────────────
+			Log("\n--- 13. Get default categories ---");
+			List<Category> defaultCats = db.GetDefaultCategories();
+			Log("Default categories count: " + defaultCats.Count);
+			foreach (Category c in defaultCats)
+				Log("  " + c.Name + " (" + c.Type + ")");
 
-			try
-			{
-				u.ResetPassword(testEmail);
-				log.AppendLine("  PASS  ResetPassword() ran without errors. Check DB for ResetToken.");
-			}
-			catch (Exception ex)
-			{
-				log.AppendLine("  FAIL  ResetPassword() threw: " + ex.Message);
-			}
-		}
+			// ── 14. CREATE TRANSACTION (EXPENSE) ─────────────────────
+			Log("\n--- 14. Creating expense transaction ---");
+			Transaction transaction = new Transaction(user.UserID, account.AccountID, category.CategoryID, "Expense", 75m, "Weekly groceries");
+			bool transactionSaved = transaction.Create();
+			Log("Transaction saved (should be true): " + transactionSaved);
+			Log(transaction.ToString());
 
-		private void Test_UpdateRole(int adminUserId)
-		{
-			log.AppendLine("\n--- [5] UPDATE ROLE ---");
+			// ── 15. CREATE TRANSACTION (INCOME) ──────────────────────
+			Log("\n--- 15. Creating income transaction ---");
+			Transaction income = new Transaction(user.UserID, account.AccountID, category.CategoryID, "Income", 1000m, "Monthly salary");
+			bool incomeSaved = income.Create();
+			Log("Income saved (should be true): " + incomeSaved);
+			Log(income.ToString());
 
-			User targetUser = new User("RoleTarget_" + DateTime.Now.Ticks, "roletarget_" + DateTime.Now.Ticks + "@financy.com", "Pass123!");
-			log.AppendLine($"  INFO  Target user created. Role = {targetUser.Role}");
+			// ── 16. CATEGORIZE TRANSACTION ────────────────────────────
+			Log("\n--- 16. Categorizing transaction ---");
+			transaction.Categorize(category.CategoryID);
+			Log("Transaction categorized to CategoryID: " + transaction.CategoryID);
 
-			Admin adminCaller = new Admin();
-			adminCaller.UserID = adminUserId;
+			// ── 17. UPDATE TRANSACTION ────────────────────────────────
+			Log("\n--- 17. Updating transaction ---");
+			transaction.Amount = 80m;
+			transaction.Description = "Updated groceries";
+			transaction.Update();
+			Log("Transaction updated: " + transaction.ToString());
 
-			targetUser.UpdateRole(adminCaller, UserRole.Admin);
-			log.AppendLine(targetUser.Role == UserRole.Admin
-				? "  PASS  UpdateRole() to Admin succeeded."
-				: "  FAIL  UpdateRole() to Admin FAILED.");
+			// ── 18. GET TRANSACTION HISTORY ───────────────────────────
+			Log("\n--- 18. Transaction history for account ---");
+			List<Transaction> history = account.GetTransactionHistory();
+			Log("Total transactions in account (should be 2): " + history.Count);
+			foreach (Transaction t in history)
+				Log("  " + t.ToString());
 
-			User regularCaller = new User();
-			regularCaller.Role = UserRole.User;
-			targetUser.UpdateRole(regularCaller, UserRole.User);
-			log.AppendLine(targetUser.Role == UserRole.Admin
-				? "  PASS  Non-admin correctly blocked from changing roles."
-				: "  FAIL  Non-admin was incorrectly allowed to change a role!");
-		}
+			// ── 19. GET TRANSACTIONS BY CATEGORY ─────────────────────
+			Log("\n--- 19. Transactions by category ---");
+			List<Transaction> catTransactions = category.GetTransactions();
+			Log("Transactions in category: " + catTransactions.Count);
 
-		private void Test_DeactivateUser(int userId)
-		{
-			log.AppendLine("\n--- [6] DEACTIVATE USER ---");
+			// ── 20. USER MONTHLY REPORT - PDF ─────────────────────────
+			Log("\n--- 20. User monthly report (PDF) ---");
+			UserReport userReport = new UserReport(user.UserID, user.Username);
+			userReport.GeneratePDF(DateTime.Now.Month, DateTime.Now.Year);
+			Log("PDF report generated — check Downloads folder.");
 
-			User u = new User();
-			u.UserID = userId;
-			u.IsActive = true;
+			// ── 21. USER MONTHLY REPORT - EXCEL ──────────────────────
+			Log("\n--- 21. User monthly report (Excel) ---");
+			userReport.GenerateExcel(DateTime.Now.Month, DateTime.Now.Year);
+			Log("Excel report generated — check Downloads folder.");
 
-			u.Deactivate();
-			log.AppendLine(u.IsActive == false
-				? "  PASS  Deactivate() set IsActive = false and updated DB."
-				: "  FAIL  Deactivate() did not update IsActive.");
-		}
+			// ── 22. UPDATE ROLE ───────────────────────────────────────
+			Log("\n--- 22. Update role ---");
+			Admin adminForRole = new Admin();
+			adminForRole.Username = "AdminTester";
+			user.UpdateRole(adminForRole, UserRole.Admin);
+			Log("User role updated to: " + user.Role);
 
-		private int Test_Account(int userId)
-		{
-			log.AppendLine("\n--- [7] ACCOUNT ---");
-
-			Account acc = new Account(userId, "Main Checking", "Debit", 1000m, "EUR");
-			bool saved = acc.Save();
-			log.AppendLine(saved
-				? $"  PASS  Account saved. AccountID = {acc.AccountID}"
-				: "  FAIL  Account Save() failed.");
-
-			decimal balanceBefore = acc.Balance;
-			acc.UpdateBalance(250m);
-			log.AppendLine(acc.Balance == balanceBefore + 250m
-				? $"  PASS  UpdateBalance(+250) correct. New balance = {acc.Balance}"
-				: $"  FAIL  UpdateBalance(+250) wrong. Expected {balanceBefore + 250m}, got {acc.Balance}");
-
-			decimal balanceBefore2 = acc.Balance;
-			acc.UpdateBalance(-100m);
-			log.AppendLine(acc.Balance == balanceBefore2 - 100m
-				? $"  PASS  UpdateBalance(-100) correct. New balance = {acc.Balance}"
-				: $"  FAIL  UpdateBalance(-100) wrong. Expected {balanceBefore2 - 100m}, got {acc.Balance}");
-
-			acc.Rename("Savings Account");
-			log.AppendLine(acc.Name == "Savings Account"
-				? "  PASS  Rename() updated Name in memory and DB."
-				: "  FAIL  Rename() did not update Name.");
-
-			log.AppendLine($"  PASS  ToString() = '{acc}'");
-
-			return acc.AccountID;
-		}
-
-		private int Test_Category(int userId)
-		{
-			log.AppendLine("\n--- [8] CATEGORY ---");
-
-			Category cat = new Category(userId, "Groceries", "Expense");
-			bool created = cat.Create();
-			log.AppendLine(created
-				? $"  PASS  Category created. CategoryID = {cat.CategoryID}"
-				: "  FAIL  Category Create() failed.");
-
-			cat.Update("Food & Groceries");
-			log.AppendLine(cat.Name == "Food & Groceries"
-				? "  PASS  Category Update() renamed correctly."
-				: "  FAIL  Category Update() did not rename.");
-
-			return cat.CategoryID;
-		}
-
-		private int Test_Transaction(int userId, int accountId, int categoryId)
-		{
-			log.AppendLine("\n--- [9] TRANSACTION ---");
-
-			Transaction t = new Transaction(userId, accountId, categoryId, "Expense", 49.99m, "Weekly groceries");
-			bool created = t.Create();
-			log.AppendLine(created
-				? $"  PASS  Transaction created. TransactionID = {t.TransactionID}"
-				: "  FAIL  Transaction Create() failed.");
-
-			t.Description = "Updated grocery run";
-			t.Amount = 55.00m;
-			t.Update();
-			log.AppendLine("  PASS  Transaction Update() called. Check DB: Description & Amount should be updated.");
-
-			log.AppendLine($"  PASS  ToString() = '{t}'");
-
-			Transaction badT = new Transaction(userId, accountId, categoryId, "Expense", -10m, "Bad transaction");
-			bool badResult = badT.Create();
-			log.AppendLine(!badResult
-				? "  PASS  Transaction with negative amount correctly rejected."
-				: "  FAIL  Transaction with negative amount was incorrectly accepted!");
-
-			return t.TransactionID;
-		}
-
-		private void Test_AttachReceipt(int transactionId)
-		{
-			log.AppendLine("\n--- [10] ATTACH RECEIPT ---");
-
-			Transaction t = new Transaction();
-			t.TransactionID = transactionId;
-
-			Receipt receipt = new Receipt();
-			receipt.ReceiptID = 1;
-			receipt.FilePath = @"C:\fake\receipt.jpg";
-			receipt.FileType = "jpg";
-			receipt.UploadedAt = DateTime.Now;
-
-			try
-			{
-				t.AttachReceipt(receipt);
-				log.AppendLine("  PASS  AttachReceipt() ran without errors.");
-			}
-			catch (Exception ex)
-			{
-				log.AppendLine("  FAIL  AttachReceipt() threw: " + ex.Message);
-			}
-		}
-
-		private void Test_Categorize(int transactionId, int categoryId)
-		{
-			log.AppendLine("\n--- [11] CATEGORIZE ---");
-
-			Transaction t = new Transaction();
-			t.TransactionID = transactionId;
-
-			t.Categorize(categoryId);
-			log.AppendLine(t.CategoryID == categoryId
-				? $"  PASS  Categorize() updated CategoryID to {categoryId} in memory and DB."
-				: "  FAIL  Categorize() did not update CategoryID.");
-		}
-
-		private void Test_GetTransactionHistory(int accountId)
-		{
-			log.AppendLine("\n--- [12] GET TRANSACTION HISTORY (Account) ---");
-
-			Account acc = new Account();
-			acc.AccountID = accountId;
-
-			List<Transaction> history = acc.GetTransactionHistory();
-			log.AppendLine(history != null
-				? $"  PASS  GetTransactionHistory() returned {history.Count} transaction(s)."
-				: "  FAIL  GetTransactionHistory() returned null.");
-		}
-
-		private void Test_GetTransactionsByCategory(int categoryId)
-		{
-			log.AppendLine("\n--- [13] GET TRANSACTIONS BY CATEGORY ---");
-
-			Category cat = new Category();
-			cat.CategoryID = categoryId;
-
-			List<Transaction> transactions = cat.GetTransactions();
-			log.AppendLine(transactions != null
-				? $"  PASS  GetTransactions() returned {transactions.Count} transaction(s) for CategoryID {categoryId}."
-				: "  FAIL  GetTransactions() returned null.");
-		}
-
-		private void Test_AdminMethods(int targetUserId)
-		{
-			log.AppendLine("\n--- [14] ADMIN METHODS ---");
-
+			// ── 23. ADMIN - GET ALL USERS ─────────────────────────────
+			Log("\n--- 23. Admin get all users ---");
 			Admin admin = new Admin();
-			admin.Username = "TestAdmin";
+			admin.Username = user.Username;
+			List<User> allUsers = admin.GetAllUsers();
+			Log("Total users in DB: " + allUsers.Count);
 
-			try
-			{
-				admin.GenerateReport();
-				log.AppendLine("  PASS  GenerateReport() ran. Check Desktop for FinancyReport.txt.");
-			}
-			catch (Exception ex)
-			{
-				log.AppendLine("  FAIL  GenerateReport() threw: " + ex.Message);
-			}
+			// ── 24. ADMIN - VIEW ALL TRANSACTIONS ────────────────────
+			Log("\n--- 24. Admin view all transactions ---");
+			List<Transaction> allTransactions = admin.ViewAllTransactions();
+			Log("Total transactions in DB: " + allTransactions.Count);
 
-			try
-			{
-				admin.ManageCategories();
-				log.AppendLine("  PASS  ManageCategories() ran without errors.");
-			}
-			catch (Exception ex)
-			{
-				log.AppendLine("  FAIL  ManageCategories() threw: " + ex.Message);
-			}
+			// ── 25. ADMIN - GENERATE REPORT ───────────────────────────
+			Log("\n--- 25. Admin generate report (Downloads) ---");
+			admin.GenerateReport();
+			Log("Admin report generated — check Downloads folder.");
 
-			User throwaway = new User("Throwaway_" + DateTime.Now.Ticks, "throw_" + DateTime.Now.Ticks + "@financy.com", "Pass123!");
-			if (throwaway.UserID > 0)
-			{
-				admin.DeleteUser(throwaway.UserID);
-				log.AppendLine($"  PASS  Admin.DeleteUser() called on throwaway UserID = {throwaway.UserID}. Check DB.");
-			}
-			else
-			{
-				log.AppendLine("  SKIP  Throwaway user not created, skipping DeleteUser test.");
-			}
+			// ── 26. ADMIN - RESET USER PASSWORD ──────────────────────
+			Log("\n--- 26. Admin reset user password ---");
+			admin.ResetUserPassword(user.UserID);
+			Log("User password reset by admin.");
+
+			// ── 27. ADMIN - DEACTIVATE USER ───────────────────────────
+			Log("\n--- 27. Admin deactivate user ---");
+			admin.DeactivateUser(user.UserID);
+			Log("User deactivated by admin.");
+
+			// ── 28. DELETE TRANSACTION ────────────────────────────────
+			Log("\n--- 28. Deleting transactions ---");
+			transaction.Delete();
+			income.Delete();
+			Log("Transactions deleted.");
+
+			// ── 29. DELETE CATEGORY ───────────────────────────────────
+			Log("\n--- 29. Deleting category ---");
+			category.Delete();
+			Log("Category deleted.");
+
+			// ── 30. DELETE ACCOUNT ────────────────────────────────────
+			Log("\n--- 30. Deleting account ---");
+			account.Delete();
+			Log("Account deleted.");
+
+			// ── 31. DEACTIVATE USER ───────────────────────────────────
+			Log("\n--- 31. Deactivating user ---");
+			user.Deactivate();
+			Log("User active status (should be false): " + user.IsActive);
+
+			// ── 32. ADMIN DELETE USER ─────────────────────────────────
+			Log("\n--- 32. Admin delete user ---");
+			db.DeleteProfile(user.UserID);  // <-- add this line
+			admin.DeleteUser(user.UserID);
+			Log("User deleted from DB.");
+
+			// ── 33. LOGOUT ────────────────────────────────────────────
+			Log("\n--- 33. Logout ---");
+			user.Logout();
+
+			Log("\n========== ALL TESTS DONE ==========");
 		}
 
 		private void Test_Budget(int userId, int categoryId)

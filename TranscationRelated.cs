@@ -31,7 +31,6 @@ namespace FinancyApplication
 			this.Date = DateTime.Now;
 		}
 
-		// Inserts this transaction into the DB and sets the TransactionID
 		public bool Create()
 		{
 			if (Amount <= 0)
@@ -40,11 +39,18 @@ namespace FinancyApplication
 				return false;
 			}
 
-			this.TransactionID = data.InsertTransaction(this);
-			return this.TransactionID > 0;
+			try
+			{
+				this.TransactionID = data.InsertTransaction(this);
+				return this.TransactionID > 0;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Create transaction error: " + ex.Message);
+				return false;
+			}
 		}
 
-		// Updates the transaction record in the DB with current property values
 		public void Update()
 		{
 			if (this.TransactionID <= 0)
@@ -53,10 +59,16 @@ namespace FinancyApplication
 				return;
 			}
 
-			data.UpdateTransaction(this);
+			try
+			{
+				data.UpdateTransaction(this);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Update transaction error: " + ex.Message);
+			}
 		}
 
-		// Deletes this transaction from the DB
 		public void Delete()
 		{
 			if (this.TransactionID <= 0)
@@ -65,26 +77,46 @@ namespace FinancyApplication
 				return;
 			}
 
-			data.DeleteTransaction(this.TransactionID);
-		}
-
-		// Links a Receipt to this transaction in the DB
-		public void AttachReceipt(Receipt receipt)
-		{
-			if (receipt == null || receipt.ReceiptID <= 0)
+			try
 			{
-				MessageBox.Show("Please provide a valid receipt.");
-				return;
+				data.DeleteTransaction(this.TransactionID);
 			}
-
-			data.AttachReceiptToTransaction(this.TransactionID, receipt.ReceiptID);
+			catch (Exception ex)
+			{
+				MessageBox.Show("Delete transaction error: " + ex.Message);
+			}
 		}
 
-		// Changes the category this transaction belongs to
+		// RECEIPT FEATURE — commented out until partner's Receipt class is ready
+		//public void AttachReceipt(Receipt receipt)
+		//{
+		//	if (receipt == null || receipt.ReceiptID <= 0)
+		//	{
+		//		MessageBox.Show("Please provide a valid receipt.");
+		//		return;
+		//	}
+		//
+		//	try
+		//	{
+		//		data.AttachReceiptToTransaction(this.TransactionID, receipt.ReceiptID);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		MessageBox.Show("AttachReceipt error: " + ex.Message);
+		//	}
+		//}
+
 		public void Categorize(int categoryId)
 		{
-			this.CategoryID = categoryId;
-			data.UpdateTransactionCategory(this.TransactionID, categoryId);
+			try
+			{
+				this.CategoryID = categoryId;
+				data.UpdateTransactionCategory(this.TransactionID, categoryId);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Categorize error: " + ex.Message);
+			}
 		}
 
 		public override string ToString() => $"[{Type}] {Amount} - {Description}";
@@ -109,7 +141,6 @@ namespace FinancyApplication
 			this.Type = type;
 		}
 
-		// Inserts this category into the DB and sets CategoryID
 		public bool Create()
 		{
 			if (string.IsNullOrWhiteSpace(Name))
@@ -118,11 +149,18 @@ namespace FinancyApplication
 				return false;
 			}
 
-			this.CategoryID = data.InsertCategory(this);
-			return this.CategoryID > 0;
+			try
+			{
+				this.CategoryID = data.InsertCategory(this);
+				return this.CategoryID > 0;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Create category error: " + ex.Message);
+				return false;
+			}
 		}
 
-		// Renames the category both in memory and in the DB
 		public void Update(string newName)
 		{
 			if (string.IsNullOrWhiteSpace(newName))
@@ -131,11 +169,17 @@ namespace FinancyApplication
 				return;
 			}
 
-			this.Name = newName;
-			data.UpdateCategory(this.CategoryID, newName);
+			try
+			{
+				this.Name = newName;
+				data.UpdateCategory(this.CategoryID, newName);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Update category error: " + ex.Message);
+			}
 		}
 
-		// Deletes this category from the DB
 		public void Delete()
 		{
 			if (this.CategoryID <= 0)
@@ -144,13 +188,27 @@ namespace FinancyApplication
 				return;
 			}
 
-			data.DeleteCategory(this.CategoryID);
+			try
+			{
+				data.DeleteCategory(this.CategoryID);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Delete category error: " + ex.Message);
+			}
 		}
 
-		// Returns all transactions that belong to this category
 		public List<Transaction> GetTransactions()
 		{
-			return data.GetTransactionsByCategory(this.CategoryID);
+			try
+			{
+				return data.GetTransactionsByCategory(this.CategoryID);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("GetTransactions error: " + ex.Message);
+				return new List<Transaction>();
+			}
 		}
 	}
 }
