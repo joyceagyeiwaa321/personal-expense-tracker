@@ -112,7 +112,7 @@ namespace FinancyApplication
 
 		public int InsertUser(User user, string password)
 		{
-			string query = "INSERT INTO user(Username, Email, Password, Role, CreatedAt, IsActive) VALUES('" +
+			string query = "INSERT INTO user(Username, Email, PasswordHash, Role, CreatedAt, IsActive) VALUES('" +
 						   user.Username + "', '" + user.Email + "', '" + password + "', '" +
 						   user.Role + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 1);";
 			return this.Insert(query);
@@ -498,8 +498,30 @@ namespace FinancyApplication
 				}
 			}
 		}
-		public string GetResetToken(string email)
-		public int InsertBudget(Budget budget)
+        public string GetResetToken(string email)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT ResetToken FROM user WHERE Email = '" + email + "' LIMIT 1";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                        return result.ToString();
+                    else
+                        return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetResetToken failed: " + ex.Message);
+                }
+            }
+        }
+        public int InsertBudget(Budget budget)
 		{
 			string limitAmount = budget.LimitAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
 			string query = "INSERT INTO budget(UserID, CategoryID, LimitAmount, Month) VALUES(" +
@@ -609,24 +631,5 @@ namespace FinancyApplication
 			string query = "DELETE FROM receipt WHERE ReceiptID = " + receiptId;
 			this.ExecuteSimple(query);
         }
-
-        private void ExecuteSimple(string query)
-		{
-			using (MySqlConnection connection = new MySqlConnection(connectionString))
-			{
-				string query = "SELECT ResetToken FROM user WHERE Email = '" + email + "' LIMIT 1";
-				MySqlCommand cmd = new MySqlCommand(query, connection);
-				try
-				{
-					connection.Open();
-					object result = cmd.ExecuteScalar();
-					return result != null ? result.ToString() : null;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("GetResetToken failed: " + ex.Message);
-				}
-			}
-		}
 	}
 }
