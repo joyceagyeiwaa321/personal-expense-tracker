@@ -122,7 +122,7 @@ namespace FinancyApplication
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "SELECT Password FROM user WHERE Email = '" + email + "' LIMIT 1";
+				string query = "SELECT PasswordHash FROM user WHERE Email = '" + email + "' LIMIT 1";
 				MySqlCommand cmd = new MySqlCommand(query, connection);
 				try
 				{
@@ -182,7 +182,7 @@ namespace FinancyApplication
 
 		public void UpdateUserPassword(int userId, string newHashedPassword)
 		{
-			string query = "UPDATE user SET Password = '" + newHashedPassword + "' WHERE UserID = " + userId;
+			string query = "UPDATE user SET PasswordHash = '" + newHashedPassword + "' WHERE UserID = " + userId;
 			this.ExecuteSimple(query);
 		}
 
