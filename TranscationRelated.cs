@@ -211,6 +211,4 @@ namespace FinancyApplication
 			}
 		}
 	}
-
-	
 }
