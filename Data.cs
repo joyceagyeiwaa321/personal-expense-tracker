@@ -6,7 +6,7 @@ namespace FinancyApplication
 {
 	public class Data
 	{
-		private string connectionString = "datasource=127.0.0.1;port=3308;username=root;password=;database=expense_tracker;";
+		private string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=expense_tracker;";
 
 		private int Insert(string query)
 		{
@@ -112,7 +112,7 @@ namespace FinancyApplication
 
 		public int InsertUser(User user, string password)
 		{
-			string query = "INSERT INTO user(Username, Email, Password, Role, CreatedAt, IsActive) VALUES('" +
+			string query = "INSERT INTO user(Username, Email, PasswordHash, Role, CreatedAt, IsActive) VALUES('" +
 						   user.Username + "', '" + user.Email + "', '" + password + "', '" +
 						   user.Role + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 1);";
 			return this.Insert(query);
@@ -122,7 +122,7 @@ namespace FinancyApplication
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "SELECT Password FROM user WHERE Email = '" + email + "' LIMIT 1";
+				string query = "SELECT PasswordHash FROM user WHERE Email = '" + email + "' LIMIT 1";
 				MySqlCommand cmd = new MySqlCommand(query, connection);
 				try
 				{
@@ -182,7 +182,7 @@ namespace FinancyApplication
 
 		public void UpdateUserPassword(int userId, string newHashedPassword)
 		{
-			string query = "UPDATE user SET Password = '" + newHashedPassword + "' WHERE UserID = " + userId;
+			string query = "UPDATE user SET PasswordHash = '" + newHashedPassword + "' WHERE UserID = " + userId;
 			this.ExecuteSimple(query);
 		}
 
@@ -498,23 +498,138 @@ namespace FinancyApplication
 				}
 			}
 		}
-		public string GetResetToken(string email)
+        public string GetResetToken(string email)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT ResetToken FROM user WHERE Email = '" + email + "' LIMIT 1";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                        return result.ToString();
+                    else
+                        return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetResetToken failed: " + ex.Message);
+                }
+            }
+        }
+        public int InsertBudget(Budget budget)
+		{
+			string limitAmount = budget.LimitAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			string query = "INSERT INTO budget(UserID, CategoryID, LimitAmount, Month) VALUES(" +
+						   budget.UserId + ", " + budget.CategoryId + ", " + limitAmount + ", '" + budget.Month + "');";
+			return this.Insert(query);
+        }
+
+		public void UpdateBudget(Budget budget)
+        {
+			string limitAmount = budget.LimitAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			string query = "UPDATE budget SET CategoryID = " + budget.CategoryId + 
+				", LimitAmount = " + limitAmount + 
+				", Month = '" + budget.Month +
+				"' WHERE BudgetID = " + budget.BudgetId;
+			this.ExecuteSimple(query);
+        }
+
+		public void DeleteBudget(int budgetId)
+        {
+			string query = "DELETE FROM budget WHERE BudgetID = " + budgetId;
+			this.ExecuteSimple(query);
+        }
+
+		public decimal GetSpentAmount(int userId, int categoryId, string month)
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "SELECT ResetToken FROM user WHERE Email = '" + email + "' LIMIT 1";
+				string query = "SELECT SUM(Amount) FROM `transaction` WHERE UserID = " + userId +
+					" AND CategoryID = " + categoryId +
+					" AND Type = 'Expense' " +
+					" AND DATE_FORMAT(`Date`, '%Y-%m') = '" + month + "'";
+
 				MySqlCommand cmd = new MySqlCommand(query, connection);
+
 				try
 				{
 					connection.Open();
 					object result = cmd.ExecuteScalar();
-					return result != null ? result.ToString() : null;
+
+					if (result == DBNull.Value || result == null)
+					{
+						return 0;
+					}
+					return Convert.ToDecimal(result);
 				}
 				catch (Exception ex)
 				{
-					throw new Exception("GetResetToken failed: " + ex.Message);
+					Console.WriteLine("GetSpentAmount error: " + ex.Message);
+					return 0;
 				}
 			}
 		}
+
+		public int InsertRecurringTransaction(RecurringTransaction rt)
+        {
+			string amount = rt.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			int active = rt.IsActive ? 1 : 0;
+
+			string query = "INSERT INTO recurring_transaction (AccountID, CategoryID, Type, Amount, Frequency, StartDate, NextRunDate, IsActive) " +
+						   "VALUES (" + 
+						   rt.AccountId + ", " +
+						   rt.CategoryId + ", '" +
+						   rt.Type + "', " +
+						   amount + ", '" + 
+						   rt.Frequency + "', '" +
+						   rt.StartDate.ToString("yyyy-MM-dd HH:mm:ss") + "', '" +
+						   rt.NextRunDate.ToString("yyyy-MM-dd HH:mm:ss") + "', " +
+						   active + ");";
+			return this.Insert(query);
+        }	
+
+		public void UpdateRecurringTransaction(RecurringTransaction rt)
+        {
+			string amount = rt.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			int active = rt.IsActive ? 1 : 0;
+
+			string query = "UPDATE recurring_transaction SET " +
+						   "CategoryID = " + rt.CategoryId + ", " +
+						   "Type = '" + rt.Type + "', " +
+						   "Amount = " + amount + ", " +
+						   "Frequency = '" + rt.Frequency + "', " +
+						   "StartDate = '" + rt.StartDate.ToString("yyyy-MM-dd HH:mm:ss") + "', " +
+						   "NextRunDate = '" + rt.NextRunDate.ToString("yyyy-MM-dd HH:mm:ss") + "', " +
+						   "IsActive = " + active +
+						   " WHERE RecurringID = " + rt.RecurringId;
+			this.ExecuteSimple(query);
+        }
+
+		public void DeleteRecurringTransaction(int recurringId)
+        {
+			string query = "DELETE FROM recurring_transaction WHERE RecurringID = " + recurringId;
+			this.ExecuteSimple(query);
+        }
+
+		public int InsertReceipt(Receipt receipt)
+        {
+			string query = "INSERT INTO receipt(TransactionID, FilePath, FileType, UploadedAt) VALUES(" +
+						   receipt.TransactionID + ", '" +
+						   receipt.FilePath + "', '" +
+						   receipt.FileType +  "', '" +
+						   DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');";
+			return this.Insert(query);
+		}
+
+		public void DeleteReceipt(int receiptId)
+        {
+			string query = "DELETE FROM receipt WHERE ReceiptID = " + receiptId;
+			this.ExecuteSimple(query);
+        }
 	}
 }
