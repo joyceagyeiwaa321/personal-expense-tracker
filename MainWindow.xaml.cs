@@ -260,7 +260,7 @@ namespace FinancyApplication
         }
 
         // ================= MY PART =================
-        // These tests are ONLY for Budget, RecurringTransaction, Receipt
+        // These tests are ONLY for Budget, RecurringTransaction, Receipt, Group, and GroupMember classes that I implemented.
         // Does NOT modify existing system tests (RunTests_Click)
         // ==========================================
         private void RunMyTests_Click(object sender, RoutedEventArgs e)
@@ -269,7 +269,7 @@ namespace FinancyApplication
 
             log.AppendLine("===========================================");
             log.AppendLine("       MY PART TEST");
-            log.AppendLine("       BUDGET / RECURRING / RECEIPT");
+            log.AppendLine("       BUDGET / RECURRING / RECEIPT / GROUP");
             log.AppendLine("===========================================\n");
 
             try
@@ -289,6 +289,9 @@ namespace FinancyApplication
 
                 // My class test 3: Receipt
                 Test_Receipt(transId);
+
+                // My class test 4: Group and GroupMember
+                Test_Group(userId);
 
                 log.AppendLine("\n===========================================");
                 log.AppendLine("         MY TESTS COMPLETED ✓");
@@ -387,6 +390,35 @@ namespace FinancyApplication
             log.AppendLine(url == receipt.FilePath
                 ? $"  PASS  GetDownloadUrl() returned {url}"
                 : "  FAIL  GetDownloadUrl() returned wrong value.");
+        }
+
+        // ── MY PART: GROUP TEST ─────────────────────────────────────
+        private void Test_Group(int userId)
+        {
+            log.AppendLine("\n--- [MY TEST 4] GROUP ---");
+
+            Group group = new Group(0, userId, "Test Group");
+            int groupId = group.Create();
+            group.GroupID = groupId;
+
+            log.AppendLine(groupId > 0
+                ? $"  PASS  Group created. GroupID = {groupId}"
+                : "  FAIL  Group was not created.");
+
+            group.Update("Updated Test Group");
+            log.AppendLine("  PASS  Group updated to: " + group.Name);
+
+            GroupMember member = group.AddMember(userId);
+            log.AppendLine("  PASS  Member added. UserID = " + member.UserID);
+
+            List<GroupMember> members = group.GetMembers();
+            log.AppendLine("  PASS  Group members count: " + members.Count);
+
+            group.RemoveMember(userId);
+            log.AppendLine("  PASS  Member removed.");
+
+            group.Delete();
+            log.AppendLine("  PASS  Group deleted.");
         }
     }
 }
