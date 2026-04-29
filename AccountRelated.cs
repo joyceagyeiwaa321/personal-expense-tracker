@@ -54,7 +54,7 @@ namespace FinancyApplication
 				}
 				catch (Exception)
 				{
-					// Some cultures don't have valid region data, skip them
+					// Some cultures don't have valid region data
 				}
 			}
 
@@ -64,12 +64,14 @@ namespace FinancyApplication
 
 		public static string ExtractCurrencyCode(string dropdownValue)
 		{
-			return dropdownValue.Split("-")[0].Trim();
+			var parts = dropdownValue.Split('-', 3);
+			return parts[0].Trim();
 		}
 
 		public static string ExtractCurrencySymbol(string dropdownValue)
 		{
-			return dropdownValue.Split("-")[1].Trim();
+			var parts = dropdownValue.Split('-', 3);
+			return parts[1].Trim();
 		}
 
 		public bool Save()
@@ -115,6 +117,12 @@ namespace FinancyApplication
 			if (this.AccountID <= 0)
 			{
 				MessageBox.Show("This account has not been saved yet.");
+				return;
+			}
+			
+			if (amount == 0)
+			{
+				MessageBox.Show("Amount cannot be zero.");
 				return;
 			}
 
