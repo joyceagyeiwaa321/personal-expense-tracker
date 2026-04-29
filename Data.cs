@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
 using MySqlConnector;
+using System;
+using System.Collections.Generic;
 
 namespace FinancyApplication
 {
@@ -631,5 +632,145 @@ namespace FinancyApplication
 			string query = "DELETE FROM receipt WHERE ReceiptID = " + receiptId;
 			this.ExecuteSimple(query);
         }
-	}
+
+        public int InsertGroup(Group group)
+        {
+            string query = "INSERT INTO `group`(CreatedByUserID, Name, CreatedAt) VALUES(" +
+                           group.CreatedByUserID + ", '" +
+                           group.Name + "', '" +
+                           DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');";
+
+            return this.Insert(query);
+        }
+
+        public void UpdateGroup(Group group)
+        {
+            string query = "UPDATE `group` SET Name = '" + group.Name +
+                           "' WHERE GroupID = " + group.GroupID;
+
+            this.ExecuteSimple(query);
+        }
+
+        public void DeleteGroup(int groupId)
+        {
+            string query = "DELETE FROM `group` WHERE GroupID = " + groupId;
+            this.ExecuteSimple(query);
+        }
+
+        public Group GetGroupById(int groupId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM `group` WHERE GroupID = " + groupId;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        Group group = new Group();
+                        group.GroupID = Convert.ToInt32(reader["GroupID"]);
+                        group.CreatedByUserID = Convert.ToInt32(reader["CreatedByUserID"]);
+                        group.Name = reader["Name"].ToString();
+                        group.CreatedAt = Convert.ToDateTime(reader["CreatedAt"]);
+                        return group;
+                    }
+
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetGroupById failed: " + ex.Message);
+                }
+            }
+        }
+
+        public void InsertGroupMember(GroupMember member)
+        {
+            string query = "INSERT INTO group_member(GroupID, UserID, JoinedAt) VALUES(" +
+                           member.GroupID + ", " +
+                           member.UserID + ", '" +
+                           DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');";
+
+            this.ExecuteSimple(query);
+        }
+
+        public void DeleteGroupMember(int groupId, int userId)
+        {
+            string query = "DELETE FROM group_member WHERE GroupID = " + groupId +
+                           " AND UserID = " + userId;
+
+            this.ExecuteSimple(query);
+        }
+
+        public List<GroupMember> GetGroupMembers(int groupId)
+        {
+            List<GroupMember> members = new List<GroupMember>();
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM group_member WHERE GroupID = " + groupId;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        GroupMember member = new GroupMember();
+                        member.GroupID = Convert.ToInt32(reader["GroupID"]);
+                        member.UserID = Convert.ToInt32(reader["UserID"]);
+                        member.JoinedAt = Convert.ToDateTime(reader["JoinedAt"]);
+
+                        members.Add(member);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetGroupMembers failed: " + ex.Message);
+                }
+            }
+
+            return members;
+        }
+
+        public User GetUserById(int userId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM user WHERE UserID = " + userId;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        User user = new User();
+                        user.UserID = Convert.ToInt32(reader["UserID"]);
+                        user.Username = reader["Username"].ToString();
+                        user.Email = reader["Email"].ToString();
+                        user.Role = reader["Role"].ToString() == "Admin" ? UserRole.Admin : UserRole.User;
+                        user.IsActive = Convert.ToInt32(reader["IsActive"]) == 1;
+                        user.CreatedAt = Convert.ToDateTime(reader["CreatedAt"]);
+
+                        return user;
+                    }
+
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetUserById failed: " + ex.Message);
+                }
+            }
+        }
+    }
 }
