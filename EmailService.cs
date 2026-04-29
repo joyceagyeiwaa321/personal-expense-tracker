@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -7,23 +8,20 @@ namespace FinancyApplication
 {
 	public class EmailService
 	{
-		private readonly string senderEmail = "chimc8699@gmail.com";  
+		private readonly string senderEmail = "financyapplication@gmail.com";
 		private readonly string senderName = "Financy App";
-		private readonly string appPassword = "egzgwususpzjcirq";    
+		private readonly string appPassword = "lqojabplujxchvex";
 
-		public bool SendResetToken(string toEmail, string recipientName, string token)
+		private bool SendEmailInternal(string toEmail, string recipientName, string subject, string htmlBody)
 		{
 			try
 			{
 				var message = new MimeMessage();
 				message.From.Add(new MailboxAddress(senderName, senderEmail));
 				message.To.Add(new MailboxAddress(recipientName, toEmail));
-				message.Subject = "Your Financy Password Reset Code";
+				message.Subject = subject;
 
-				message.Body = new TextPart("html")
-				{
-					Text = BuildEmailBody(recipientName, token)
-				};
+				message.Body = new TextPart("html") { Text = htmlBody };
 
 				using (var client = new SmtpClient())
 				{
@@ -32,74 +30,62 @@ namespace FinancyApplication
 					client.Send(message);
 					client.Disconnect(true);
 				}
-
 				return true;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("Email error: " + ex.Message);
+				MessageBox.Show("Email error: " + ex.Message);
 				return false;
 			}
 		}
 
-		private string BuildEmailBody(string name, string token)
+		public bool SendResetToken(string toEmail, string recipientName, string token)
 		{
-			return $@"
-            <div style='font-family:Arial,sans-serif;max-width:480px;margin:auto;border:1px solid #e0e0e0;border-radius:10px;padding:32px;'>
-                <h2 style='color:#2e7d32;'>Financy</h2>
-                <p>Hi {name},</p>
-                <p>We received a request to reset your password. Use the code below:</p>
-                <div style='text-align:center;margin:32px 0;'>
-                    <span style='font-size:36px;font-weight:bold;letter-spacing:8px;color:#2e7d32;'>{token}</span>
-                </div>
-                <p>Enter this code in the app to reset your password.</p>
-                <p style='color:#999;font-size:12px;'>If you didn't request this, you can safely ignore this email.</p>
-            </div>";
+			string body = BuildModernTemplate(recipientName, "PASSWORD RESET CODE", "We received a request to reset your password. Use the secure code below—it's valid for 15 minutes:", token, isAlert: true);
+			return SendEmailInternal(toEmail, recipientName, "Securely Reset Your Financy Password", body);
 		}
 
 		public bool SendVerificationCode(string toEmail, string recipientName, string code)
 		{
-			try
-			{
-				var message = new MimeMessage();
-				message.From.Add(new MailboxAddress(senderName, senderEmail));
-				message.To.Add(new MailboxAddress(recipientName, toEmail));
-				message.Subject = "Verify your Financy account";
-
-				message.Body = new TextPart("html")
-				{
-					Text = BuildVerificationBody(recipientName, code)
-				};
-
-				using (var client = new SmtpClient())
-				{
-					client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-					client.Authenticate(senderEmail, appPassword);
-					client.Send(message);
-					client.Disconnect(true);
-				}
-
-				return true;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Email error: " + ex.Message);
-				return false;
-			}
+			string body = BuildModernTemplate(recipientName, "ACCOUNT VERIFICATION CODE", "Welcome aboard! To activate your account, enter the unique verification code below directly in the app:", code, isAlert: false);
+			return SendEmailInternal(toEmail, recipientName, "Action Required: Verify Your Financy Account", body);
 		}
 
-		private string BuildVerificationBody(string name, string code)
+
+
+		private string BuildModernTemplate(string name, string title, string message, string code, bool isAlert)
 		{
+			string primaryColor = "#2e7d32"; 
+			string codeBoxBg = "#f1f8e9";    
+			string codeColor = "#1b5e20";   
+
+			string alertText = isAlert
+				? "<p style='color:#d32f2f; font-size:12px; font-weight:bold; margin-top:20px; text-align:center;'>⚠️ SECURITY: If you did not request this, please secure your account by changing your password immediately.</p>"
+				: "";
+
 			return $@"
-    <div style='font-family:Arial,sans-serif;max-width:480px;margin:auto;border:1px solid #e0e0e0;border-radius:10px;padding:32px;'>
-        <h2 style='color:#2e7d32;'>Financy</h2>
-        <p>Hi {name},</p>
-        <p>Welcome! Please verify your account using the code below:</p>
-        <div style='text-align:center;margin:32px 0;'>
-            <span style='font-size:36px;font-weight:bold;letter-spacing:8px;color:#2e7d32;'>{code}</span>
+    <div style='background-color:#fafafa; padding:40px 0;'>
+        <div style='font-family:""Segoe UI"", Tahoma, Geneva, Verdana, sans-serif; max-width:500px; margin:0 auto; border:1px solid #e0e0e0; border-radius:16px; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06);'>
+            
+            <div style='background-color:{primaryColor}; padding:30px; text-align:center;'>
+                <h1 style='color:white; margin:0; font-size:24px; letter-spacing:3px; font-weight:bold;'>FINANCY</h1>
+            </div>
+
+            <div style='padding:40px; line-height:1.7; color:#333; background-color:white;'>
+                <p style='font-size:17px;'>Hi <b>{name}</b>,</p>
+                <p style='font-size:15px; color:#555;'>{message}</p>
+                
+                <div style='text-align:center; margin:40px 0; background-color:{codeBoxBg}; padding:30px; border-radius:12px;'>
+                    <p style='text-transform:uppercase; font-size:11px; letter-spacing:2px; color:#777; margin:0 0 10px 0;'>{title}</p>
+                    <span style='font-size:42px; font-weight:bold; letter-spacing:8px; color:{codeColor}; font-family:monospace;'>{code}</span>
+                </div>
+                
+                {alertText}
+
+                <hr style='border:none; border-top:1px solid #eee; margin:30px 0;'>
+                <p style='color:#999; font-size:12px; text-align:center;'>This is an automated message from the Financy Security System.</p>
+            </div>
         </div>
-        <p>Enter this code in the app to activate your account.</p>
-        <p style='color:#999;font-size:12px;'>If you didn't create this account, you can safely ignore this email.</p>
     </div>";
 		}
 	}

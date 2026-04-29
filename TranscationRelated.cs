@@ -12,6 +12,7 @@ namespace FinancyApplication
 		public int UserID { get; set; }
 		public int AccountID { get; set; }
 		public int CategoryID { get; set; }
+		public int GroupID { get; set; } 
 		public int RecurringID { get; set; }
 		public string Type { get; set; }
 		public decimal Amount { get; set; }
@@ -29,6 +30,7 @@ namespace FinancyApplication
 			this.Amount = amount;
 			this.Description = description;
 			this.Date = DateTime.Now;
+			this.GroupID = 0; 
 		}
 
 		public bool Create()
@@ -87,27 +89,38 @@ namespace FinancyApplication
 			}
 		}
 
-		// RECEIPT FEATURE — commented out until partner's Receipt class is ready
-		//public void AttachReceipt(Receipt receipt)
-		//{
-		//	if (receipt == null || receipt.ReceiptID <= 0)
-		//	{
-		//		MessageBox.Show("Please provide a valid receipt.");
-		//		return;
-		//	}
-		//
-		//	try
-		//	{
-		//		data.AttachReceiptToTransaction(this.TransactionID, receipt.ReceiptID);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		MessageBox.Show("AttachReceipt error: " + ex.Message);
-		//	}
-		//}
+		public void AttachReceipt(Receipt receipt)
+		{
+			if (this.TransactionID <= 0)
+			{
+				MessageBox.Show("Transaction has not been saved yet.");
+				return;
+			}
+
+			if (receipt == null || receipt.ReceiptID <= 0)
+			{
+				MessageBox.Show("Please provide a valid receipt.");
+				return;
+			}
+
+			try
+			{
+				data.AttachReceiptToTransaction(this.TransactionID, receipt.ReceiptID);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("AttachReceipt error: " + ex.Message);
+			}
+		}
 
 		public void Categorize(int categoryId)
 		{
+			if (this.TransactionID <= 0)
+			{
+				MessageBox.Show("Transaction has not been saved yet.");
+				return;
+			}
+
 			try
 			{
 				this.CategoryID = categoryId;
@@ -119,13 +132,15 @@ namespace FinancyApplication
 			}
 		}
 
-		public override string ToString() => $"[{Type}] {Amount} - {Description}";
+		public override string ToString()
+		{
+			return "[" + Type + "] " + Amount + " - " + Description;
+		}
 	}
 
 	public class Category
 	{
 		private Data data = new Data();
-
 		public int CategoryID { get; set; }
 		public int UserID { get; set; }
 		public string Name { get; set; }
@@ -163,6 +178,12 @@ namespace FinancyApplication
 
 		public void Update(string newName)
 		{
+			if (this.CategoryID <= 0)
+			{
+				MessageBox.Show("Category has not been saved yet.");
+				return;
+			}
+
 			if (string.IsNullOrWhiteSpace(newName))
 			{
 				MessageBox.Show("Please provide a valid category name.");
@@ -188,6 +209,12 @@ namespace FinancyApplication
 				return;
 			}
 
+			if (IsDefault)
+			{
+				MessageBox.Show("Cannot delete a default category.");
+				return;
+			}
+
 			try
 			{
 				data.DeleteCategory(this.CategoryID);
@@ -210,5 +237,25 @@ namespace FinancyApplication
 				return new List<Transaction>();
 			}
 		}
+
+		public static void CreateDefaultCategories(int userId)
+		{
+		
+			string[] defaults = { "Food & Dining", "Transport", "Housing", "Health", "Entertainment", "Salary" };
+
+			foreach (string name in defaults)
+			{
+				string type = "expense";
+				if (name == "Salary")
+				{
+					type = "income";
+				}
+
+				Category cat = new Category(userId, name, type);
+				cat.IsDefault = true;
+				cat.Create();
+			}
+		}
+	
 	}
 }
