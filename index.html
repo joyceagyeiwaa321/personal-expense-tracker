@@ -7,16 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --pink: #e91e8c;
-  --pink-deep: #c2185b;
-  --pink-dark: #880e4f;
-  --pink-soft: #f48fb1;
-  --pink-blush: #fce4ec;
-  --pink-pale: #fff5f9;
-  --namariq: #d81b60;
-  --namariq-bg: #fce4ec;
-  --joyce: #7b1fa2;
-  --joyce-bg: #f3e5f5;
+  --pink: #00b894;
+  --pink-deep: #00a383;
+  --pink-dark: #006b5f;
+  --pink-soft: #55d6be;
+  --pink-blush: #e6fff8;
+  --pink-pale: #f4fffb;
+  --namariq: #00a383;
+  --namariq-bg: #e6fff8;
+  --joyce: #00b894;
+  --joyce-bg: #e6fff8;
   --completed: #2e7d32;
   --completed-bg: #e8f5e9;
   --ongoing: #e65100;
@@ -28,7 +28,7 @@
   --ontime: #1b5e20;
   --ontime-bg: #e8f5e9;
   --white: #ffffff;
-  --text: #1a0a12;
+  --text: #06231f;
   --text-muted: #8b5a70;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -48,7 +48,7 @@ body {
    LOGIN PAGE
 ════════════════════════════════ */
 #page-login {
-  background: linear-gradient(135deg, #1a0a12 0%, #3d0a2a 50%, #1a0a12 100%);
+  background: linear-gradient(135deg, #06231f 0%, #0f4c43 50%, #06231f 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,7 +177,7 @@ body {
 ════════════════════════════════ */
 .nav {
   background: #fff;
-  border-bottom: 1px solid #fce4ec;
+  border-bottom: 1px solid #e6fff8;
   padding: 0 32px;
   display: flex;
   align-items: center;
@@ -232,7 +232,7 @@ body {
 .btn-logout {
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid #fce4ec;
+  border: 1px solid #e6fff8;
   background: none;
   color: var(--text-muted);
   font-size: 0.75rem;
@@ -247,7 +247,7 @@ body {
    HOME PAGE
 ════════════════════════════════ */
 .home-hero {
-  background: linear-gradient(135deg, #1a0a12 0%, #3d0a2a 60%, #1a0a12 100%);
+  background: linear-gradient(135deg, #06231f 0%, #0f4c43 60%, #06231f 100%);
   padding: 56px 32px 48px;
   text-align: center;
   position: relative;
@@ -325,8 +325,8 @@ body {
   text-align: center;
   position: relative;
 }
-.member-card-top.namariq { background: linear-gradient(135deg, #fce4ec, #fff5f9); }
-.member-card-top.joyce   { background: linear-gradient(135deg, #f3e5f5, #faf0ff); }
+.member-card-top.namariq { background: linear-gradient(135deg, #e6fff8, #f4fffb); }
+.member-card-top.joyce   { background: linear-gradient(135deg, #e6fff8, #f4fffb); }
 
 /* AVATAR AREA */
 .avatar-area {
@@ -354,15 +354,15 @@ body {
   border: 3px dashed rgba(255,255,255,0.5);
   font-family: 'Cormorant Garamond', serif;
 }
-.avatar-placeholder.namariq { background: linear-gradient(135deg, var(--namariq), #f06292); }
-.avatar-placeholder.joyce   { background: linear-gradient(135deg, var(--joyce), #ab47bc); }
+.avatar-placeholder.namariq { background: linear-gradient(135deg, var(--namariq), #55d6be); }
+.avatar-placeholder.joyce   { background: linear-gradient(135deg, var(--joyce), #55d6be); }
 .avatar-upload-hint {
   position: absolute;
   bottom: 0; right: 0;
   width: 26px; height: 26px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid #fce4ec;
+  border: 2px solid #e6fff8;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.7rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -444,11 +444,11 @@ body {
   letter-spacing: 0.02em;
 }
 .btn-goto.namariq {
-  background: linear-gradient(135deg, var(--namariq), #f06292);
+  background: linear-gradient(135deg, var(--namariq), #55d6be);
   color: #fff;
 }
 .btn-goto.joyce {
-  background: linear-gradient(135deg, var(--joyce), #ab47bc);
+  background: linear-gradient(135deg, var(--joyce), #55d6be);
   color: #fff;
 }
 .btn-goto:hover { opacity: 0.88; transform: translateY(-1px); }
@@ -480,8 +480,8 @@ body {
   position: relative;
   overflow: hidden;
 }
-.dash-hero.namariq { background: linear-gradient(135deg, #fce4ec, #fff5f9, #fce4ec); }
-.dash-hero.joyce   { background: linear-gradient(135deg, #f3e5f5, #faf0ff, #f3e5f5); }
+.dash-hero.namariq { background: linear-gradient(135deg, #e6fff8, #f4fffb, #e6fff8); }
+.dash-hero.joyce   { background: linear-gradient(135deg, #e6fff8, #f4fffb, #e6fff8); }
 
 .dash-hero-inner {
   max-width: 960px;
@@ -513,15 +513,15 @@ body {
   color: #fff;
   border: 3px dashed rgba(255,255,255,0.5);
 }
-.dash-avatar-ph.namariq { background: linear-gradient(135deg, var(--namariq), #f06292); }
-.dash-avatar-ph.joyce   { background: linear-gradient(135deg, var(--joyce), #ab47bc); }
+.dash-avatar-ph.namariq { background: linear-gradient(135deg, var(--namariq), #55d6be); }
+.dash-avatar-ph.joyce   { background: linear-gradient(135deg, var(--joyce), #55d6be); }
 .dash-upload-btn {
   position: absolute;
   bottom: 0; right: 0;
   width: 24px; height: 24px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid #fce4ec;
+  border: 2px solid #e6fff8;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.65rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -598,8 +598,8 @@ body {
   border-bottom: 1px solid #fdf0f5;
   gap: 8px; flex-wrap: wrap;
 }
-.phase-head.namariq { background: linear-gradient(90deg, #fce4ec, #fff5f9); }
-.phase-head.joyce   { background: linear-gradient(90deg, #f3e5f5, #faf0ff); }
+.phase-head.namariq { background: linear-gradient(90deg, #e6fff8, #f4fffb); }
+.phase-head.joyce   { background: linear-gradient(90deg, #e6fff8, #f4fffb); }
 .phase-head-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.02rem;
@@ -675,6 +675,8 @@ body {
   line-height: 1.5;
 }
 
+
+.intro-actions{margin-top:8px;display:none;gap:8px;justify-content:center}.dash-intro-area .intro-actions{justify-content:flex-start}.intro-actions.show{display:flex}.intro-btn,.save-copy-btn{border:1px solid var(--pink-soft);background:#fff;color:var(--pink-deep);border-radius:8px;padding:5px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer}.intro-btn.done{background:var(--pink);color:#fff;border-color:var(--pink)}.save-copy-btn{margin-left:6px}.member-intro.editing,.dash-intro-text.editing{outline:1.5px dashed var(--pink-soft);background:#fff;color:var(--text)}
 /* STATUS POPUP */
 .overlay2 { display:none; position:fixed; inset:0; z-index:80; }
 .overlay2.open { display:block; }
@@ -687,7 +689,7 @@ body {
   box-shadow: 0 10px 40px rgba(0,0,0,0.18);
   padding: 8px;
   min-width: 175px;
-  border: 1.5px solid #fce4ec;
+  border: 1.5px solid #e6fff8;
   animation: pop 0.15s ease;
 }
 .status-popup.open { display: block; }
@@ -764,7 +766,7 @@ body {
   <div class="home-hero">
     <h1>The Collab Board</h1>
     <p>Namariq &amp; Joyce — Expense Tracker Project</p>
-    <div class="home-timeline-tag">📅 Apr 21 → May 19, 2025 &nbsp;·&nbsp; Realistic ✓</div>
+    <div class="home-timeline-tag">📅 Apr 21 → May 21, 2026 &nbsp;·&nbsp; Realistic ✓</div>
   </div>
 
   <div class="home-content">
@@ -816,10 +818,10 @@ body {
 
     <div class="section-label">Key Milestones</div>
     <div class="milestones-strip">
-      <div class="milestone-item"><div class="m-dot" style="background:#d81b60"></div><span class="m-date">Mon Apr 28</span><span class="m-desc">Each person has 3 classes coded + Git working</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#00a383"></div><span class="m-date">Mon Apr 28</span><span class="m-desc">Each person has 3 classes coded + Git working</span></div>
       <div class="milestone-item"><div class="m-dot" style="background:#e91e8c"></div><span class="m-date">Fri May 2</span><span class="m-desc">All backend classes done (all 10 + enum)</span></div>
       <div class="milestone-item"><div class="m-dot" style="background:#e65100"></div><span class="m-date">Mon May 5</span><span class="m-desc">DB connection done — all tables wired to classes</span></div>
-      <div class="milestone-item"><div class="m-dot" style="background:#7b1fa2"></div><span class="m-date">Mon May 12</span><span class="m-desc">Frontend pages divided and started</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#00b894"></div><span class="m-date">Mon May 12</span><span class="m-desc">Frontend pages divided and started</span></div>
       <div class="milestone-item"><div class="m-dot" style="background:#2e7d32"></div><span class="m-date">Mon May 19</span><span class="m-desc">Frontend done — full app working end to end</span></div>
       <div class="milestone-item"><div class="m-dot" style="background:#2e7d32"></div><span class="m-date">May 19–21</span><span class="m-desc">Testing, bug fixes, demo prep — buffer</span></div>
     </div>
@@ -908,280 +910,169 @@ body {
 
 <script>
 // ── CREDENTIALS ──────────────────────────────────────────────────────────────
-const USERS = { namariq: 'namariq2025', joyce: 'joyce2025' };
+const USERS = { namariq: 'namariq2026', joyce: 'joyce2026' };
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
-const TODAY = new Date('2025-04-30');
+const TODAY = new Date('2026-04-30');
 function parseDeadline(s) {
   const m = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
   const p = s.trim().split(' ');
-  return new Date(2025, m[p[1]], parseInt(p[0], 10));
+  return new Date(2026, m[p[1]], parseInt(p[0], 10));
 }
 
 const PHASES = [
-  { id:'ph1', title:'Phase 1 — First 3 classes each + Git', dates:'Apr 21 → Mon Apr 28', deadline:'Apr 28', goal:'Goal Mon Apr 28: you both have classes committed on Git and can push/pull without issues.', namariq:[{id:'n1a', name:'UserRelated.cs — UserRole enum, User, Admin, UserProfile'}, {id:'n1b', name:'Create Git repo + invite Joyce'}], joyce:[{id:'j1a', name:'MoneyRelated.cs — Budget, RecurringTransaction, Receipt'}, {id:'j1b', name:'Clone repo + first commit'}] },
-  { id:'ph2', title:'Phase 2 — Remaining classes', dates:'Mon Apr 28 → Fri May 2', deadline:'May 2', goal:'Goal Fri May 2: all 10 classes + enum done and committed. Check naming is consistent.', namariq:[{id:'n2a', name:'AccountRelated.cs — Account'}, {id:'n2b', name:'TransactionRelated.cs — Transaction, Category'}], joyce:[{id:'j2a', name:'GroupRelated.cs — Group, GroupMember'}] },
-  { id:'ph3', title:'Phase 3 — DB Connection', dates:'Fri May 2 → Mon May 5', deadline:'May 5', goal:'Goal Mon May 5: every class reads and writes to DB correctly.', namariq:[{id:'n3a', name:'Create DataConnection.cs — connection string + DB setup'}, {id:'n3b', name:'Wire User + Admin → User table'}, {id:'n3c', name:'Wire UserProfile → User_Profile table'}, {id:'n3d', name:'Wire Account → Account table'}, {id:'n3e', name:'Wire Category → Category table'}, {id:'n3f', name:'Wire Transaction → Transaction table'}], joyce:[{id:'j3a', name:'Import DataConnection.cs from Namariq'}, {id:'j3b', name:'Wire Budget → Budget table'}, {id:'j3c', name:'Wire RecurringTransaction table'}, {id:'j3d', name:'Wire Receipt → Receipt table'}, {id:'j3e', name:'Wire Group → Group table'}, {id:'j3f', name:'Wire GroupMember → GroupMember table'}] },
-  { id:'ph4', title:'Phase 4 — Frontend HTML Pages', dates:'Mon May 5 → Mon May 12', deadline:'May 12', goal:'Goal Mon May 12: all pages exist and connected to backend.', namariq:[{id:'n4a', name:'Login / Register page'}, {id:'n4b', name:'User profile page'}, {id:'n4c', name:'Transaction list + detail page'}, {id:'n4d', name:'Category management page'}, {id:'n4e', name:'Admin panel page'}], joyce:[{id:'j4a', name:'Dashboard / account overview'}, {id:'j4b', name:'Budget page'}, {id:'j4c', name:'Recurring transactions page'}, {id:'j4d', name:'Groups page'}, {id:'j4e', name:'Receipt upload UI'}] },
-  { id:'ph5', title:'Phase 5 — Testing, Fixes & Demo Prep', dates:'Mon May 12 → Mon May 19', deadline:'May 19', goal:'May 19–21 = buffer just in case.', namariq:[{id:'n5a', name:'Click through every feature end to end'}, {id:'n5b', name:'Fix bugs that come up'}, {id:'n5c', name:'Clean up UI if time allows'}, {id:'n5d', name:'Prepare demo flow'}], joyce:[{id:'j5a', name:'Click through every feature end to end'}, {id:'j5b', name:'Fix bugs that come up'}, {id:'j5c', name:'Clean up UI if time allows'}, {id:'j5d', name:'Prepare demo flow'}] }
+  {
+    id:'ph1',
+    title:'Phase 1 — First 3 classes each + Git',
+    dates:'Apr 21 → Mon Apr 28',
+    deadline:'Apr 28',
+    goal:'Goal Mon Apr 28: you both have classes committed on Git and can push/pull without issues.',
+    namariq:[
+      {id:'n1a', name:'UserRelated.cs — UserRole enum, User, Admin, UserProfile'},
+      {id:'n1b', name:'Create Git repo + invite Joyce'},
+    ],
+    joyce:[
+      {id:'j1a', name:'MoneyRelated.cs — Budget, RecurringTransaction, Receipt'},
+      {id:'j1b', name:'Clone repo + first commit'},
+    ]
+  },
+  {
+    id:'ph2',
+    title:'Phase 2 — Remaining classes + DB Connection',
+    dates:'Mon Apr 28 → Fri May 2',
+    deadline:'May 2',
+    goal:'Goal Fri May 2: all remaining classes and DB connection completed.',
+    namariq:[
+      {id:'n2a', name:'AccountRelated.cs — Account'},
+      {id:'n2b', name:'TransactionRelated.cs — Transaction, Category'},
+      {id:'n3a', name:'Create DataConnection.cs — connection string + DB setup'},
+      {id:'n3b', name:'Wire User + Admin → User table'},
+      {id:'n3c', name:'Wire UserProfile → User_Profile table'},
+      {id:'n3d', name:'Wire Account → Account table'},
+      {id:'n3e', name:'Wire Category → Category table'},
+      {id:'n3f', name:'Wire Transaction → Transaction table'},
+    ],
+    joyce:[
+      {id:'j2a', name:'GroupRelated.cs — Group, GroupMember'},
+      {id:'j3a', name:'Import DataConnection.cs from Namariq'},
+      {id:'j3b', name:'Wire Budget → Budget table'},
+      {id:'j3c', name:'Wire RecurringTransaction table'},
+      {id:'j3d', name:'Wire Receipt → Receipt table'},
+      {id:'j3e', name:'Wire Group → Group table'},
+      {id:'j3f', name:'Wire GroupMember → GroupMember table'},
+    ]
+  },
+  {
+    id:'ph3',
+    title:'Phase 3 — Frontend HTML Pages',
+    dates:'Fri May 2 → Mon May 5',
+    deadline:'May 5',
+    goal:'Goal Mon May 5: all pages exist and are connected to the backend.',
+    namariq:[
+      {id:'n4a', name:'Login / Register page'},
+      {id:'n4b', name:'User profile page'},
+      {id:'n4c', name:'Transaction list + detail page'},
+      {id:'n4d', name:'Category management page'},
+      {id:'n4e', name:'Admin panel page'},
+    ],
+    joyce:[
+      {id:'j4a', name:'Dashboard / account overview'},
+      {id:'j4b', name:'Budget page'},
+      {id:'j4c', name:'Recurring transactions page'},
+      {id:'j4d', name:'Groups page'},
+      {id:'j4e', name:'Receipt upload UI'},
+    ]
+  },
+  {
+    id:'ph4',
+    title:'Phase 4 — Testing, Fixes & Demo Prep',
+    dates:'Mon May 5 → Mon May 12',
+    deadline:'May 12',
+    goal:'Goal Mon May 12: full app working end to end.',
+    namariq:[
+      {id:'n5a', name:'Click through every feature end to end'},
+      {id:'n5b', name:'Fix bugs that come up'},
+      {id:'n5c', name:'Clean up UI if time allows'},
+      {id:'n5d', name:'Prepare demo flow'},
+    ],
+    joyce:[
+      {id:'j5a', name:'Click through every feature end to end'},
+      {id:'j5b', name:'Fix bugs that come up'},
+      {id:'j5c', name:'Clean up UI if time allows'},
+      {id:'j5d', name:'Prepare demo flow'},
+    ]
+  },
+  {
+    id:'ph5',
+    title:'Final Buffer — Extra fixes and polishing',
+    dates:'May 12 → May 21',
+    deadline:'May 21',
+    goal:'Buffer period for final fixes, polishing, testing, and demo preparation.',
+    namariq:[
+      {id:'n6a', name:'Final review and polish'},
+    ],
+    joyce:[
+      {id:'j6a', name:'Final review and polish'},
+    ]
+  }
 ];
+
 
 const TASK_MAP = {};
 PHASES.forEach(ph => ['namariq','joyce'].forEach(person => (ph[person] || []).forEach(task => TASK_MAP[task.id] = { task, phase: ph, person })));
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-const SK = 'collab_board_v7_all_clicks';
-let state = { status:{}, intros:{namariq:'', joyce:''}, avatars:{namariq:'', joyce:''} };
+const SK = 'collab_board_v8_green_shareable';
+const INITIAL_STATE = window.COLLAB_BOARD_INITIAL_STATE || { status:{}, intros:{namariq:'', joyce:''}, avatars:{namariq:'', joyce:''} };
+let state = JSON.parse(JSON.stringify(INITIAL_STATE));
 let currentUser = null;
 let activeTaskId = null;
 let activeTaskPerson = null;
 
-function loadState() { try { const saved = localStorage.getItem(SK); if (saved) state = JSON.parse(saved); } catch(e) {} }
+function loadState() { try { const saved = localStorage.getItem(SK); if (saved) state = Object.assign(JSON.parse(JSON.stringify(INITIAL_STATE)), JSON.parse(saved)); } catch(e) {} }
 function saveState() { try { localStorage.setItem(SK, JSON.stringify(state)); } catch(e) {} }
 function getStatus(id) { return state.status[id] || 'notstarted'; }
+function showPage(id) { document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; }); const pg = document.getElementById(id); if (!pg) return; pg.classList.add('active'); pg.style.display = id === 'page-login' ? 'flex' : 'block'; }
+function doLogin() { const u=document.getElementById('login-user').value.trim().toLowerCase(); const p=document.getElementById('login-pass').value.trim(); const err=document.getElementById('login-error'); if(USERS[u]&&USERS[u]===p){ currentUser=u; err.textContent=''; showHome(); } else { err.textContent='✗ Wrong username or password. Try again.'; document.getElementById('login-pass').value=''; } }
+function doLogout() { currentUser=null; activeTaskId=null; activeTaskPerson=null; showPage('page-login'); document.getElementById('login-user').value=''; document.getElementById('login-pass').value=''; }
+function showHome() { showPage('page-home'); renderHome(); updateNavAvatars(); addSaveCopyButtons(); }
+function showDash(person) { showPage('page-'+person); renderDash(person); updateNavAvatars(); addSaveCopyButtons(); }
 
-// ── PAGE / AUTH ───────────────────────────────────────────────────────────────
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
-  const pg = document.getElementById(id);
-  if (!pg) return;
-  pg.classList.add('active');
-  pg.style.display = id === 'page-login' ? 'flex' : 'block';
-}
-function doLogin() {
-  const u = document.getElementById('login-user').value.trim().toLowerCase();
-  const p = document.getElementById('login-pass').value.trim();
-  const err = document.getElementById('login-error');
-  if (USERS[u] && USERS[u] === p) {
-    currentUser = u;
-    err.textContent = '';
-    showHome();
-  } else {
-    err.textContent = '✗ Wrong username or password. Try again.';
-    document.getElementById('login-pass').value = '';
-  }
-}
-function doLogout() {
-  currentUser = null;
-  activeTaskId = null;
-  activeTaskPerson = null;
-  showPage('page-login');
-  document.getElementById('login-user').value = '';
-  document.getElementById('login-pass').value = '';
-}
-function showHome() { showPage('page-home'); renderHome(); updateNavAvatars(); }
-function showDash(person) { showPage('page-' + person); renderDash(person); updateNavAvatars(); }
+function triggerAvatarUpload(person, scope) { if(currentUser===person) document.getElementById(scope+'-av-file-'+person).click(); }
+function handleAvatarUpload(e, person, scope) { if(currentUser!==person) return; const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ state.avatars[person]=ev.target.result; saveState(); applyAvatars(); updateNavAvatars(); addSaveCopyButtons(); }; reader.readAsDataURL(file); }
+function applyAvatars() { ['namariq','joyce'].forEach(p=>{ const av=state.avatars[p]; ['home','dash'].forEach(scope=>{ const img=document.getElementById(scope+'-av-img-'+p); const ph=document.getElementById(scope+'-av-ph-'+p); if(!img||!ph)return; if(av){ img.src=av; img.style.display='block'; ph.style.display='none'; } else { img.style.display='none'; ph.style.display='flex'; } }); }); }
+function updateNavAvatars() { if(!currentUser)return; const av=state.avatars[currentUser]; const initial=currentUser==='namariq'?'N':'J'; const bg=currentUser==='namariq'?'linear-gradient(135deg,#00a383,#55d6be)':'linear-gradient(135deg,#00b894,#55d6be)'; ['nav-av','nav-av2','nav-av3'].forEach(id=>{ const el=document.getElementById(id); if(!el)return; if(av) el.innerHTML='<img src="'+av+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">'; else { el.innerHTML=initial; el.style.background=bg; } }); ['nav-nm','nav-nm2','nav-nm3'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=currentUser==='namariq'?'Namariq':'Joyce'; }); }
 
-// ── AVATARS / INTROS ──────────────────────────────────────────────────────────
-function triggerAvatarUpload(person, scope) { if (currentUser === person) document.getElementById(scope + '-av-file-' + person).click(); }
-function handleAvatarUpload(e, person, scope) {
-  if (currentUser !== person) return;
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => { state.avatars[person] = ev.target.result; saveState(); applyAvatars(); updateNavAvatars(); };
-  reader.readAsDataURL(file);
-}
-function applyAvatars() {
-  ['namariq','joyce'].forEach(p => {
-    const av = state.avatars[p];
-    ['home','dash'].forEach(scope => {
-      const img = document.getElementById(scope + '-av-img-' + p);
-      const ph = document.getElementById(scope + '-av-ph-' + p);
-      if (!img || !ph) return;
-      if (av) { img.src = av; img.style.display = 'block'; ph.style.display = 'none'; }
-      else { img.style.display = 'none'; ph.style.display = 'flex'; }
-    });
-  });
-}
-function updateNavAvatars() {
-  if (!currentUser) return;
-  const av = state.avatars[currentUser];
-  const initial = currentUser === 'namariq' ? 'N' : 'J';
-  const bg = currentUser === 'namariq' ? 'linear-gradient(135deg,#d81b60,#f06292)' : 'linear-gradient(135deg,#7b1fa2,#ab47bc)';
-  ['nav-av','nav-av2','nav-av3'].forEach(id => {
-    const el = document.getElementById(id); if (!el) return;
-    if (av) el.innerHTML = '<img src="' + av + '" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">';
-    else { el.innerHTML = initial; el.style.background = bg; }
-  });
-  ['nav-nm','nav-nm2','nav-nm3'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = currentUser === 'namariq' ? 'Namariq' : 'Joyce'; });
-}
-function setupIntro(el, person) {
-  if (!el) return;
-  el.innerHTML = state.intros[person] || el.innerHTML;
-  el.contentEditable = currentUser === person ? 'true' : 'false';
-  if (!el.dataset.wired) {
-    el.dataset.wired = '1';
-    el.addEventListener('blur', () => {
-      if (currentUser !== person) return;
-      state.intros[person] = el.innerHTML;
-      saveState();
-      ['home-intro-', 'dash-intro-'].forEach(prefix => {
-        const other = document.getElementById(prefix + person);
-        if (other && other !== el) other.innerHTML = state.intros[person];
-      });
-    });
-  }
-}
+function ensureIntroActions(el, person) { if(!el||!el.parentNode)return; const id='intro-actions-'+el.id; let box=document.getElementById(id); if(!box){ box=document.createElement('div'); box.className='intro-actions'; box.id=id; box.innerHTML='<button class="intro-btn edit" type="button">Edit bio</button><button class="intro-btn done" type="button">Done</button>'; el.insertAdjacentElement('afterend',box); box.querySelector('.edit').addEventListener('click',()=>startIntroEdit(el,person)); box.querySelector('.done').addEventListener('click',()=>finishIntroEdit(el,person)); } box.classList.toggle('show', currentUser===person); }
+function startIntroEdit(el, person) { if(currentUser!==person)return; if(!state.intros[person]) el.innerHTML=''; el.contentEditable='true'; el.classList.add('editing'); el.focus(); }
+function finishIntroEdit(el, person) { if(currentUser!==person)return; state.intros[person]=el.innerHTML.trim(); saveState(); el.contentEditable='false'; el.classList.remove('editing'); ['home-intro-','dash-intro-'].forEach(prefix=>{ const other=document.getElementById(prefix+person); if(other){ other.innerHTML=state.intros[person]||'<em style="opacity:0.4">Click Edit bio to write your introduction…</em>'; other.contentEditable='false'; other.classList.remove('editing'); } }); }
+function setupIntro(el, person) { if(!el)return; el.innerHTML=state.intros[person]||'<em style="opacity:0.4">Click Edit bio to write your introduction…</em>'; el.contentEditable='false'; ensureIntroActions(el,person); if(!el.dataset.wired){ el.dataset.wired='1'; el.addEventListener('click',()=>{ if(currentUser===person) startIntroEdit(el,person); }); el.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') finishIntroEdit(el,person); }); } }
 
-// ── STATS ─────────────────────────────────────────────────────────────────────
-function getPersonStats(person) {
-  let c = 0, o = 0, n = 0, late = 0;
-  PHASES.forEach(ph => (ph[person] || []).forEach(t => {
-    const st = getStatus(t.id);
-    if (st === 'completed') { c++; if (ph.deadline && TODAY > parseDeadline(ph.deadline)) late++; }
-    else if (st === 'ongoing') o++;
-    else n++;
-  }));
-  return { c, o, n, late };
-}
-function personTotal(person) { return PHASES.reduce((sum, ph) => sum + (ph[person] || []).length, 0); }
-function renderStatPills(person, id, type) {
-  const el = document.getElementById(id); if (!el) return;
-  const s = getPersonStats(person);
-  const allDone = s.c === personTotal(person);
-  if (type === 'mini') {
-    el.innerHTML = (allDone ? '<div class="mini-stat c" style="background:#fff9c4;color:#f57f17;font-weight:800">🏆 All Done!</div>' : '') +
-      '<div class="mini-stat c"><span class="num">' + s.c + '</span> done</div>' +
-      '<div class="mini-stat o"><span class="num">' + s.o + '</span> ongoing</div>' +
-      '<div class="mini-stat n"><span class="num">' + s.n + '</span> not started</div>';
-  } else {
-    el.innerHTML = (allDone ? '<div class="dash-stat c" style="background:#fff9c4;color:#f57f17;font-weight:800">🏆 All tasks done!</div>' : '') +
-      '<div class="dash-stat c"><span class="num">' + s.c + '</span> completed</div>' +
-      '<div class="dash-stat o"><span class="num">' + s.o + '</span> ongoing</div>' +
-      '<div class="dash-stat n"><span class="num">' + s.n + '</span> not started</div>' +
-      (s.late > 0 ? '<div class="dash-stat l"><span class="num">' + s.late + '</span> late</div>' : '');
-  }
-}
+function getPersonStats(person) { let c=0,o=0,n=0,late=0; PHASES.forEach(ph=>(ph[person]||[]).forEach(t=>{ const st=getStatus(t.id); if(st==='completed'){ c++; if(ph.deadline&&TODAY>parseDeadline(ph.deadline)) late++; } else if(st==='ongoing') o++; else n++; })); return {c,o,n,late}; }
+function personTotal(person) { return PHASES.reduce((sum,ph)=>sum+(ph[person]||[]).length,0); }
+function renderStatPills(person,id,type) { const el=document.getElementById(id); if(!el)return; const s=getPersonStats(person); const allDone=s.c===personTotal(person); if(type==='mini'){ el.innerHTML=(allDone?'<div class="mini-stat c" style="background:#fff9c4;color:#f57f17;font-weight:800">🏆 All Done!</div>':'')+'<div class="mini-stat c"><span class="num">'+s.c+'</span> done</div><div class="mini-stat o"><span class="num">'+s.o+'</span> ongoing</div><div class="mini-stat n"><span class="num">'+s.n+'</span> not started</div>'; } else { el.innerHTML=(allDone?'<div class="dash-stat c" style="background:#fff9c4;color:#f57f17;font-weight:800">🏆 All tasks done!</div>':'')+'<div class="dash-stat c"><span class="num">'+s.c+'</span> completed</div><div class="dash-stat o"><span class="num">'+s.o+'</span> ongoing</div><div class="dash-stat n"><span class="num">'+s.n+'</span> not started</div>'+(s.late>0?'<div class="dash-stat l"><span class="num">'+s.late+'</span> late</div>':''); } }
+function renderHome() { renderStatPills('namariq','home-mini-namariq','mini'); renderStatPills('joyce','home-mini-joyce','mini'); applyAvatars(); setupIntro(document.getElementById('home-intro-namariq'),'namariq'); setupIntro(document.getElementById('home-intro-joyce'),'joyce'); }
+function renderDash(person) { renderStatPills(person,'dash-stats-'+person,'dash'); const container=document.getElementById('dash-tasks-'+person); container.innerHTML=PHASES.map(ph=>{ const tasks=ph[person]||[]; const allDone=tasks.length&&tasks.every(t=>getStatus(t.id)==='completed'); return '<div class="phase-block"><div class="phase-head '+person+'" data-phase="'+ph.id+'-'+person+'">'+(allDone?'<span class="ph-allcheck" style="font-size:0.75rem;margin-right:6px">✅</span>':'')+'<span class="phase-head-title">'+ph.title+'</span><span class="phase-head-dates">'+ph.dates+'</span><span class="phase-chevron" id="chev-'+ph.id+'-'+person+'">▾</span></div><div class="phase-body2" id="pb-'+ph.id+'-'+person+'">'+tasks.map(t=>buildTaskRow(t,ph.deadline,person)).join('')+(ph.goal?'<div class="goal-note">🎯 '+ph.goal+'</div>':'')+'</div></div>'; }).join(''); applyAvatars(); setupIntro(document.getElementById('dash-intro-'+person),person); }
+function buildTaskRow(task,deadline,person) { const st=getStatus(task.id); let timeBadge=''; if(st==='completed'&&deadline) timeBadge=TODAY>parseDeadline(deadline)?'<span class="tbadge bl">⚠ Late</span>':'<span class="tbadge bt">✓ On Time</span>'; const stBadge=st==='completed'?'<span class="tbadge bc">✓ Completed</span>':st==='ongoing'?'<span class="tbadge bo">⏳ Ongoing</span>':'<span class="tbadge bn">○ Not Started</span>'; const dlBadge=deadline?'<span class="tbadge bd">📅 Due '+deadline+'</span>':''; const check=st==='completed'?'<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':st==='ongoing'?'<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M2 4.5h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>':''; const readonlyStyle=currentUser===person?'':'cursor:default'; return '<div class="task-row st-'+st+'" data-task-id="'+task.id+'" data-person="'+person+'" style="'+readonlyStyle+'"><div class="task-checkbox">'+check+'</div><div class="task-text"><div class="task-label">'+task.name+'</div><div class="task-badges2">'+stBadge+timeBadge+dlBadge+'</div></div></div>'; }
+function openTaskMenu(taskId,person,row,event) { if(event)event.stopPropagation(); if(currentUser!==person)return; activeTaskId=taskId; activeTaskPerson=person; const popup=document.getElementById('status-popup'); const overlay=document.getElementById('overlay2'); const rect=row.getBoundingClientRect(); popup.style.display='block'; overlay.style.display='block'; popup.classList.add('open'); overlay.classList.add('open'); const popupHeight=popup.offsetHeight||130; const popupWidth=popup.offsetWidth||180; let top=rect.bottom+6; let left=rect.left; if(top+popupHeight>window.innerHeight-10) top=rect.top-popupHeight-6; if(top<10)top=10; if(left+popupWidth>window.innerWidth-10) left=window.innerWidth-popupWidth-10; if(left<10)left=10; popup.style.top=top+'px'; popup.style.left=left+'px'; }
+function closePopup() { document.getElementById('status-popup').classList.remove('open'); document.getElementById('status-popup').style.display='none'; document.getElementById('overlay2').classList.remove('open'); document.getElementById('overlay2').style.display='none'; activeTaskId=null; activeTaskPerson=null; }
+function applyStatus(val) { if(!activeTaskId||!activeTaskPerson)return; const changedPerson=activeTaskPerson; state.status[activeTaskId]=val; saveState(); closePopup(); renderDash(changedPerson); renderStatPills('namariq','home-mini-namariq','mini'); renderStatPills('joyce','home-mini-joyce','mini'); }
+function downloadShareableCopy() { saveState(); let html=document.documentElement.outerHTML; const stateScript='<script>window.COLLAB_BOARD_INITIAL_STATE = '+JSON.stringify(state).replace(/</g,'\u003c')+';<\/script>\n'; if(html.includes('window.COLLAB_BOARD_INITIAL_STATE')) html=html.replace(/<script>window\.COLLAB_BOARD_INITIAL_STATE[\s\S]*?<\\\/script>\n?/,stateScript); else html=html.replace('<script>\n// ── CREDENTIALS',stateScript+'<script>\n// ── CREDENTIALS'); const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='the_collab_board_saved_with_photos.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+function addSaveCopyButtons() { document.querySelectorAll('.nav-user').forEach(nav=>{ if(nav.querySelector('.save-copy-btn'))return; const btn=document.createElement('button'); btn.type='button'; btn.className='save-copy-btn'; btn.textContent='Save shareable copy'; btn.addEventListener('click',downloadShareableCopy); const logout=nav.querySelector('[data-action="logout"]'); nav.insertBefore(btn,logout); }); }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function renderHome() {
-  renderStatPills('namariq', 'home-mini-namariq', 'mini');
-  renderStatPills('joyce', 'home-mini-joyce', 'mini');
-  applyAvatars();
-  setupIntro(document.getElementById('home-intro-namariq'), 'namariq');
-  setupIntro(document.getElementById('home-intro-joyce'), 'joyce');
-}
-function renderDash(person) {
-  renderStatPills(person, 'dash-stats-' + person, 'dash');
-  const container = document.getElementById('dash-tasks-' + person);
-  container.innerHTML = PHASES.map(ph => {
-    const tasks = ph[person] || [];
-    const allDone = tasks.length && tasks.every(t => getStatus(t.id) === 'completed');
-    return '<div class="phase-block">' +
-      '<div class="phase-head ' + person + '" data-phase="' + ph.id + '-' + person + '">' +
-      (allDone ? '<span class="ph-allcheck" style="font-size:0.75rem;margin-right:6px">✅</span>' : '') +
-      '<span class="phase-head-title">' + ph.title + '</span>' +
-      '<span class="phase-head-dates">' + ph.dates + '</span>' +
-      '<span class="phase-chevron" id="chev-' + ph.id + '-' + person + '">▾</span>' +
-      '</div>' +
-      '<div class="phase-body2" id="pb-' + ph.id + '-' + person + '">' +
-      tasks.map(t => buildTaskRow(t, ph.deadline, person)).join('') +
-      (ph.goal ? '<div class="goal-note">🎯 ' + ph.goal + '</div>' : '') +
-      '</div></div>';
-  }).join('');
-  applyAvatars();
-  setupIntro(document.getElementById('dash-intro-' + person), person);
-}
-function buildTaskRow(task, deadline, person) {
-  const st = getStatus(task.id);
-  let timeBadge = '';
-  if (st === 'completed' && deadline) timeBadge = TODAY > parseDeadline(deadline) ? '<span class="tbadge bl">⚠ Late</span>' : '<span class="tbadge bt">✓ On Time</span>';
-  const stBadge = st === 'completed' ? '<span class="tbadge bc">✓ Completed</span>' : st === 'ongoing' ? '<span class="tbadge bo">⏳ Ongoing</span>' : '<span class="tbadge bn">○ Not Started</span>';
-  const dlBadge = deadline ? '<span class="tbadge bd">📅 Due ' + deadline + '</span>' : '';
-  const check = st === 'completed' ? '<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : st === 'ongoing' ? '<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M2 4.5h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>' : '';
-  const readonlyStyle = currentUser === person ? '' : 'cursor:default';
-  return '<div class="task-row st-' + st + '" data-task-id="' + task.id + '" data-person="' + person + '" onclick="openTaskMenu(\'' + task.id + '\',\'' + person + '\',this,event)" style="' + readonlyStyle + '">' +
-    '<div class="task-checkbox">' + check + '</div>' +
-    '<div class="task-text"><div class="task-label">' + task.name + '</div><div class="task-badges2">' + stBadge + timeBadge + dlBadge + '</div></div>' +
-    '</div>';
-}
-
-// ── TASK / POPUP ──────────────────────────────────────────────────────────────
-function openTaskMenu(taskId, person, row, event) {
-  if (event) event.stopPropagation();
-  if (currentUser !== person) return;
-
-  activeTaskId = taskId;
-  activeTaskPerson = person;
-
-  const popup = document.getElementById('status-popup');
-  const overlay = document.getElementById('overlay2');
-  const rect = row.getBoundingClientRect();
-
-  // The popup is position: fixed, so use viewport coordinates only.
-  // Do NOT add window.scrollY/window.scrollX; that makes lower-phase clicks open off-screen.
-  popup.style.display = 'block';
-  overlay.style.display = 'block';
-  popup.classList.add('open');
-  overlay.classList.add('open');
-
-  const popupHeight = popup.offsetHeight || 130;
-  const popupWidth = popup.offsetWidth || 180;
-  let top = rect.bottom + 6;
-  let left = rect.left;
-
-  if (top + popupHeight > window.innerHeight - 10) {
-    top = rect.top - popupHeight - 6;
-  }
-  if (top < 10) top = 10;
-  if (left + popupWidth > window.innerWidth - 10) {
-    left = window.innerWidth - popupWidth - 10;
-  }
-  if (left < 10) left = 10;
-
-  popup.style.top = top + 'px';
-  popup.style.left = left + 'px';
-}
-function closePopup() {
-  document.getElementById('status-popup').classList.remove('open');
-  document.getElementById('status-popup').style.display = 'none';
-  document.getElementById('overlay2').classList.remove('open');
-  document.getElementById('overlay2').style.display = 'none';
-  activeTaskId = null; activeTaskPerson = null;
-}
-function applyStatus(val) {
-  if (!activeTaskId || !activeTaskPerson) return;
-  const changedPerson = activeTaskPerson;
-  state.status[activeTaskId] = val;
-  saveState();
-  closePopup();
-  renderDash(changedPerson);
-  renderStatPills('namariq', 'home-mini-namariq', 'mini');
-  renderStatPills('joyce', 'home-mini-joyce', 'mini');
-}
-
-// ── INIT / EVENT DELEGATION ──────────────────────────────────────────────────
 loadState();
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('btn-login-submit').addEventListener('click', doLogin);
-  document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-  document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-  document.querySelectorAll('[data-goto="page-home"]').forEach(btn => btn.addEventListener('click', showHome));
-  document.querySelectorAll('[data-goto="dash-namariq"]').forEach(btn => btn.addEventListener('click', () => showDash('namariq')));
-  document.querySelectorAll('[data-goto="dash-joyce"]').forEach(btn => btn.addEventListener('click', () => showDash('joyce')));
-  const myBtn = document.getElementById('nav-my-dash-btn');
-  if (myBtn) myBtn.addEventListener('click', () => { if (currentUser) showDash(currentUser); });
-  document.querySelectorAll('[data-action="logout"]').forEach(btn => btn.addEventListener('click', doLogout));
-  document.getElementById('overlay2').addEventListener('click', closePopup);
-  document.querySelectorAll('.sp-opt').forEach(opt => opt.addEventListener('click', () => applyStatus(opt.getAttribute('data-val'))));
-
-  document.body.addEventListener('click', function(e) {
-    const phase = e.target.closest('[data-phase]');
-    if (phase) {
-      const id = phase.getAttribute('data-phase');
-      const body = document.getElementById('pb-' + id);
-      const chev = document.getElementById('chev-' + id);
-      if (body) body.classList.toggle('collapsed');
-      if (chev) chev.classList.toggle('rotated');
-      return;
-    }
-    const row = e.target.closest('[data-task-id]');
-    if (row) {
-      e.stopPropagation();
-      openTaskMenu(row.getAttribute('data-task-id'), row.getAttribute('data-person'), row);
-    }
-  });
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('btn-login-submit').addEventListener('click',doLogin);
+  document.getElementById('login-user').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+  document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+  document.querySelectorAll('[data-goto="page-home"]').forEach(btn=>btn.addEventListener('click',showHome));
+  document.querySelectorAll('[data-goto="dash-namariq"]').forEach(btn=>btn.addEventListener('click',()=>showDash('namariq')));
+  document.querySelectorAll('[data-goto="dash-joyce"]').forEach(btn=>btn.addEventListener('click',()=>showDash('joyce')));
+  const myBtn=document.getElementById('nav-my-dash-btn'); if(myBtn)myBtn.addEventListener('click',()=>{ if(currentUser)showDash(currentUser); });
+  document.querySelectorAll('[data-action="logout"]').forEach(btn=>btn.addEventListener('click',doLogout));
+  document.getElementById('overlay2').addEventListener('click',closePopup);
+  document.querySelectorAll('.sp-opt').forEach(opt=>opt.addEventListener('click',()=>applyStatus(opt.getAttribute('data-val'))));
+  document.body.addEventListener('click',function(e){ const phase=e.target.closest('[data-phase]'); if(phase){ const id=phase.getAttribute('data-phase'); const body=document.getElementById('pb-'+id); const chev=document.getElementById('chev-'+id); if(body)body.classList.toggle('collapsed'); if(chev)chev.classList.toggle('rotated'); return; } const row=e.target.closest('[data-task-id]'); if(row){ e.stopPropagation(); openTaskMenu(row.getAttribute('data-task-id'),row.getAttribute('data-person'),row,e); } });
+  addSaveCopyButtons();
 });
 </script>
 </body>
