@@ -903,9 +903,10 @@ body {
 <!-- Status popup -->
 <div class="overlay2" id="overlay2" onclick="closePopup()"></div>
 <div class="status-popup" id="status-popup">
-  <div class="sp-opt" onclick="applyStatus('completed')"><div class="sp-dot" style="background:var(--completed)"></div>Completed</div>
-  <div class="sp-opt" onclick="applyStatus('ongoing')"><div class="sp-dot" style="background:var(--ongoing)"></div>Ongoing</div>
-  <div class="sp-opt" onclick="applyStatus('notstarted')"><div class="sp-dot" style="background:#aaa"></div>Not Started</div>
+  <!-- FIX: added data-val attributes so the JS event-delegation path works correctly -->
+  <div class="sp-opt" data-val="completed" onclick="applyStatus('completed')"><div class="sp-dot" style="background:var(--completed)"></div>Completed</div>
+  <div class="sp-opt" data-val="ongoing" onclick="applyStatus('ongoing')"><div class="sp-dot" style="background:var(--ongoing)"></div>Ongoing</div>
+  <div class="sp-opt" data-val="notstarted" onclick="applyStatus('notstarted')"><div class="sp-dot" style="background:#aaa"></div>Not Started</div>
 </div>
 
 <script>
@@ -923,17 +924,24 @@ function parseDeadline(s) {
 const PHASES = [
   {
     id:'ph1',
-    title:'Phase 1 — First 3 classes each + Git',
+    title:'Phase 1 — First 3 classes each + Git + DB Connection',
     dates:'Apr 21 → Mon Apr 28',
     deadline:'Apr 28',
     goal:'Goal Mon Apr 28: you both have classes committed on Git and can push/pull without issues.',
     namariq:[
+      {id:'j1b', name:'Clone repo + first commit'},
       {id:'n1a', name:'UserRelated.cs — UserRole enum, User, Admin, UserProfile'},
-      {id:'n1b', name:'Create Git repo + invite Joyce'},
+      {id:'n3b', name:'Wire User + Admin → User table'},
+      {id:'n3c', name:'Wire UserProfile → User_Profile table'},
+      {id:'n3a', name:'Create DataConnection.cs — connection string + DB setup'},
     ],
     joyce:[
+      {id:'n1b', name:'Create Git repo + invite Namariq'},
       {id:'j1a', name:'MoneyRelated.cs — Budget, RecurringTransaction, Receipt'},
-      {id:'j1b', name:'Clone repo + first commit'},
+      {id:'j3a', name:'Import DataConnection.cs from Namariq'},
+      {id:'j3b', name:'Wire Budget → Budget table'},
+      {id:'j3c', name:'Wire RecurringTransaction table'},
+      {id:'j3d', name:'Wire Receipt → Receipt table'},
     ]
   },
   {
@@ -945,19 +953,12 @@ const PHASES = [
     namariq:[
       {id:'n2a', name:'AccountRelated.cs — Account'},
       {id:'n2b', name:'TransactionRelated.cs — Transaction, Category'},
-      {id:'n3a', name:'Create DataConnection.cs — connection string + DB setup'},
-      {id:'n3b', name:'Wire User + Admin → User table'},
-      {id:'n3c', name:'Wire UserProfile → User_Profile table'},
       {id:'n3d', name:'Wire Account → Account table'},
       {id:'n3e', name:'Wire Category → Category table'},
       {id:'n3f', name:'Wire Transaction → Transaction table'},
     ],
     joyce:[
       {id:'j2a', name:'GroupRelated.cs — Group, GroupMember'},
-      {id:'j3a', name:'Import DataConnection.cs from Namariq'},
-      {id:'j3b', name:'Wire Budget → Budget table'},
-      {id:'j3c', name:'Wire RecurringTransaction table'},
-      {id:'j3d', name:'Wire Receipt → Receipt table'},
       {id:'j3e', name:'Wire Group → Group table'},
       {id:'j3f', name:'Wire GroupMember → GroupMember table'},
     ]
@@ -974,6 +975,7 @@ const PHASES = [
       {id:'n4c', name:'Transaction list + detail page'},
       {id:'n4d', name:'Category management page'},
       {id:'n4e', name:'Admin panel page'},
+      {id:'n4f', name:'Reports page'},
     ],
     joyce:[
       {id:'j4a', name:'Dashboard / account overview'},
@@ -981,6 +983,7 @@ const PHASES = [
       {id:'j4c', name:'Recurring transactions page'},
       {id:'j4d', name:'Groups page'},
       {id:'j4e', name:'Receipt upload UI'},
+      {id:'j4f', name:'Goals page'},
     ]
   },
   {
@@ -1056,7 +1059,7 @@ function buildTaskRow(task,deadline,person) { const st=getStatus(task.id); let t
 function openTaskMenu(taskId,person,row,event) { if(event)event.stopPropagation(); if(currentUser!==person)return; activeTaskId=taskId; activeTaskPerson=person; const popup=document.getElementById('status-popup'); const overlay=document.getElementById('overlay2'); const rect=row.getBoundingClientRect(); popup.style.display='block'; overlay.style.display='block'; popup.classList.add('open'); overlay.classList.add('open'); const popupHeight=popup.offsetHeight||130; const popupWidth=popup.offsetWidth||180; let top=rect.bottom+6; let left=rect.left; if(top+popupHeight>window.innerHeight-10) top=rect.top-popupHeight-6; if(top<10)top=10; if(left+popupWidth>window.innerWidth-10) left=window.innerWidth-popupWidth-10; if(left<10)left=10; popup.style.top=top+'px'; popup.style.left=left+'px'; }
 function closePopup() { document.getElementById('status-popup').classList.remove('open'); document.getElementById('status-popup').style.display='none'; document.getElementById('overlay2').classList.remove('open'); document.getElementById('overlay2').style.display='none'; activeTaskId=null; activeTaskPerson=null; }
 function applyStatus(val) { if(!activeTaskId||!activeTaskPerson)return; const changedPerson=activeTaskPerson; state.status[activeTaskId]=val; saveState(); closePopup(); renderDash(changedPerson); renderStatPills('namariq','home-mini-namariq','mini'); renderStatPills('joyce','home-mini-joyce','mini'); }
-function downloadShareableCopy() { saveState(); let html=document.documentElement.outerHTML; const stateScript='<script>window.COLLAB_BOARD_INITIAL_STATE = '+JSON.stringify(state).replace(/</g,'\u003c')+';<\/script>\n'; if(html.includes('window.COLLAB_BOARD_INITIAL_STATE')) html=html.replace(/<script>window\.COLLAB_BOARD_INITIAL_STATE[\s\S]*?<\\\/script>\n?/,stateScript); else html=html.replace('<script>\n// ── CREDENTIALS',stateScript+'<script>\n// ── CREDENTIALS'); const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='the_collab_board_saved_with_photos.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+function downloadShareableCopy() { saveState(); let html=document.documentElement.outerHTML; const stateScript='<script>window.COLLAB_BOARD_INITIAL_STATE = '+JSON.stringify(state).replace(/</g,'\u003c')+';<\/script>\n'; if(html.includes('window.COLLAB_BOARD_INITIAL_STATE')) html=html.replace(/<script>window\.COLLAB_BOARD_INITIAL_STATE[\s\S]*?<\/script>\n?/,stateScript); else html=html.replace('<script>\n// ── CREDENTIALS',stateScript+'<script>\n// ── CREDENTIALS'); const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='the_collab_board_saved_with_photos.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
 function addSaveCopyButtons() { document.querySelectorAll('.nav-user').forEach(nav=>{ if(nav.querySelector('.save-copy-btn'))return; const btn=document.createElement('button'); btn.type='button'; btn.className='save-copy-btn'; btn.textContent='Save shareable copy'; btn.addEventListener('click',downloadShareableCopy); const logout=nav.querySelector('[data-action="logout"]'); nav.insertBefore(btn,logout); }); }
 
 loadState();
@@ -1070,6 +1073,7 @@ document.addEventListener('DOMContentLoaded',function(){
   const myBtn=document.getElementById('nav-my-dash-btn'); if(myBtn)myBtn.addEventListener('click',()=>{ if(currentUser)showDash(currentUser); });
   document.querySelectorAll('[data-action="logout"]').forEach(btn=>btn.addEventListener('click',doLogout));
   document.getElementById('overlay2').addEventListener('click',closePopup);
+  // data-val is now correctly set on each sp-opt so this listener works reliably
   document.querySelectorAll('.sp-opt').forEach(opt=>opt.addEventListener('click',()=>applyStatus(opt.getAttribute('data-val'))));
   document.body.addEventListener('click',function(e){ const phase=e.target.closest('[data-phase]'); if(phase){ const id=phase.getAttribute('data-phase'); const body=document.getElementById('pb-'+id); const chev=document.getElementById('chev-'+id); if(body)body.classList.toggle('collapsed'); if(chev)chev.classList.toggle('rotated'); return; } const row=e.target.closest('[data-task-id]'); if(row){ e.stopPropagation(); openTaskMenu(row.getAttribute('data-task-id'),row.getAttribute('data-person'),row,e); } });
   addSaveCopyButtons();
