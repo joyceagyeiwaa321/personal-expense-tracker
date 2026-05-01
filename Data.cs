@@ -979,5 +979,126 @@ namespace FinancyApplication
 				}
 			}
 		}
+
+		public User GetUserByEmail(string email)
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT * FROM user WHERE Email = @email LIMIT 1";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@email", email);
+				try
+				{
+					connection.Open();
+					using (MySqlDataReader reader = cmd.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							User u = new User();
+							u.UserID = Convert.ToInt32(reader["UserID"]);
+							u.Username = reader["Username"].ToString();
+							u.Email = reader["Email"].ToString();
+							u.Role = reader["Role"].ToString() == "Admin" ? UserRole.Admin : UserRole.User;
+							u.IsActive = Convert.ToInt32(reader["IsActive"]) == 1;
+							return u;
+						}
+					}
+					return null;
+				}
+				catch (Exception ex) { throw new Exception("GetUserByEmail failed: " + ex.Message); }
+			}
+		}
+
+		public UserProfile GetProfileByUserId(int userId)
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT * FROM user_profile WHERE UserID = @userId LIMIT 1";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@userId", userId);
+				try
+				{
+					connection.Open();
+					using (MySqlDataReader reader = cmd.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							return new UserProfile
+							{
+								ProfileID = Convert.ToInt32(reader["ProfileID"]),
+								UserID = Convert.ToInt32(reader["UserID"]),
+								FirstName = reader["FirstName"].ToString(),
+								LastName = reader["LastName"].ToString(),
+								PhoneNumber = reader["PhoneNumber"].ToString(),
+								AvatarUrl = reader["AvatarURL"].ToString(),
+								PreferredCurrency = reader["PreferedCurrency"].ToString()
+							};
+						}
+					}
+					return null;
+				}
+				catch (Exception ex) { throw new Exception("GetProfileByUserId failed: " + ex.Message); }
+			}
+		}
+
+		public List<Category> GetCategoriesByUser(int userId)
+		{
+			List<Category> categories = new List<Category>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				// Fetches system defaults (UserID is null/0) AND user-specific categories
+				string query = "SELECT * FROM category WHERE UserID = @userId OR IsDefault = 1";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@userId", userId);
+				try
+				{
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						categories.Add(new Category
+						{
+							CategoryID = Convert.ToInt32(reader["CategoryID"]),
+							UserID = reader["UserID"] == DBNull.Value ? 0 : Convert.ToInt32(reader["UserID"]),
+							Name = reader["Name"].ToString(),
+							Type = reader["Type"].ToString(),
+							IsDefault = Convert.ToInt32(reader["IsDefault"]) == 1
+						});
+					}
+				}
+				catch (Exception ex) { throw new Exception("GetCategoriesByUser failed: " + ex.Message); }
+			}
+			return categories;
+		}
+
+		public List<Account> GetAccountsByUser(int userId)
+		{
+			List<Account> accounts = new List<Account>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT * FROM account WHERE UserID = @userId";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@userId", userId);
+				try
+				{
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						accounts.Add(new Account
+						{
+							AccountID = Convert.ToInt32(reader["AccountID"]),
+							UserID = Convert.ToInt32(reader["UserID"]),
+							Name = reader["Name"].ToString(),
+							AccountType = reader["AccountType"].ToString(),
+							Balance = Convert.ToDecimal(reader["Balance"]),
+							Currency = reader["Currency"].ToString()
+						});
+					}
+				}
+				catch (Exception ex) { throw new Exception("GetAccountsByUser failed: " + ex.Message); }
+			}
+			return accounts;
+		}
 	}
 }
