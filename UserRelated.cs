@@ -45,6 +45,17 @@ namespace FinancyApplication
 			string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 			this.UserID = data.InsertUser(this, hashedPassword);
 
+			UserProfile newProfile = new UserProfile
+			{
+				UserID = this.UserID,
+				FirstName = "",
+				LastName = "",
+				PhoneNumber = "",
+				AvatarUrl = "default_avatar.png",
+				PreferredCurrency = "USD"
+			};
+			data.InsertProfile(newProfile);
+
 			string code = Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
 			data.UpdateResetToken(email, code);
 
@@ -56,27 +67,19 @@ namespace FinancyApplication
 		{
 			try
 			{
-				string storedHash = data.GetPasswordHash(email);
-
-				if (string.IsNullOrEmpty(storedHash))
-				{
-					MessageBox.Show("Login denied. Account is either inactive, unverified, or doesn't exist.");
-					return false;
+				if (data.ValidateLogin(email, password)) 
+        {
+					User loggedInUser = data.GetUserByEmail(email);
+					Application.Current.Properties["CurrentUser"] = loggedInUser;
+					return true;
 				}
-
-				bool isValid = BCrypt.Net.BCrypt.Verify(password, storedHash);
-
-				if (isValid)
-				{
-					Application.Current.Properties["CurrentUser"] = email;
-				}
-
-				return isValid;
+				MessageBox.Show("Invalid credentials.");
+				return false;
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show("Login error: " + ex.Message);
-				return false;
+				MessageBox.Show("Login error: " + ex.Message); 
+        return false;
 			}
 		}
 
