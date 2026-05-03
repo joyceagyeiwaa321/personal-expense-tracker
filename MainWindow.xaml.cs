@@ -27,16 +27,20 @@ namespace FinancyApplication
 
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) { if (e.ChangedButton == MouseButton.Left) this.DragMove(); }
 
-		private void Login_Click(object sender, RoutedEventArgs e)
-		{
-			if (db.ValidateLogin(EmailInput.Text.Trim(), PasswordInput.Password)) 
-                ShowNotification("Login Successful!");
+        private void Login_Click(object sender, RoutedEventArgs e)
+        {
+            if (db.ValidateLogin(EmailInput.Text.Trim(), PasswordInput.Password))
+            {
+                var user = db.GetUserByEmail(EmailInput.Text.Trim());
+                Application.Current.Properties["CurrentUser"] = user;
+                new Dashboard { CurrentUser = user }.Show();
+                this.Close();
+            }
+            else
+                ShowNotification("Invalid email or password.", true);
+        }
 
-			else
-				ShowNotification("Invalid email or password.", true);
-		}
-
-		private void RegisterStep1_Click(object sender, RoutedEventArgs e)
+        private void RegisterStep1_Click(object sender, RoutedEventArgs e)
 		{
 			string email = RegEmail.Text.Trim();
 			string pass = RegPass.Password;
