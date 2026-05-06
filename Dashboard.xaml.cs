@@ -531,12 +531,11 @@ namespace FinancyApplication
             MessageBox.Show("Goals page coming soon.", "Navigation");
         }
 
-        private void NavProfile_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Profile page coming soon.", "Navigation");
-        }
-
-        private void NavGroups_Click(object sender, RoutedEventArgs e)
+		private void NavProfile_Click(object sender, RoutedEventArgs e)
+		{
+			new ProfileWindow(CurrentUser).ShowDialog();
+		}
+		private void NavGroups_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Groups page coming soon.", "Navigation");
         }

@@ -7,7 +7,7 @@ namespace FinancyApplication
 {
 	public class Data
 	{
-		private string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=expense_tracker;";
+		private string connectionString = "datasource=127.0.0.1;port=3308;username=root;password=;database=expense_tracker;";
 
 		private int Insert(string query)
 		{
@@ -204,6 +204,12 @@ namespace FinancyApplication
 			string query = "UPDATE user SET Password = '" + newHashedPassword + "' WHERE UserID = " + userId;
 			this.ExecuteSimple(query);
 		}
+		public void UpdateUsername(int userId, string newUsername)
+		{
+			string query = "UPDATE user SET Username = '" + newUsername + "' WHERE UserID = " + userId;
+			this.ExecuteSimple(query);
+		}
+
 
 		public void DeleteUser(int userId)
 		{
