@@ -8,7 +8,6 @@
         FontFamily="Segoe UI Variable Display">
 
 	<Window.Resources>
-		<!-- Teal Green Buttons (matching Dashboard #00B894) -->
 		<Style x:Key="MainGreenButton" TargetType="Button">
 			<Setter Property="Background" Value="#00897B"/>
 			<Setter Property="Foreground" Value="White"/>
@@ -35,7 +34,6 @@
 			</Setter>
 		</Style>
 
-		<!-- Text-only Buttons -->
 		<Style x:Key="TextButton" TargetType="Button">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderThickness" Value="0"/>
@@ -60,7 +58,6 @@
 			</Setter>
 		</Style>
 
-		<!-- Window control buttons (grey X, □, −) -->
 		<Style x:Key="WinCtrlButton" TargetType="Button">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderThickness" Value="0"/>
@@ -85,11 +82,10 @@
 			</Setter>
 		</Style>
 
-		<!-- Input field style with border -->
+		<!-- FIXED: icon lives in col 0, cursor starts right after it in col 1 -->
 		<Style x:Key="InputBox" TargetType="TextBox">
 			<Setter Property="Height" Value="45"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
-			<Setter Property="Padding" Value="40,0,12,0"/>
 			<Setter Property="FontSize" Value="13"/>
 			<Setter Property="BorderBrush" Value="#DDE3E7"/>
 			<Setter Property="BorderThickness" Value="1.5"/>
@@ -101,9 +97,22 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="10">
-							<ScrollViewer x:Name="PART_ContentHost"
-                                          Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="Center"/>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="38"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+								<ContentPresenter x:Name="IconHost"
+                                                  Grid.Column="0"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Tag}"/>
+								<ScrollViewer x:Name="PART_ContentHost"
+                                              Grid.Column="1"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,8,0"/>
+							</Grid>
 						</Border>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsFocused" Value="True">
@@ -116,11 +125,10 @@
 			</Setter>
 		</Style>
 
-		<!-- Password field style -->
+		<!-- FIXED: lock icon in col 0, text in col 1, eye button in col 2 -->
 		<Style x:Key="PassBox" TargetType="PasswordBox">
 			<Setter Property="Height" Value="45"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
-			<Setter Property="Padding" Value="40,0,40,0"/>
 			<Setter Property="FontSize" Value="13"/>
 			<Setter Property="BorderBrush" Value="#DDE3E7"/>
 			<Setter Property="BorderThickness" Value="1.5"/>
@@ -132,9 +140,21 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="10">
-							<ScrollViewer x:Name="PART_ContentHost"
-                                          Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="Center"/>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="38"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="32"/>
+								</Grid.ColumnDefinitions>
+								<TextBlock Grid.Column="0" Text="🔒" FontSize="13"
+                                           Foreground="#9CA3AF"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+								<ScrollViewer x:Name="PART_ContentHost"
+                                              Grid.Column="1"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,4,0"/>
+							</Grid>
 						</Border>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsFocused" Value="True">
@@ -147,7 +167,6 @@
 			</Setter>
 		</Style>
 
-		<!-- Label style -->
 		<Style x:Key="FieldLabel" TargetType="TextBlock">
 			<Setter Property="FontWeight" Value="SemiBold"/>
 			<Setter Property="Foreground" Value="#374151"/>
@@ -167,7 +186,7 @@
 				<ColumnDefinition Width="1*"/>
 			</Grid.ColumnDefinitions>
 
-			<!-- LEFT PANEL: BRANDING (teal gradient matching Dashboard) -->
+			<!-- LEFT PANEL -->
 			<Grid Grid.Column="0" ClipToBounds="True">
 				<Grid.Background>
 					<LinearGradientBrush StartPoint="0.1,0" EndPoint="0.9,1">
@@ -176,7 +195,6 @@
 						<GradientStop Color="#004D40" Offset="1"/>
 					</LinearGradientBrush>
 				</Grid.Background>
-
 				<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 					<Border Width="90" Height="90" CornerRadius="22" Background="#00B894" Margin="0,0,0,20">
 						<Border.Effect>
@@ -195,7 +213,6 @@
 			<!-- RIGHT PANEL -->
 			<Grid Grid.Column="1">
 
-				<!-- WINDOW CONTROLS (−, □, ✕) -->
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Top"
                             HorizontalAlignment="Right" Margin="0,14,16,0">
 					<Button Content="−" Click="Minimize_Click" Style="{StaticResource WinCtrlButton}" Margin="0,0,4,0"/>
@@ -203,7 +220,6 @@
 					<Button Content="✕" Click="Exit_Click" Style="{StaticResource WinCtrlButton}"/>
 				</StackPanel>
 
-				<!-- NOTIFICATION TOAST -->
 				<Border x:Name="NotificationToast" Visibility="Collapsed"
                         VerticalAlignment="Top" Margin="40,60,40,0"
                         Background="#E0F2F1" CornerRadius="10" Padding="14,10">
@@ -211,41 +227,41 @@
                                FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" FontSize="13"/>
 				</Border>
 
-				<!-- PASSWORD STRENGTH BAR (hidden until typing) -->
-				<StackPanel x:Name="StrengthPanel" Visibility="Collapsed"
-                            VerticalAlignment="Top" Margin="60,0,60,0" HorizontalAlignment="Stretch"/>
-
 				<Grid Margin="55,0">
 
-					<!-- 1. LOGIN VIEW -->
+					<!-- 1. LOGIN -->
 					<StackPanel x:Name="LoginView" VerticalAlignment="Center" Visibility="Visible">
-						<TextBlock Text="Welcome Back ! " FontSize="28" FontWeight="Bold"
+						<TextBlock Text="Welcome Back!" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
 						<TextBlock Text="Sign in to your account" Foreground="#6B7280"
                                    FontSize="13" Margin="0,0,0,28"/>
 
 						<TextBlock Text="Email Address" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,18">
-							<TextBox x:Name="EmailInput" Style="{StaticResource InputBox}"/>
-							<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+							<TextBox x:Name="EmailInput" Style="{StaticResource InputBox}">
+								<TextBox.Tag>
+									<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 						</Grid>
 
 						<TextBlock Text="Password" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,8">
 							<PasswordBox x:Name="PasswordInput" Style="{StaticResource PassBox}"/>
-							<TextBox x:Name="PasswordInputVisible" Style="{StaticResource InputBox}"
-                                     Visibility="Collapsed"/>
-							<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+							<TextBox x:Name="PasswordInputVisible" Style="{StaticResource InputBox}" Visibility="Collapsed">
+								<TextBox.Tag>
+									<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 							<Button x:Name="LoginShowPassBtn" Content="👁" Background="Transparent"
                                     BorderThickness="0" HorizontalAlignment="Right" Cursor="Hand"
-                                    VerticalAlignment="Center" Margin="0,0,10,0" FontSize="14"
+                                    VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"
                                     Click="LoginTogglePass_Click"/>
 						</Grid>
 
 						<Button Style="{StaticResource TextButton}" Content="Forgot Password?"
-                                Click="ShowReset_Click" HorizontalAlignment="Right" Margin="0,0,0,22" FontSize="12"/>
+                                Click="ShowReset_Click" HorizontalAlignment="Right"
+                                Margin="0,0,0,22" FontSize="12"/>
 						<Button Style="{StaticResource MainGreenButton}" Content="SIGN IN"
                                 Click="Login_Click" IsDefault="True"/>
 						<Button Style="{StaticResource TextButton}" Content="Create an account"
@@ -261,9 +277,11 @@
 
 						<TextBlock Text="Email Address" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,16">
-							<TextBox x:Name="RegEmail" Style="{StaticResource InputBox}"/>
-							<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+							<TextBox x:Name="RegEmail" Style="{StaticResource InputBox}">
+								<TextBox.Tag>
+									<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 						</Grid>
 
 						<TextBlock Text="Password" Style="{StaticResource FieldLabel}"/>
@@ -271,16 +289,17 @@
 							<PasswordBox x:Name="RegPass" Style="{StaticResource PassBox}"
                                          PasswordChanged="RegPass_PasswordChanged"/>
 							<TextBox x:Name="RegPassVisible" Style="{StaticResource InputBox}"
-                                     Visibility="Collapsed" TextChanged="RegPassVisible_TextChanged"/>
-							<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+                                     Visibility="Collapsed" TextChanged="RegPassVisible_TextChanged">
+								<TextBox.Tag>
+									<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 							<Button Content="👁" Background="Transparent" BorderThickness="0"
                                     HorizontalAlignment="Right" Cursor="Hand"
-                                    VerticalAlignment="Center" Margin="0,0,10,0" FontSize="14"
+                                    VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"
                                     Click="RegTogglePass_Click"/>
 						</Grid>
 
-						<!-- Password strength indicator -->
 						<StackPanel Margin="0,0,0,4">
 							<ProgressBar x:Name="StrengthBar" Height="4" Minimum="0" Maximum="4"
                                          Value="0" Background="#E5E7EB" Margin="0,0,0,4">
@@ -300,12 +319,14 @@
 						<Grid Margin="0,0,0,20">
 							<PasswordBox x:Name="RegConfirmPass" Style="{StaticResource PassBox}"/>
 							<TextBox x:Name="RegConfirmPassVisible" Style="{StaticResource InputBox}"
-                                     Visibility="Collapsed"/>
-							<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+                                     Visibility="Collapsed">
+								<TextBox.Tag>
+									<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 							<Button Content="👁" Background="Transparent" BorderThickness="0"
                                     HorizontalAlignment="Right" Cursor="Hand"
-                                    VerticalAlignment="Center" Margin="0,0,10,0" FontSize="14"
+                                    VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"
                                     Click="RegToggleConfirmPass_Click"/>
 						</Grid>
 
@@ -343,9 +364,11 @@
                                    FontSize="13" Margin="0,0,0,28"/>
 						<TextBlock Text="Username" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,26">
-							<TextBox x:Name="RegUsername" Style="{StaticResource InputBox}"/>
-							<TextBlock Text="👤" FontSize="13" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+							<TextBox x:Name="RegUsername" Style="{StaticResource InputBox}">
+								<TextBox.Tag>
+									<TextBlock Text="👤" FontSize="13" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 						</Grid>
 						<Button Style="{StaticResource MainGreenButton}" Content="FINISH SIGNUP"
                                 Click="RegisterStep3_Click" IsDefault="True"/>
@@ -361,9 +384,11 @@
                                    Foreground="#6B7280" FontSize="13" Margin="0,0,0,24"/>
 						<TextBlock Text="Email Address" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,20">
-							<TextBox x:Name="ResetEmailInput" Style="{StaticResource InputBox}"/>
-							<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
+							<TextBox x:Name="ResetEmailInput" Style="{StaticResource InputBox}">
+								<TextBox.Tag>
+									<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"/>
+								</TextBox.Tag>
+							</TextBox>
 						</Grid>
 						<Button Style="{StaticResource MainGreenButton}" Content="SEND RESET CODE"
                                 Click="SendReset_Click" IsDefault="True"/>
@@ -398,14 +423,10 @@
 						<TextBlock Text="New Password" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,16">
 							<PasswordBox x:Name="NewPass" Style="{StaticResource PassBox}"/>
-							<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
 						</Grid>
 						<TextBlock Text="Confirm New Password" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,26">
 							<PasswordBox x:Name="RepeatPass" Style="{StaticResource PassBox}"/>
-							<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"
-                                       VerticalAlignment="Center" Margin="13,0,0,0" IsHitTestVisible="False"/>
 						</Grid>
 						<Button Style="{StaticResource MainGreenButton}" Content="UPDATE PASSWORD"
                                 Click="FinalReset_Click" IsDefault="True"/>
