@@ -7,7 +7,7 @@ namespace FinancyApplication
 {
 	public class Data
 	{
-		private string connectionString = "datasource=127.0.0.1;port=3308;username=root;password=;database=expense_tracker;";
+		private string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=expense_tracker;";
 
 		private int Insert(string query)
 		{
@@ -689,7 +689,41 @@ namespace FinancyApplication
 			this.ExecuteSimple(query);
 		}
 
-		public decimal GetSpentAmount(int userId, int categoryId, string month)
+        public List<Budget> GetBudgetsByUser(int userId, string month)
+        {
+            List<Budget> budgets = new List<Budget>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                // month is stored as "yyyy-MM" string in the budget table
+                string query = "SELECT * FROM budget WHERE UserID = @userId AND Month = @month";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@month", month);
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        budgets.Add(new Budget
+                        {
+                            BudgetId = Convert.ToInt32(reader["BudgetID"]),
+                            UserId = Convert.ToInt32(reader["UserID"]),
+                            CategoryId = Convert.ToInt32(reader["CategoryID"]),
+                            LimitAmount = Convert.ToDecimal(reader["LimitAmount"]),
+                            Month = reader["Month"].ToString()
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetBudgetsByUser failed: " + ex.Message);
+                }
+            }
+            return budgets;
+        }
+
+        public decimal GetSpentAmount(int userId, int categoryId, string month)
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{

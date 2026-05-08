@@ -523,7 +523,8 @@ namespace FinancyApplication
 
         private void NavBudget_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Budget page coming soon.", "Navigation");
+            new BudgetPage { CurrentUser = CurrentUser }.Show();
+            this.Close();
         }
 
         private void NavGoals_Click(object sender, RoutedEventArgs e)
