@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
@@ -16,10 +17,16 @@ namespace FinancyApplication
 		private int regSecondsRemaining = 30;
 		private Data db = new Data();
 
+		// In-memory expiry for password reset codes — email -> issue time (UTC). Survives only the app session.
+		private static readonly Dictionary<string, DateTime> _resetTokenIssuedAt = new Dictionary<string, DateTime>();
+		private static readonly TimeSpan ResetTokenLifetime = TimeSpan.FromMinutes(15);
+
 		// Track show/hide state for each password field
 		private bool loginPassVisible = false;
 		private bool regPassVisible = false;
 		private bool regConfirmPassVisible = false;
+		private bool resetNewPassVisible = false;
+		private bool resetRepeatPassVisible = false;
 
 		public MainWindow()
 		{
@@ -94,6 +101,40 @@ namespace FinancyApplication
 			}
 		}
 
+		private void ResetTogglePass_Click(object sender, RoutedEventArgs e)
+		{
+			resetNewPassVisible = !resetNewPassVisible;
+			if (resetNewPassVisible)
+			{
+				NewPassVisible.Text = NewPass.Password;
+				NewPass.Visibility = Visibility.Collapsed;
+				NewPassVisible.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				NewPass.Password = NewPassVisible.Text;
+				NewPassVisible.Visibility = Visibility.Collapsed;
+				NewPass.Visibility = Visibility.Visible;
+			}
+		}
+
+		private void ResetToggleConfirmPass_Click(object sender, RoutedEventArgs e)
+		{
+			resetRepeatPassVisible = !resetRepeatPassVisible;
+			if (resetRepeatPassVisible)
+			{
+				RepeatPassVisible.Text = RepeatPass.Password;
+				RepeatPass.Visibility = Visibility.Collapsed;
+				RepeatPassVisible.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				RepeatPass.Password = RepeatPassVisible.Text;
+				RepeatPassVisible.Visibility = Visibility.Collapsed;
+				RepeatPass.Visibility = Visibility.Visible;
+			}
+		}
+
 		// ── PASSWORD STRENGTH ─────────────────────────────────────────────
 		// Industry standard: 8+ chars, uppercase, lowercase, number, special char
 		private (int score, string label, Color color) GetPasswordStrength(string password)
@@ -128,6 +169,21 @@ namespace FinancyApplication
 				&& Regex.IsMatch(password, @"\d")
 				&& Regex.IsMatch(password, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.
 	<>\/?]");
+		}
+
+		// Rejects passwords that embed the user's identity (username / real name).
+		// Tokens shorter than 3 chars are ignored so a one-letter name doesn't block everything.
+		private static bool ContainsIdentity(string password, params string[] tokens)
+		{
+			if (string.IsNullOrEmpty(password)) return false;
+			string lower = password.ToLowerInvariant();
+			foreach (string t in tokens)
+			{
+				if (string.IsNullOrWhiteSpace(t)) continue;
+				string tl = t.Trim().ToLowerInvariant();
+				if (tl.Length >= 3 && lower.Contains(tl)) return true;
+			}
+			return false;
 		}
 
 		private void UpdateStrengthUI(string password)
@@ -248,6 +304,14 @@ namespace FinancyApplication
 			string username = RegUsername.Text.Trim();
 			if (string.IsNullOrEmpty(username)) { ShowNotification("Please enter a username.", true); return; }
 
+			// Password from step 1 must not contain the chosen username
+			string regPass = Application.Current.Properties["RegPass"] as string;
+			if (ContainsIdentity(regPass, username))
+			{
+				ShowNotification("Username can't appear in your password — pick a different one.", true);
+				return;
+			}
+
 			string hashed = BCrypt.Net.BCrypt.HashPassword(Application.Current.Properties["RegPass"] as string);
 			User newUser = new User
 			{
@@ -285,6 +349,7 @@ namespace FinancyApplication
 			User user = db.GetUserByEmail(email);
 			if (user != null && db.ResendPasswordReset(email, user.Username))
 			{
+				_resetTokenIssuedAt[email] = DateTime.UtcNow;   // start the 15-min clock
 				HideAllViews();
 				VerifyView.Visibility = Visibility.Visible;
 				StartCooldown();
@@ -294,8 +359,19 @@ namespace FinancyApplication
 
 		private void VerifyCode_Click(object sender, RoutedEventArgs e)
 		{
-			if (CodeInput.Text.Trim() == db.GetResetToken(ResetEmailInput.Text.Trim()))
+			string email = ResetEmailInput.Text.Trim();
+
+			// Enforce the 15-min lifetime the email promises
+			if (!_resetTokenIssuedAt.TryGetValue(email, out DateTime issuedAt)
+				|| DateTime.UtcNow - issuedAt > ResetTokenLifetime)
 			{
+				ShowNotification("This code has expired. Please request a new one.", true);
+				return;
+			}
+
+			if (CodeInput.Text.Trim() == db.GetResetToken(email))
+			{
+				_resetTokenIssuedAt.Remove(email);   // single-use
 				HideAllViews();
 				NewPasswordView.Visibility = Visibility.Visible;
 			}
@@ -304,8 +380,9 @@ namespace FinancyApplication
 
 		private void FinalReset_Click(object sender, RoutedEventArgs e)
 		{
-			string newPass = NewPass.Password;
-			string repeatPass = RepeatPass.Password;
+			string newPass = resetNewPassVisible ? NewPassVisible.Text : NewPass.Password;
+			string repeatPass = resetRepeatPassVisible ? RepeatPassVisible.Text : RepeatPass.Password;
+			string email = ResetEmailInput.Text.Trim();
 
 			if (!IsPasswordValid(newPass))
 			{
@@ -318,13 +395,28 @@ namespace FinancyApplication
 				ShowNotification("Passwords do not match!", true); return;
 			}
 
-			User user = db.GetUserByEmail(ResetEmailInput.Text.Trim());
-			if (user != null)
+			User user = db.GetUserByEmail(email);
+			if (user == null) { ShowNotification("Account not found.", true); return; }
+
+			// Same rules as registration PLUS can't reuse the old password
+			string oldHash = db.GetPasswordHash(email);
+			if (!string.IsNullOrEmpty(oldHash) && BCrypt.Net.BCrypt.Verify(newPass, oldHash))
 			{
-				db.UpdateUserPassword(user.UserID, BCrypt.Net.BCrypt.HashPassword(newPass));
-				ShowNotification("Password updated successfully!");
-				ShowLogin_Click(null, null);
+				ShowNotification("New password can't be the same as your old one.", true);
+				return;
 			}
+
+			// Can't contain username or real name
+			UserProfile profile = db.GetProfileByUserId(user.UserID);
+			if (ContainsIdentity(newPass, user.Username, profile?.FirstName, profile?.LastName))
+			{
+				ShowNotification("Password can't contain your username or name.", true);
+				return;
+			}
+
+			db.UpdateUserPassword(user.UserID, BCrypt.Net.BCrypt.HashPassword(newPass));
+			ShowNotification("Password updated successfully!");
+			ShowLogin_Click(null, null);
 		}
 
 		// ── VIEW NAVIGATION ───────────────────────────────────────────────

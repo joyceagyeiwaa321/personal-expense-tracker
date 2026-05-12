@@ -115,25 +115,29 @@
 					</Button>
 
 					<Button Style="{StaticResource IconButtonStyle}"
-                            Click="NavProfile_Click">
-						<Border Width="38"
-                                Height="38"
-                                CornerRadius="19"
-                                Background="#00B894">
-							<TextBlock x:Name="AvatarInitial"
-                                       Text="U"
-                                       Foreground="White"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+        Click="NavProfile_Click">
+						<Border Width="38" Height="38" CornerRadius="19"
+            Background="#00B894" ClipToBounds="True">
+							<Grid>
+								<TextBlock x:Name="AvatarInitial"
+                       Text="U"
+                       Foreground="White"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+								<Image x:Name="NavAvatarImage"
+                   Stretch="UniformToFill"
+                   Visibility="Collapsed"/>
+							</Grid>
 						</Border>
 					</Button>
 				</StackPanel>
 			</Grid>
 		</Border>
 
-		<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<Grid x:Name="MainContentHost">
+		<ScrollViewer x:Name="DashboardContent" VerticalScrollBarVisibility="Auto">
 			<StackPanel Width="880"
                         HorizontalAlignment="Center"
                         Margin="0,48,0,30">
@@ -327,5 +331,9 @@
 
 			</StackPanel>
 		</ScrollViewer>
+
+		<!-- Embedded profile lives here; created on demand by NavProfile_Click -->
+		<ContentControl x:Name="ProfileHost" Visibility="Collapsed"/>
+		</Grid>
 	</DockPanel>
 </Window>
