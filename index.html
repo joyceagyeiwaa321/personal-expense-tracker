@@ -1,112 +1,1083 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Personal Expense Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f6f8;
-      color: #222;
-    }
-    header {
-      background: #1f4e79;
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-    }
-    main {
-      max-width: 900px;
-      margin: 30px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    }
-    h2 {
-      color: #1f4e79;
-      margin-top: 30px;
-    }
-    ul {
-      line-height: 1.8;
-    }
-    .status {
-      background: #eef5fb;
-      padding: 15px;
-      border-left: 5px solid #1f4e79;
-      margin-top: 10px;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Collab Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #00b894;
+  --pink-deep: #00a383;
+  --pink-dark: #006b5f;
+  --pink-soft: #55d6be;
+  --pink-blush: #e6fff8;
+  --pink-pale: #f4fffb;
+  --namariq: #00a383;
+  --namariq-bg: #e6fff8;
+  --joyce: #00b894;
+  --joyce-bg: #e6fff8;
+  --completed: #2e7d32;
+  --completed-bg: #e8f5e9;
+  --ongoing: #e65100;
+  --ongoing-bg: #fff3e0;
+  --notstarted-bg: #f5f5f5;
+  --notstarted: #757575;
+  --late: #b71c1c;
+  --late-bg: #ffebee;
+  --ontime: #1b5e20;
+  --ontime-bg: #e8f5e9;
+  --white: #ffffff;
+  --text: #06231f;
+  --text-muted: #8b5a70;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--pink-pale);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── PAGES ── */
+.page { display:none; min-height:100vh; }
+.page.active { display:block; }
+
+/* ════════════════════════════════
+   LOGIN PAGE
+════════════════════════════════ */
+#page-login {
+  background: linear-gradient(135deg, #06231f 0%, #0f4c43 50%, #06231f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+#page-login.active { display: flex; }
+
+.login-bg-circles {
+  position: absolute; inset: 0; pointer-events: none;
+}
+.login-bg-circles span {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(233,30,140,0.15), transparent 70%);
+}
+.login-bg-circles span:nth-child(1) { width:600px; height:600px; top:-200px; left:-200px; }
+.login-bg-circles span:nth-child(2) { width:400px; height:400px; bottom:-100px; right:-100px; }
+.login-bg-circles span:nth-child(3) { width:300px; height:300px; top:50%; left:50%; transform:translate(-50%,-50%); }
+
+.login-box {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 420px;
+  padding: 24px;
+  animation: fadeUp 0.6s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.login-logo {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.login-logo h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.login-logo p {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.login-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(233,30,140,0.2);
+  border-radius: 24px;
+  padding: 32px 28px;
+  backdrop-filter: blur(12px);
+}
+.login-card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+.login-card p {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 24px;
+}
+.login-field {
+  margin-bottom: 16px;
+}
+.login-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 7px;
+}
+.login-field input {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-field input::placeholder { color: rgba(255,255,255,0.25); }
+.login-field input:focus { border-color: var(--pink); }
+.login-error {
+  font-size: 0.78rem;
+  color: #ff6b9d;
+  margin-bottom: 14px;
+  min-height: 18px;
+  text-align: center;
+}
+.btn-login {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  letter-spacing: 0.03em;
+}
+.btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-login:active { transform: translateY(0); }
+.login-hint {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ════════════════════════════════
+   SHARED NAV
+════════════════════════════════ */
+.nav {
+  background: #fff;
+  border-bottom: 1px solid #e6fff8;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 12px rgba(194,24,91,0.07);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--pink-deep);
+  letter-spacing: -0.3px;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.nav-link {
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.nav-link:hover, .nav-link.active { background: var(--pink-blush); color: var(--pink-deep); }
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.nav-avatar.joyce-av { background: linear-gradient(135deg, var(--joyce), #9c27b0); }
+.nav-name { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+.btn-logout {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #e6fff8;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.15s;
+}
+.btn-logout:hover { background: var(--pink-blush); color: var(--pink-deep); border-color: var(--pink-soft); }
+
+/* ════════════════════════════════
+   HOME PAGE
+════════════════════════════════ */
+.home-hero {
+  background: linear-gradient(135deg, #06231f 0%, #0f4c43 60%, #06231f 100%);
+  padding: 56px 32px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.home-hero::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233,30,140,0.12), transparent 70%);
+  top: -150px; left: 50%; transform: translateX(-50%);
+}
+.home-hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  letter-spacing: -0.5px;
+}
+.home-hero p {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  margin-top: 8px;
+  position: relative;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+.home-timeline-tag {
+  display: inline-block;
+  margin-top: 16px;
+  position: relative;
+  background: rgba(233,30,140,0.2);
+  border: 1px solid rgba(233,30,140,0.3);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 0.78rem;
+  color: var(--pink-soft);
+  font-weight: 500;
+}
+
+/* TEAM CARDS */
+.home-content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 36px 24px 48px;
+}
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  margin-bottom: 16px;
+}
+.team-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+.member-card {
+  background: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(194,24,91,0.08);
+  border: 1px solid rgba(194,24,91,0.07);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.member-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(194,24,91,0.13); }
+.member-card-top {
+  padding: 28px 24px 20px;
+  text-align: center;
+  position: relative;
+}
+.member-card-top.namariq { background: linear-gradient(135deg, #e6fff8, #f4fffb); }
+.member-card-top.joyce   { background: linear-gradient(135deg, #e6fff8, #f4fffb); }
+
+/* AVATAR AREA */
+.avatar-area {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  position: relative;
+  cursor: pointer;
+}
+.avatar-img {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  display: none;
+}
+.avatar-placeholder {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  border: 3px dashed rgba(255,255,255,0.5);
+  font-family: 'Cormorant Garamond', serif;
+}
+.avatar-placeholder.namariq { background: linear-gradient(135deg, var(--namariq), #55d6be); }
+.avatar-placeholder.joyce   { background: linear-gradient(135deg, var(--joyce), #55d6be); }
+.avatar-upload-hint {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #e6fff8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+.avatar-file-input { display: none; }
+
+.member-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.member-role {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.member-intro {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  font-style: italic;
+  line-height: 1.5;
+  min-height: 40px;
+  cursor: text;
+  border-radius: 8px;
+  padding: 4px 6px;
+  transition: background 0.15s;
+}
+.member-intro:hover { background: rgba(0,0,0,0.03); }
+.member-intro[contenteditable="true"] {
+  outline: 1.5px dashed var(--pink-soft);
+  background: #fff;
+  color: var(--text);
+}
+.member-intro-hint {
+  font-size: 0.68rem;
+  color: rgba(0,0,0,0.2);
+  font-style: normal;
+  display: block;
+  margin-top: 2px;
+}
+
+.member-card-bottom {
+  padding: 16px 20px 18px;
+  border-top: 1px solid #fdf0f5;
+}
+.mini-stats {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.mini-stat {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.75rem; font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+.mini-stat.c { background: var(--completed-bg); color: var(--completed); }
+.mini-stat.o { background: var(--ongoing-bg); color: var(--ongoing); }
+.mini-stat.n { background: var(--notstarted-bg); color: var(--notstarted); }
+.mini-stat .num { font-size: 1rem; font-weight: 700; }
+
+.btn-goto {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px;
+  border-radius: 12px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+.btn-goto.namariq {
+  background: linear-gradient(135deg, var(--namariq), #55d6be);
+  color: #fff;
+}
+.btn-goto.joyce {
+  background: linear-gradient(135deg, var(--joyce), #55d6be);
+  color: #fff;
+}
+.btn-goto:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* MILESTONES STRIP */
+.milestones-strip {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: 0 2px 12px rgba(194,24,91,0.06);
+  border: 1px solid rgba(194,24,91,0.07);
+}
+.milestone-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #fdf0f5;
+  font-size: 0.8rem;
+}
+.milestone-item:last-child { border-bottom: none; }
+.m-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.m-date { font-weight: 700; color: var(--pink-deep); min-width: 90px; font-size: 0.76rem; }
+.m-desc { color: var(--text-muted); }
+
+/* ════════════════════════════════
+   DASHBOARD (shared structure)
+════════════════════════════════ */
+.dash-hero {
+  padding: 36px 32px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-hero.namariq { background: linear-gradient(135deg, #e6fff8, #f4fffb, #e6fff8); }
+.dash-hero.joyce   { background: linear-gradient(135deg, #e6fff8, #f4fffb, #e6fff8); }
+
+.dash-hero-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.dash-avatar-area {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.dash-avatar-img {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  display: none;
+}
+.dash-avatar-ph {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  border: 3px dashed rgba(255,255,255,0.5);
+}
+.dash-avatar-ph.namariq { background: linear-gradient(135deg, var(--namariq), #55d6be); }
+.dash-avatar-ph.joyce   { background: linear-gradient(135deg, var(--joyce), #55d6be); }
+.dash-upload-btn {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #e6fff8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.dash-intro-area { flex: 1; }
+.dash-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.dash-name span { color: var(--color); }
+.dash-intro-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-style: italic;
+  line-height: 1.5;
+  cursor: text;
+  border-radius: 8px;
+  padding: 4px 6px;
+  transition: background 0.15s;
+  min-height: 36px;
+}
+.dash-intro-text:hover { background: rgba(0,0,0,0.03); }
+.dash-intro-text[contenteditable="true"] {
+  outline: 1.5px dashed var(--pink-soft);
+  background: #fff;
+  color: var(--text);
+}
+.dash-stats-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.dash-stat {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.7);
+}
+.dash-stat.c { color: var(--completed); }
+.dash-stat.o { color: var(--ongoing); }
+.dash-stat.n { color: var(--notstarted); }
+.dash-stat.l { color: var(--late); }
+.dash-stat .num { font-size: 1rem; font-weight: 700; }
+
+/* TASKS SECTION */
+.dash-tasks {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+.phase-block {
+  background: #fff;
+  border-radius: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(194,24,91,0.06);
+  border: 1px solid rgba(194,24,91,0.07);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.phase-block:hover { box-shadow: 0 4px 20px rgba(194,24,91,0.1); }
+.phase-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #fdf0f5;
+  gap: 8px; flex-wrap: wrap;
+}
+.phase-head.namariq { background: linear-gradient(90deg, #e6fff8, #f4fffb); }
+.phase-head.joyce   { background: linear-gradient(90deg, #e6fff8, #f4fffb); }
+.phase-head-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  flex: 1;
+}
+.phase-head.namariq .phase-head-title { color: var(--namariq); }
+.phase-head.joyce   .phase-head-title { color: var(--joyce); }
+.phase-head-dates {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.6);
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+.phase-chevron { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; transition: transform 0.2s; }
+.phase-body2 { padding: 12px 16px 16px; }
+.phase-body2.collapsed { display: none; }
+.phase-chevron.rotated { transform: rotate(-90deg); }
+
+/* TASK ITEM */
+.task-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  border: 1.5px solid transparent;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.task-row:hover { background: var(--pink-blush); border-color: var(--pink-soft); }
+.task-row.st-completed { background: var(--completed-bg); border-color: rgba(46,125,50,0.2); }
+.task-row.st-ongoing   { background: var(--ongoing-bg); border-color: rgba(230,81,0,0.2); }
+.task-checkbox {
+  width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px;
+  border-radius: 6px; border: 2px solid #ddd; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.task-row.st-completed .task-checkbox { background: var(--completed); border-color: var(--completed); }
+.task-row.st-ongoing   .task-checkbox { background: var(--ongoing);   border-color: var(--ongoing); }
+.check-svg { display: none; }
+.task-row.st-completed .check-svg { display: block; }
+.task-row.st-ongoing   .check-svg { display: block; }
+.task-text { flex: 1; }
+.task-label { font-size: 0.83rem; font-weight: 500; line-height: 1.4; }
+.task-row.st-completed .task-label { text-decoration: line-through; color: #aaa; }
+.task-badges2 { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tbadge {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em;
+  padding: 2px 8px; border-radius: 6px; text-transform: uppercase;
+}
+.tbadge.bc { background: var(--completed-bg); color: var(--completed); }
+.tbadge.bo { background: var(--ongoing-bg); color: var(--ongoing); }
+.tbadge.bn { background: var(--notstarted-bg); color: var(--notstarted); }
+.tbadge.bl { background: var(--late-bg); color: var(--late); }
+.tbadge.bt { background: var(--ontime-bg); color: var(--ontime); }
+.tbadge.bd { background: var(--pink-blush); color: var(--pink-deep); }
+
+.goal-note {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: var(--pink-blush);
+  border-left: 3px solid var(--pink);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.77rem;
+  color: var(--pink-dark);
+  line-height: 1.5;
+}
+
+
+.intro-actions{margin-top:8px;display:none;gap:8px;justify-content:center}.dash-intro-area .intro-actions{justify-content:flex-start}.intro-actions.show{display:flex}.intro-btn,.save-copy-btn{border:1px solid var(--pink-soft);background:#fff;color:var(--pink-deep);border-radius:8px;padding:5px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer}.intro-btn.done{background:var(--pink);color:#fff;border-color:var(--pink)}.save-copy-btn{margin-left:6px}.member-intro.editing,.dash-intro-text.editing{outline:1.5px dashed var(--pink-soft);background:#fff;color:var(--text)}
+/* STATUS POPUP */
+.overlay2 { display:none; position:fixed; inset:0; z-index:80; }
+.overlay2.open { display:block; }
+.status-popup {
+  display: none;
+  position: fixed;
+  z-index: 99;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+  padding: 8px;
+  min-width: 175px;
+  border: 1.5px solid #e6fff8;
+  animation: pop 0.15s ease;
+}
+.status-popup.open { display: block; }
+@keyframes pop {
+  from { opacity:0; transform:scale(0.9) translateY(-6px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+.sp-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 9px;
+  font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: background 0.1s;
+}
+.sp-opt:hover { background: var(--pink-blush); }
+.sp-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .team-cards { grid-template-columns: 1fr; }
+  .home-hero h1 { font-size: 2.2rem; }
+  .nav { padding: 0 16px; }
+  .home-content, .dash-tasks { padding: 20px 16px 40px; }
+  .dash-hero { padding: 24px 16px 20px; }
+  .dash-hero-inner { flex-direction: column; text-align: center; }
+  .dash-stats-row { justify-content: center; }
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Personal Expense Tracker</h1>
-    <p>Project Progress Website</p>
-  </header>
 
-  <main>
-    <h2>About the Project</h2>
-    <p>
-      The Personal Expense Tracker is a desktop application designed to help users
-      manage their finances by tracking income, expenses, account balances, and transfers.
-    </p>
+<!-- ════ LOGIN PAGE ════ -->
+<div id="page-login" class="page active">
+  <div class="login-bg-circles">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="login-box">
+    <div class="login-logo">
+      <h1>The Collab Board</h1>
+      <p>Expense Tracker Project</p>
+    </div>
+    <div class="login-card">
+      <h2>Welcome back ✦</h2>
+      <p>Sign in to access your dashboard</p>
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="login-user" placeholder="Enter your name" autocomplete="off" />
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter your password" />
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <button class="btn-login" id="btn-login-submit">Sign In →</button>
+      <div class="login-hint">Only Namariq & Joyce can access this board</div>
+    </div>
+  </div>
+</div>
 
-    <h2>Planned Features</h2>
-    <ul>
-      <li>User registration and login</li>
-      <li>Profile management</li>
-      <li>Create and manage accounts</li>
-       <li>Forgot Password</li>
-       <li>Create Group</li>
-      <li>Add income and expense transactions</li>
-      <li>View account balances</li>
-      <li>Upload receipts, Scan receipts etc</li>
-      <li>Admin dashboard for managing users</li>
-       <li>New Recurring</li>
-      <li>Charts, reports, and PDF export</li>
-    </ul>
-    <h2>
-      Optional Features
-    </h2>
-    <ul>
-      <li>Multi Factor Authentication</li>
-      <li>AI Assistant</li>
-    </ul>
+<!-- ════ HOME PAGE ════ -->
+<div id="page-home" class="page">
+  <nav class="nav">
+    <div class="nav-logo">The Collab Board</div>
+    <div class="nav-links">
+      <button class="nav-link active" data-goto="page-home">Home</button>
+      <button class="nav-link" id="nav-my-dash-btn">My Dashboard</button>
+    </div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="nav-av"></div>
+      <span class="nav-name" id="nav-nm"></span>
+      <button class="btn-logout" data-action="logout">Sign out</button>
+    </div>
+  </nav>
 
-    <h2>Technology Stack</h2>
-    <ul>
-      <li>Frontend: HTML, CSS, JavaScript</li>
-      <li>Backend: C#</li>
-      <li>Database: To be decided</li>
-      <li>Security: Password hashing and role-based access</li>
-    </ul>
+  <div class="home-hero">
+    <h1>The Collab Board</h1>
+    <p>Namariq &amp; Joyce — Expense Tracker Project</p>
+    <div class="home-timeline-tag">📅 Apr 21 → May 21, 2026 &nbsp;·&nbsp; Realistic ✓</div>
+  </div>
 
-    <h2>Project Timeline</h2>
-    <div class="status">
-      <p><strong>Week 1:</strong> Planning, requirements, wireframes, database design</p>
-      <p><strong>Week 2:</strong> User login, registration, and profile features</p>
-      <p><strong>Week 3:</strong> Transactions, balances, and transfer features</p>
-      <p><strong>Week 4:</strong> Testing, debugging, and final improvements</p>
+  <div class="home-content">
+    <div class="section-label">The Team</div>
+    <div class="team-cards">
+
+      <!-- NAMARIQ CARD -->
+      <div class="member-card" id="home-card-namariq">
+        <div class="member-card-top namariq">
+          <div class="avatar-area" onclick="triggerAvatarUpload('namariq', 'home')">
+            <img class="avatar-img" id="home-av-img-namariq" />
+            <div class="avatar-placeholder namariq" id="home-av-ph-namariq">N</div>
+            <div class="avatar-upload-hint" title="Upload photo">📷</div>
+          </div>
+          <input type="file" class="avatar-file-input" id="home-av-file-namariq" accept="image/*" onchange="handleAvatarUpload(event,'namariq','home')" />
+          <div class="member-name">Namariq</div>
+          <div class="member-role">Backend Lead · UserRelated, AccountRelated, TransactionRelated, DataConnection</div>
+          <div class="member-intro" id="home-intro-namariq" data-person="namariq" data-scope="home">
+            <em id="intro-placeholder-namariq" style="color:rgba(0,0,0,0.2);font-style:italic;font-size:0.75rem;">Click to add a short introduction…</em>
+          </div>
+        </div>
+        <div class="member-card-bottom">
+          <div class="mini-stats" id="home-mini-namariq"></div>
+          <button class="btn-goto namariq" data-goto="dash-namariq">View Namariq's Dashboard →</button>
+        </div>
+      </div>
+
+      <!-- JOYCE CARD -->
+      <div class="member-card" id="home-card-joyce">
+        <div class="member-card-top joyce">
+          <div class="avatar-area" onclick="triggerAvatarUpload('joyce', 'home')">
+            <img class="avatar-img" id="home-av-img-joyce" />
+            <div class="avatar-placeholder joyce" id="home-av-ph-joyce">J</div>
+            <div class="avatar-upload-hint" title="Upload photo">📷</div>
+          </div>
+          <input type="file" class="avatar-file-input" id="home-av-file-joyce" accept="image/*" onchange="handleAvatarUpload(event,'joyce','home')" />
+          <div class="member-name">Joyce</div>
+          <div class="member-role">Backend Dev · MoneyRelated, GroupRelated</div>
+          <div class="member-intro" id="home-intro-joyce" data-person="joyce" data-scope="home">
+            <em id="intro-placeholder-joyce" style="color:rgba(0,0,0,0.2);font-style:italic;font-size:0.75rem;">Click to add a short introduction…</em>
+          </div>
+        </div>
+        <div class="member-card-bottom">
+          <div class="mini-stats" id="home-mini-joyce"></div>
+          <button class="btn-goto joyce" data-goto="dash-joyce">View Joyce's Dashboard →</button>
+        </div>
+      </div>
     </div>
 
-    <h2>Current Status</h2>
-    <p>Project initialized. Planning and design phase started.</p>
+    <div class="section-label">Key Milestones</div>
+    <div class="milestones-strip">
+      <div class="milestone-item"><div class="m-dot" style="background:#00a383"></div><span class="m-date">Mon Apr 28</span><span class="m-desc">Each person has 3 classes coded(including database connections) + Git working</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#e91e8c"></div><span class="m-date">Fri May 2</span><span class="m-desc">All 10 backend classes and enum done(including database connections)</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#e65100"></div><span class="m-date">Mon May 5</span><span class="m-desc">Backend full test, Frontend pages divided and started</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#00b894"></div><span class="m-date">Mon May 12</span><span class="m-desc">Frontend done — full app working end to end</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#2e7d32"></div><span class="m-date">Mon May 19</span><span class="m-desc">Testing, bug fixes, demo prep</span></div>
+      <div class="milestone-item"><div class="m-dot" style="background:#2e7d32"></div><span class="m-date">May 19–21</span><span class="m-desc">Buffer + Presentation prep for exam</span></div>
+    </div>
+  </div>
+</div>
 
-    <h2>Students Information</h2>
-    <p><strong>Name:</strong>Joyce</p>
-     <p><strong>Name:</strong>Namariq</p>
-  </main>
+<!-- ════ NAMARIQ DASHBOARD ════ -->
+<div id="page-namariq" class="page">
+  <nav class="nav">
+    <div class="nav-logo">The Collab Board</div>
+    <div class="nav-links">
+      <button class="nav-link" data-goto="page-home">Home</button>
+      <button class="nav-link active" id="nav-nd">Namariq</button>
+      <button class="nav-link" data-goto="dash-joyce">Joyce</button>
+    </div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="nav-av2"></div>
+      <span class="nav-name" id="nav-nm2"></span>
+      <button class="btn-logout" data-action="logout">Sign out</button>
+    </div>
+  </nav>
 
-  <footer>
-    <p>&copy; 2026 Personal Expense Tracker Project</p>
-  </footer>
+  <div class="dash-hero namariq" style="--color:var(--namariq)">
+    <div class="dash-hero-inner">
+      <div class="dash-avatar-area" onclick="triggerAvatarUpload('namariq','dash')">
+        <img class="dash-avatar-img" id="dash-av-img-namariq" />
+        <div class="dash-avatar-ph namariq" id="dash-av-ph-namariq">N</div>
+        <div class="dash-upload-btn" title="Upload photo">📷</div>
+        <input type="file" class="avatar-file-input" id="dash-av-file-namariq" accept="image/*" onchange="handleAvatarUpload(event,'namariq','dash')" />
+      </div>
+      <div class="dash-intro-area">
+        <div class="dash-name">Namariq <span style="color:var(--namariq)">✦</span></div>
+        <div class="dash-intro-text" id="dash-intro-namariq" data-person="namariq">
+          <em style="opacity:0.4">Click to write your introduction…</em>
+        </div>
+        <div class="dash-stats-row" id="dash-stats-namariq"></div>
+      </div>
+    </div>
+  </div>
+  <div class="dash-tasks" id="dash-tasks-namariq"></div>
+</div>
+
+<!-- ════ JOYCE DASHBOARD ════ -->
+<div id="page-joyce" class="page">
+  <nav class="nav">
+    <div class="nav-logo">The Collab Board</div>
+    <div class="nav-links">
+      <button class="nav-link" data-goto="page-home">Home</button>
+      <button class="nav-link" data-goto="dash-namariq">Namariq</button>
+      <button class="nav-link active" id="nav-jd">Joyce</button>
+    </div>
+    <div class="nav-user">
+      <div class="nav-avatar joyce-av" id="nav-av3"></div>
+      <span class="nav-name" id="nav-nm3"></span>
+      <button class="btn-logout" data-action="logout">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="dash-hero joyce" style="--color:var(--joyce)">
+    <div class="dash-hero-inner">
+      <div class="dash-avatar-area" onclick="triggerAvatarUpload('joyce','dash')">
+        <img class="dash-avatar-img" id="dash-av-img-joyce" />
+        <div class="dash-avatar-ph joyce" id="dash-av-ph-joyce">J</div>
+        <div class="dash-upload-btn" title="Upload photo">📷</div>
+        <input type="file" class="avatar-file-input" id="dash-av-file-joyce" accept="image/*" onchange="handleAvatarUpload(event,'joyce','dash')" />
+      </div>
+      <div class="dash-intro-area">
+        <div class="dash-name">Joyce <span style="color:var(--joyce)">✦</span></div>
+        <div class="dash-intro-text" id="dash-intro-joyce" data-person="joyce">
+          <em style="opacity:0.4">Click to write your introduction…</em>
+        </div>
+        <div class="dash-stats-row" id="dash-stats-joyce"></div>
+      </div>
+    </div>
+  </div>
+  <div class="dash-tasks" id="dash-tasks-joyce"></div>
+</div>
+
+<!-- Status popup -->
+<div class="overlay2" id="overlay2" onclick="closePopup()"></div>
+<div class="status-popup" id="status-popup">
+  <!-- FIX: added data-val attributes so the JS event-delegation path works correctly -->
+  <div class="sp-opt" data-val="completed" onclick="applyStatus('completed')"><div class="sp-dot" style="background:var(--completed)"></div>Completed</div>
+  <div class="sp-opt" data-val="ongoing" onclick="applyStatus('ongoing')"><div class="sp-dot" style="background:var(--ongoing)"></div>Ongoing</div>
+  <div class="sp-opt" data-val="notstarted" onclick="applyStatus('notstarted')"><div class="sp-dot" style="background:#aaa"></div>Not Started</div>
+</div>
+
+<script>
+// ── CREDENTIALS ──────────────────────────────────────────────────────────────
+const USERS = { namariq: 'namariq2026', joyce: 'joyce2026' };
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const TODAY = new Date('2026-04-30');
+function parseDeadline(s) {
+  const m = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const p = s.trim().split(' ');
+  return new Date(2026, m[p[1]], parseInt(p[0], 10));
+}
+
+const PHASES = [
+  {
+    id:'ph1',
+    title:'Phase 1 — First 3 classes each + Git + DB Connection',
+    dates:'Apr 21 → Mon Apr 28',
+    deadline:'Apr 28',
+    goal:'Goal Mon Apr 28: you both have classes committed on Git and can push/pull without issues.',
+    namariq:[
+      {id:'j1b', name:'Clone repo + first commit'},
+      {id:'n1a', name:'UserRelated.cs — UserRole enum, User, Admin, UserProfile'},
+      {id:'n3b', name:'Wire User + Admin → User table'},
+      {id:'n3c', name:'Wire UserProfile → User_Profile table'},
+      {id:'n3a', name:'Create DataConnection.cs — connection string + DB setup'},
+    ],
+    joyce:[
+      {id:'n1b', name:'Create Git repo + invite Namariq'},
+      {id:'j1a', name:'MoneyRelated.cs — Budget, RecurringTransaction, Receipt'},
+      {id:'j3a', name:'Import DataConnection.cs from Namariq'},
+      {id:'j3b', name:'Wire Budget → Budget table'},
+      {id:'j3c', name:'Wire RecurringTransaction table'},
+      {id:'j3d', name:'Wire Receipt → Receipt table'},
+    ]
+  },
+  {
+    id:'ph2',
+    title:'Phase 2 — Remaining classes + DB Connection',
+    dates:'Mon Apr 28 → Fri May 2',
+    deadline:'May 2',
+    goal:'Goal Fri May 2: all remaining classes and DB connection completed.',
+    namariq:[
+      {id:'n2a', name:'AccountRelated.cs — Account'},
+      {id:'n2b', name:'TransactionRelated.cs — Transaction, Category'},
+      {id:'n3d', name:'Wire Account → Account table'},
+      {id:'n3e', name:'Wire Category → Category table'},
+      {id:'n3f', name:'Wire Transaction → Transaction table'},
+    ],
+    joyce:[
+      {id:'j2a', name:'GroupRelated.cs — Group, GroupMember'},
+      {id:'j3e', name:'Wire Group → Group table'},
+      {id:'j3f', name:'Wire GroupMember → GroupMember table'},
+    ]
+  },
+  {
+    id:'ph3',
+    title:'Phase 3 — Frontend HTML Pages',
+    dates:'Fri May 2 → Mon May 5',
+    deadline:'May 5',
+    goal:'Goal Mon May 5: all pages exist and are connected to the backend.',
+    namariq:[
+      {id:'n4a', name:'Login / Register page'},
+      {id:'n4b', name:'User profile page'},
+      {id:'n4c', name:'Transaction list + detail page'},
+      {id:'n4d', name:'Category management page'},
+      {id:'n4e', name:'Admin panel page'},
+      {id:'n4f', name:'Reports page'},
+    ],
+    joyce:[
+      {id:'j4a', name:'Dashboard / account overview'},
+      {id:'j4b', name:'Budget page'},
+      {id:'j4c', name:'Recurring transactions page'},
+      {id:'j4d', name:'Groups page'},
+      {id:'j4e', name:'Receipt upload UI'},
+      {id:'j4f', name:'Goals page'},
+    ]
+  },
+  {
+    id:'ph4',
+    title:'Phase 4 — Testing, Fixes & Demo Prep',
+    dates:'Mon May 5 → Mon May 12',
+    deadline:'May 12',
+    goal:'Goal Mon May 12: full app working end to end.',
+    namariq:[
+      {id:'n5a', name:'Click through every feature end to end'},
+      {id:'n5b', name:'Fix bugs that come up'},
+      {id:'n5c', name:'Clean up UI if time allows'},
+      {id:'n5d', name:'Prepare demo flow'},
+    ],
+    joyce:[
+      {id:'j5a', name:'Click through every feature end to end'},
+      {id:'j5b', name:'Fix bugs that come up'},
+      {id:'j5c', name:'Clean up UI if time allows'},
+      {id:'j5d', name:'Prepare demo flow'},
+    ]
+  },
+  {
+    id:'ph5',
+    title:'Final Buffer — Extra fixes and polishing',
+    dates:'May 12 → May 21',
+    deadline:'May 21',
+    goal:'Buffer period for final fixes, polishing, testing, and demo preparation.',
+    namariq:[
+      {id:'n6a', name:'Final review and polish'},
+    ],
+    joyce:[
+      {id:'j6a', name:'Final review and polish'},
+    ]
+  }
+];
+
+
+const TASK_MAP = {};
+PHASES.forEach(ph => ['namariq','joyce'].forEach(person => (ph[person] || []).forEach(task => TASK_MAP[task.id] = { task, phase: ph, person })));
+
+const SK = 'collab_board_v8_green_shareable';
+const INITIAL_STATE = window.COLLAB_BOARD_INITIAL_STATE || { status:{}, intros:{namariq:'', joyce:''}, avatars:{namariq:'', joyce:''} };
+let state = JSON.parse(JSON.stringify(INITIAL_STATE));
+let currentUser = null;
+let activeTaskId = null;
+let activeTaskPerson = null;
+
+function loadState() { try { const saved = localStorage.getItem(SK); if (saved) state = Object.assign(JSON.parse(JSON.stringify(INITIAL_STATE)), JSON.parse(saved)); } catch(e) {} }
+function saveState() { try { localStorage.setItem(SK, JSON.stringify(state)); } catch(e) {} }
+function getStatus(id) { return state.status[id] || 'notstarted'; }
+function showPage(id) { document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; }); const pg = document.getElementById(id); if (!pg) return; pg.classList.add('active'); pg.style.display = id === 'page-login' ? 'flex' : 'block'; }
+function doLogin() { const u=document.getElementById('login-user').value.trim().toLowerCase(); const p=document.getElementById('login-pass').value.trim(); const err=document.getElementById('login-error'); if(USERS[u]&&USERS[u]===p){ currentUser=u; err.textContent=''; showHome(); } else { err.textContent='✗ Wrong username or password. Try again.'; document.getElementById('login-pass').value=''; } }
+function doLogout() { currentUser=null; activeTaskId=null; activeTaskPerson=null; showPage('page-login'); document.getElementById('login-user').value=''; document.getElementById('login-pass').value=''; }
+function showHome() { showPage('page-home'); renderHome(); updateNavAvatars(); addSaveCopyButtons(); }
+function showDash(person) { showPage('page-'+person); renderDash(person); updateNavAvatars(); addSaveCopyButtons(); }
+
+function triggerAvatarUpload(person, scope) { if(currentUser===person) document.getElementById(scope+'-av-file-'+person).click(); }
+function handleAvatarUpload(e, person, scope) { if(currentUser!==person) return; const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ state.avatars[person]=ev.target.result; saveState(); applyAvatars(); updateNavAvatars(); addSaveCopyButtons(); }; reader.readAsDataURL(file); }
+function applyAvatars() { ['namariq','joyce'].forEach(p=>{ const av=state.avatars[p]; ['home','dash'].forEach(scope=>{ const img=document.getElementById(scope+'-av-img-'+p); const ph=document.getElementById(scope+'-av-ph-'+p); if(!img||!ph)return; if(av){ img.src=av; img.style.display='block'; ph.style.display='none'; } else { img.style.display='none'; ph.style.display='flex'; } }); }); }
+function updateNavAvatars() { if(!currentUser)return; const av=state.avatars[currentUser]; const initial=currentUser==='namariq'?'N':'J'; const bg=currentUser==='namariq'?'linear-gradient(135deg,#00a383,#55d6be)':'linear-gradient(135deg,#00b894,#55d6be)'; ['nav-av','nav-av2','nav-av3'].forEach(id=>{ const el=document.getElementById(id); if(!el)return; if(av) el.innerHTML='<img src="'+av+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">'; else { el.innerHTML=initial; el.style.background=bg; } }); ['nav-nm','nav-nm2','nav-nm3'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=currentUser==='namariq'?'Namariq':'Joyce'; }); }
+
+function ensureIntroActions(el, person) { if(!el||!el.parentNode)return; const id='intro-actions-'+el.id; let box=document.getElementById(id); if(!box){ box=document.createElement('div'); box.className='intro-actions'; box.id=id; box.innerHTML='<button class="intro-btn edit" type="button">Edit bio</button><button class="intro-btn done" type="button">Done</button>'; el.insertAdjacentElement('afterend',box); box.querySelector('.edit').addEventListener('click',()=>startIntroEdit(el,person)); box.querySelector('.done').addEventListener('click',()=>finishIntroEdit(el,person)); } box.classList.toggle('show', currentUser===person); }
+function startIntroEdit(el, person) { if(currentUser!==person)return; if(!state.intros[person]) el.innerHTML=''; el.contentEditable='true'; el.classList.add('editing'); el.focus(); }
+function finishIntroEdit(el, person) { if(currentUser!==person)return; state.intros[person]=el.innerHTML.trim(); saveState(); el.contentEditable='false'; el.classList.remove('editing'); ['home-intro-','dash-intro-'].forEach(prefix=>{ const other=document.getElementById(prefix+person); if(other){ other.innerHTML=state.intros[person]||'<em style="opacity:0.4">Click Edit bio to write your introduction…</em>'; other.contentEditable='false'; other.classList.remove('editing'); } }); }
+function setupIntro(el, person) { if(!el)return; el.innerHTML=state.intros[person]||'<em style="opacity:0.4">Click Edit bio to write your introduction…</em>'; el.contentEditable='false'; ensureIntroActions(el,person); if(!el.dataset.wired){ el.dataset.wired='1'; el.addEventListener('click',()=>{ if(currentUser===person) startIntroEdit(el,person); }); el.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') finishIntroEdit(el,person); }); } }
+
+function getPersonStats(person) { let c=0,o=0,n=0,late=0; PHASES.forEach(ph=>(ph[person]||[]).forEach(t=>{ const st=getStatus(t.id); if(st==='completed'){ c++; if(ph.deadline&&TODAY>parseDeadline(ph.deadline)) late++; } else if(st==='ongoing') o++; else n++; })); return {c,o,n,late}; }
+function personTotal(person) { return PHASES.reduce((sum,ph)=>sum+(ph[person]||[]).length,0); }
+function renderStatPills(person,id,type) { const el=document.getElementById(id); if(!el)return; const s=getPersonStats(person); const allDone=s.c===personTotal(person); if(type==='mini'){ el.innerHTML=(allDone?'<div class="mini-stat c" style="background:#fff9c4;color:#f57f17;font-weight:800">🏆 All Done!</div>':'')+'<div class="mini-stat c"><span class="num">'+s.c+'</span> done</div><div class="mini-stat o"><span class="num">'+s.o+'</span> ongoing</div><div class="mini-stat n"><span class="num">'+s.n+'</span> not started</div>'; } else { el.innerHTML=(allDone?'<div class="dash-stat c" style="background:#fff9c4;color:#f57f17;font-weight:800">🏆 All tasks done!</div>':'')+'<div class="dash-stat c"><span class="num">'+s.c+'</span> completed</div><div class="dash-stat o"><span class="num">'+s.o+'</span> ongoing</div><div class="dash-stat n"><span class="num">'+s.n+'</span> not started</div>'+(s.late>0?'<div class="dash-stat l"><span class="num">'+s.late+'</span> late</div>':''); } }
+function renderHome() { renderStatPills('namariq','home-mini-namariq','mini'); renderStatPills('joyce','home-mini-joyce','mini'); applyAvatars(); setupIntro(document.getElementById('home-intro-namariq'),'namariq'); setupIntro(document.getElementById('home-intro-joyce'),'joyce'); }
+function renderDash(person) { renderStatPills(person,'dash-stats-'+person,'dash'); const container=document.getElementById('dash-tasks-'+person); container.innerHTML=PHASES.map(ph=>{ const tasks=ph[person]||[]; const allDone=tasks.length&&tasks.every(t=>getStatus(t.id)==='completed'); return '<div class="phase-block"><div class="phase-head '+person+'" data-phase="'+ph.id+'-'+person+'">'+(allDone?'<span class="ph-allcheck" style="font-size:0.75rem;margin-right:6px">✅</span>':'')+'<span class="phase-head-title">'+ph.title+'</span><span class="phase-head-dates">'+ph.dates+'</span><span class="phase-chevron" id="chev-'+ph.id+'-'+person+'">▾</span></div><div class="phase-body2" id="pb-'+ph.id+'-'+person+'">'+tasks.map(t=>buildTaskRow(t,ph.deadline,person)).join('')+(ph.goal?'<div class="goal-note">🎯 '+ph.goal+'</div>':'')+'</div></div>'; }).join(''); applyAvatars(); setupIntro(document.getElementById('dash-intro-'+person),person); }
+function buildTaskRow(task,deadline,person) { const st=getStatus(task.id); let timeBadge=''; if(st==='completed'&&deadline) timeBadge=TODAY>parseDeadline(deadline)?'<span class="tbadge bl">⚠ Late</span>':'<span class="tbadge bt">✓ On Time</span>'; const stBadge=st==='completed'?'<span class="tbadge bc">✓ Completed</span>':st==='ongoing'?'<span class="tbadge bo">⏳ Ongoing</span>':'<span class="tbadge bn">○ Not Started</span>'; const dlBadge=deadline?'<span class="tbadge bd">📅 Due '+deadline+'</span>':''; const check=st==='completed'?'<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':st==='ongoing'?'<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M2 4.5h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>':''; const readonlyStyle=currentUser===person?'':'cursor:default'; return '<div class="task-row st-'+st+'" data-task-id="'+task.id+'" data-person="'+person+'" style="'+readonlyStyle+'"><div class="task-checkbox">'+check+'</div><div class="task-text"><div class="task-label">'+task.name+'</div><div class="task-badges2">'+stBadge+timeBadge+dlBadge+'</div></div></div>'; }
+function openTaskMenu(taskId,person,row,event) { if(event)event.stopPropagation(); if(currentUser!==person)return; activeTaskId=taskId; activeTaskPerson=person; const popup=document.getElementById('status-popup'); const overlay=document.getElementById('overlay2'); const rect=row.getBoundingClientRect(); popup.style.display='block'; overlay.style.display='block'; popup.classList.add('open'); overlay.classList.add('open'); const popupHeight=popup.offsetHeight||130; const popupWidth=popup.offsetWidth||180; let top=rect.bottom+6; let left=rect.left; if(top+popupHeight>window.innerHeight-10) top=rect.top-popupHeight-6; if(top<10)top=10; if(left+popupWidth>window.innerWidth-10) left=window.innerWidth-popupWidth-10; if(left<10)left=10; popup.style.top=top+'px'; popup.style.left=left+'px'; }
+function closePopup() { document.getElementById('status-popup').classList.remove('open'); document.getElementById('status-popup').style.display='none'; document.getElementById('overlay2').classList.remove('open'); document.getElementById('overlay2').style.display='none'; activeTaskId=null; activeTaskPerson=null; }
+function applyStatus(val) { if(!activeTaskId||!activeTaskPerson)return; const changedPerson=activeTaskPerson; state.status[activeTaskId]=val; saveState(); closePopup(); renderDash(changedPerson); renderStatPills('namariq','home-mini-namariq','mini'); renderStatPills('joyce','home-mini-joyce','mini'); }
+function downloadShareableCopy() { saveState(); let html=document.documentElement.outerHTML; const stateScript='<script>window.COLLAB_BOARD_INITIAL_STATE = '+JSON.stringify(state).replace(/</g,'\u003c')+';<\/script>\n'; if(html.includes('window.COLLAB_BOARD_INITIAL_STATE')) html=html.replace(/<script>window\.COLLAB_BOARD_INITIAL_STATE[\s\S]*?<\/script>\n?/,stateScript); else html=html.replace('<script>\n// ── CREDENTIALS',stateScript+'<script>\n// ── CREDENTIALS'); const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='the_collab_board_saved_with_photos.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+function addSaveCopyButtons() { document.querySelectorAll('.nav-user').forEach(nav=>{ if(nav.querySelector('.save-copy-btn'))return; const btn=document.createElement('button'); btn.type='button'; btn.className='save-copy-btn'; btn.textContent='Save shareable copy'; btn.addEventListener('click',downloadShareableCopy); const logout=nav.querySelector('[data-action="logout"]'); nav.insertBefore(btn,logout); }); }
+
+loadState();
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('btn-login-submit').addEventListener('click',doLogin);
+  document.getElementById('login-user').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+  document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+  document.querySelectorAll('[data-goto="page-home"]').forEach(btn=>btn.addEventListener('click',showHome));
+  document.querySelectorAll('[data-goto="dash-namariq"]').forEach(btn=>btn.addEventListener('click',()=>showDash('namariq')));
+  document.querySelectorAll('[data-goto="dash-joyce"]').forEach(btn=>btn.addEventListener('click',()=>showDash('joyce')));
+  const myBtn=document.getElementById('nav-my-dash-btn'); if(myBtn)myBtn.addEventListener('click',()=>{ if(currentUser)showDash(currentUser); });
+  document.querySelectorAll('[data-action="logout"]').forEach(btn=>btn.addEventListener('click',doLogout));
+  document.getElementById('overlay2').addEventListener('click',closePopup);
+  // data-val is now correctly set on each sp-opt so this listener works reliably
+  document.querySelectorAll('.sp-opt').forEach(opt=>opt.addEventListener('click',()=>applyStatus(opt.getAttribute('data-val'))));
+  document.body.addEventListener('click',function(e){ const phase=e.target.closest('[data-phase]'); if(phase){ const id=phase.getAttribute('data-phase'); const body=document.getElementById('pb-'+id); const chev=document.getElementById('chev-'+id); if(body)body.classList.toggle('collapsed'); if(chev)chev.classList.toggle('rotated'); return; } const row=e.target.closest('[data-task-id]'); if(row){ e.stopPropagation(); openTaskMenu(row.getAttribute('data-task-id'),row.getAttribute('data-person'),row,e); } });
+  addSaveCopyButtons();
+});
+</script>
 </body>
 </html>
