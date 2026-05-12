@@ -16,7 +16,7 @@ using PhoneNumbers; // ← requires NuGet: libphonenumber-csharp
 
 namespace FinancyApplication
 {
-	public partial class ProfileWindow : Window
+	public partial class ProfileView : UserControl
 	{
 		private Data db = new Data();
 		private User _currentUser;
@@ -52,13 +52,15 @@ namespace FinancyApplication
 
 		// ─────────────────────────────────────────────────────────────────────
 
-		public ProfileWindow(User user)
+		public ProfileView(User user)
 		{
 			InitializeComponent();
 			_currentUser = user;
 			LoadProfile();
 			PopulateCurrencyDropdown();
 			PopulatePhoneCountryPicker();
+			Loaded += (s, e) => LoadAvatarImage(_profile?.AvatarUrl);
+
 		}
 
 		// ── LOAD & DISPLAY ────────────────────────────────────────────────
@@ -327,6 +329,18 @@ namespace FinancyApplication
 				return;
 			}
 
+			if (newPw == current)
+			{
+				ShowPassFeedback("New password can't be the same as your old one.", isError: true);
+				return;
+			}
+
+			if (ContainsIdentity(newPw, _currentUser.Username, _profile?.FirstName, _profile?.LastName))
+			{
+				ShowPassFeedback("Password can't contain your username or name.", isError: true);
+				return;
+			}
+
 			try
 			{
 				string hashed = BCrypt.Net.BCrypt.HashPassword(newPw);
@@ -386,11 +400,6 @@ namespace FinancyApplication
 			}
 		}
 
-		private void Back_Click(object sender, RoutedEventArgs e)
-		{
-			this.Close();
-		}
-
 		// ── AVATAR UPLOAD ─────────────────────────────────────────────────
 
 		private void AvatarButton_Click(object sender, RoutedEventArgs e)
@@ -411,7 +420,7 @@ namespace FinancyApplication
 				System.IO.Directory.CreateDirectory(destDir);
 				string destPath = System.IO.Path.Combine(destDir, $"avatar_{_currentUser.UserID}.jpg");
 
-				var bmp = new BitmapImage(new Uri(dlg.FileName));
+				var bmp = new BitmapImage(new Uri(dlg.FileName, UriKind.Absolute)); 
 				var encoder = new JpegBitmapEncoder();
 				encoder.Frames.Add(BitmapFrame.Create(bmp));
 				using (var fs = System.IO.File.OpenWrite(destPath))
@@ -419,7 +428,7 @@ namespace FinancyApplication
 					encoder.Save(fs);
 				}
 
-				_profile.AvatarUrl = destPath;
+				_profile.AvatarUrl = destPath.Replace("\\", "/");
 				_profile.Save();
 
 				LoadAvatarImage(destPath);
@@ -443,7 +452,7 @@ namespace FinancyApplication
 
 			var bmp = new BitmapImage();
 			bmp.BeginInit();
-			bmp.UriSource = new Uri(path);
+			bmp.UriSource = new Uri(path, UriKind.Absolute);
 			bmp.CacheOption = BitmapCacheOption.OnLoad;
 			bmp.EndInit();
 
@@ -488,6 +497,20 @@ namespace FinancyApplication
 				&& Regex.IsMatch(password, @"[a-z]")
 				&& Regex.IsMatch(password, @"\d")
 				&& Regex.IsMatch(password, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]");
+		}
+
+		// Rejects passwords that embed the user's identity (username / real name).
+		private static bool ContainsIdentity(string password, params string[] tokens)
+		{
+			if (string.IsNullOrEmpty(password)) return false;
+			string lower = password.ToLowerInvariant();
+			foreach (string t in tokens)
+			{
+				if (string.IsNullOrWhiteSpace(t)) continue;
+				string tl = t.Trim().ToLowerInvariant();
+				if (tl.Length >= 3 && lower.Contains(tl)) return true;
+			}
+			return false;
 		}
 
 		private void UpdatePassStrengthUI(string password)
