@@ -695,7 +695,11 @@ namespace FinancyApplication
 
         private void NavProfile_Click(object sender, RoutedEventArgs e)
         {
-            new ProfileWindow(CurrentUser).ShowDialog();
+            // Profile is now embedded inside Dashboard as a UserControl (ProfileView),
+            // so navigate back to Dashboard rather than opening a standalone window.
+            Dashboard dash = new Dashboard { CurrentUser = CurrentUser };
+            dash.Show();
+            this.Close();
         }
 
         private void ThemeToggle_Click(object sender, RoutedEventArgs e)

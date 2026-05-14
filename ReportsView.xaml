@@ -1,0 +1,255 @@
+<UserControl x:Class="FinancyApplication.ReportsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Background="#F4F6F8"
+        FontFamily="Segoe UI Variable Display">
+
+	<UserControl.Resources>
+		<Style x:Key="CardStyle" TargetType="Border">
+			<Setter Property="Background" Value="White"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="22"/>
+			<Setter Property="Effect">
+				<Setter.Value>
+					<DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.10"/>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="TealButton" TargetType="Button">
+			<Setter Property="Background" Value="#00B894"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="FontSize" Value="13"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="Height" Value="38"/>
+			<Setter Property="Padding" Value="16,0"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="bg" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="bg" Property="Background" Value="#00967A"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="GhostButton" TargetType="Button">
+			<Setter Property="Background" Value="White"/>
+			<Setter Property="Foreground" Value="#00796B"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="FontSize" Value="13"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="Height" Value="38"/>
+			<Setter Property="Padding" Value="16,0"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="bg"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="#B2DFDB"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="bg" Property="Background" Value="#E0F2F1"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="FilterCombo" TargetType="ComboBox">
+			<Setter Property="Height" Value="38"/>
+			<Setter Property="Padding" Value="10,0"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="FontSize" Value="13"/>
+			<Setter Property="MinWidth" Value="120"/>
+			<Setter Property="Foreground" Value="#1F2937"/>
+		</Style>
+	</UserControl.Resources>
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Width="980"
+                    HorizontalAlignment="Center"
+                    Margin="0,32,0,40">
+
+			<!-- HEADER -->
+			<Grid Margin="0,0,0,22">
+				<StackPanel>
+					<TextBlock Text="Reports"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Foreground="#1F2937"/>
+					<TextBlock Text="Track your income, expenses and savings over time."
+                               FontSize="13"
+                               Foreground="#64748B"
+                               Margin="0,4,0,0"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+					<ComboBox x:Name="MonthCombo"
+                              Style="{StaticResource FilterCombo}"
+                              Margin="0,0,8,0"
+                              SelectionChanged="Period_Changed"/>
+					<ComboBox x:Name="YearCombo"
+                              Style="{StaticResource FilterCombo}"
+                              Margin="0,0,12,0"
+                              SelectionChanged="Period_Changed"/>
+					<Button Content="Export Excel"
+                            Style="{StaticResource GhostButton}"
+                            Margin="0,0,8,0"
+                            Click="ExportExcel_Click"/>
+					<Button Content="Export PDF"
+                            Style="{StaticResource TealButton}"
+                            Click="ExportPdf_Click"/>
+				</StackPanel>
+			</Grid>
+
+			<!-- KPI STRIP -->
+			<UniformGrid Columns="4" Margin="0,0,0,22">
+				<Border Style="{StaticResource CardStyle}" Margin="0,0,10,0">
+					<StackPanel>
+						<TextBlock Text="Total Income" FontSize="12" Foreground="#64748B"/>
+						<TextBlock x:Name="KpiIncome" FontSize="22" FontWeight="SemiBold"
+                                   Foreground="#00B894" Margin="0,10,0,0"/>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource CardStyle}" Margin="5,0,5,0">
+					<StackPanel>
+						<TextBlock Text="Total Expenses" FontSize="12" Foreground="#64748B"/>
+						<TextBlock x:Name="KpiExpense" FontSize="22" FontWeight="SemiBold"
+                                   Foreground="#EF4444" Margin="0,10,0,0"/>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource CardStyle}" Margin="5,0,5,0">
+					<StackPanel>
+						<TextBlock Text="Net Savings" FontSize="12" Foreground="#64748B"/>
+						<TextBlock x:Name="KpiNet" FontSize="22" FontWeight="SemiBold"
+                                   Foreground="#1F2937" Margin="0,10,0,0"/>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource CardStyle}" Margin="10,0,0,0">
+					<StackPanel>
+						<TextBlock Text="Savings Rate" FontSize="12" Foreground="#64748B"/>
+						<TextBlock x:Name="KpiRate" FontSize="22" FontWeight="SemiBold"
+                                   Foreground="#00796B" Margin="0,10,0,0"/>
+					</StackPanel>
+				</Border>
+			</UniformGrid>
+
+			<!-- TREND CARD -->
+			<Border Style="{StaticResource CardStyle}" Margin="0,0,0,22">
+				<StackPanel>
+					<Grid>
+						<TextBlock Text="Income vs Expense — Last 6 Months"
+                                   FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+							<TextBlock Text="━ Income" Foreground="#00B894" FontSize="12" Margin="0,0,12,0"/>
+							<TextBlock Text="━ Expense" Foreground="#EF4444" FontSize="12"/>
+						</StackPanel>
+					</Grid>
+					<Canvas x:Name="TrendCanvas" Height="240" Margin="0,16,0,0"/>
+				</StackPanel>
+			</Border>
+
+			<!-- BREAKDOWN + TOP CATEGORIES -->
+			<Grid Margin="0,0,0,22">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1*"/>
+					<ColumnDefinition Width="1.1*"/>
+				</Grid.ColumnDefinitions>
+
+				<!-- Pie -->
+				<Border Grid.Column="0"
+                        Style="{StaticResource CardStyle}"
+                        Margin="0,0,11,0">
+					<StackPanel>
+						<TextBlock Text="Expense Breakdown" FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+						<TextBlock x:Name="BreakdownSubtitle"
+                                   FontSize="12" Foreground="#64748B" Margin="0,4,0,14"/>
+						<Grid>
+							<Canvas x:Name="PieCanvas" Width="200" Height="200" HorizontalAlignment="Left"/>
+							<StackPanel x:Name="PieLegend"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,0,0"/>
+						</Grid>
+						<TextBlock x:Name="PieEmpty"
+                                   Text="No expense data for this period."
+                                   Foreground="#64748B"
+                                   FontSize="13"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,20,0,10"
+                                   Visibility="Collapsed"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Top categories with bars -->
+				<Border Grid.Column="1"
+                        Style="{StaticResource CardStyle}"
+                        Margin="11,0,0,0">
+					<StackPanel>
+						<TextBlock Text="Top Spending Categories" FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+						<TextBlock Text="Where most of your money went."
+                                   FontSize="12" Foreground="#64748B" Margin="0,4,0,14"/>
+						<StackPanel x:Name="TopCategoriesPanel"/>
+						<TextBlock x:Name="TopCategoriesEmpty"
+                                   Text="No categories to show yet."
+                                   Foreground="#64748B"
+                                   FontSize="13"
+                                   Margin="0,12,0,4"
+                                   Visibility="Collapsed"/>
+					</StackPanel>
+				</Border>
+			</Grid>
+
+			<!-- TOP TRANSACTIONS -->
+			<Border Style="{StaticResource CardStyle}">
+				<StackPanel>
+					<TextBlock Text="Largest Expenses" FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+					<TextBlock Text="The 10 biggest transactions in the selected period."
+                               FontSize="12" Foreground="#64748B" Margin="0,4,0,14"/>
+
+					<DataGrid x:Name="TopTxGrid"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              BorderThickness="0"
+                              Background="White"
+                              CanUserAddRows="False"
+                              CanUserResizeRows="False"
+                              IsReadOnly="True"
+                              Height="240">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="*"/>
+							<DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*"/>
+							<DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*"/>
+							<DataGridTextColumn Header="Amount" Binding="{Binding AmountDisplay}" Width="*"/>
+						</DataGrid.Columns>
+					</DataGrid>
+
+					<TextBlock x:Name="TopTxEmpty"
+                               Text="No transactions in this period."
+                               Foreground="#64748B"
+                               FontSize="13"
+                               HorizontalAlignment="Center"
+                               Margin="0,14,0,6"
+                               Visibility="Collapsed"/>
+				</StackPanel>
+			</Border>
+
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
