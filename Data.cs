@@ -2,12 +2,13 @@
 using MySqlConnector;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancyApplication
 {
 	public class Data
 	{
-		private string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=expense_tracker;";
+		private string connectionString = "datasource=127.0.0.1;port=3308;username=root;password=;database=expense_tracker;";
 
 		private int Insert(string query)
 		{
@@ -373,6 +374,40 @@ namespace FinancyApplication
 				catch (Exception ex)
 				{
 					throw new Exception("GetAllTransactions failed: " + ex.Message);
+				}
+			}
+			return transactions;
+		}
+
+		// All-time version used by the Transactions page (filtering done client-side)
+		public List<Transaction> GetTransactionsByUser(int userId)
+		{
+			List<Transaction> transactions = new List<Transaction>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT * FROM `transaction` WHERE UserID = " + userId + " ORDER BY `Date` DESC";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				try
+				{
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						Transaction t = new Transaction();
+						t.TransactionID = Convert.ToInt32(reader["TransactionID"]);
+						t.UserID = Convert.ToInt32(reader["UserID"]);
+						t.AccountID = Convert.ToInt32(reader["AccountID"]);
+						t.CategoryID = Convert.ToInt32(reader["CategoryID"]);
+						t.Type = reader["Type"].ToString();
+						t.Amount = Convert.ToDecimal(reader["Amount"]);
+						t.Description = reader["Description"].ToString();
+						t.Date = Convert.ToDateTime(reader["Date"]);
+						transactions.Add(t);
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetTransactionsByUser failed: " + ex.Message);
 				}
 			}
 			return transactions;
@@ -809,6 +844,46 @@ namespace FinancyApplication
 			this.ExecuteSimple(query);
 		}
 
+		// Recurring rows for one user — joined through the account they belong to
+		public List<RecurringTransaction> GetRecurringByUser(int userId)
+		{
+			List<RecurringTransaction> list = new List<RecurringTransaction>();
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "SELECT rt.* FROM recurring_transaction rt " +
+							   "INNER JOIN account a ON rt.AccountID = a.AccountID " +
+							   "WHERE a.UserID = @userId " +
+							   "ORDER BY rt.NextRunDate ASC";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@userId", userId);
+				try
+				{
+					connection.Open();
+					MySqlDataReader reader = cmd.ExecuteReader();
+					while (reader.Read())
+					{
+						list.Add(new RecurringTransaction
+						{
+							RecurringId = Convert.ToInt32(reader["RecurringID"]),
+							AccountId = Convert.ToInt32(reader["AccountID"]),
+							CategoryId = Convert.ToInt32(reader["CategoryID"]),
+							Type = reader["Type"].ToString(),
+							Amount = Convert.ToDecimal(reader["Amount"]),
+							Frequency = reader["Frequency"].ToString(),
+							StartDate = Convert.ToDateTime(reader["StartDate"]),
+							NextRunDate = Convert.ToDateTime(reader["NextRunDate"]),
+							IsActive = Convert.ToInt32(reader["IsActive"]) == 1
+						});
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("GetRecurringByUser failed: " + ex.Message);
+				}
+			}
+			return list;
+		}
+
 		public int InsertReceipt(Receipt receipt)
 		{
 			string query = "INSERT INTO receipt(TransactionID, FilePath, FileType, UploadedAt) VALUES(" +
@@ -1108,7 +1183,16 @@ namespace FinancyApplication
 				}
 				catch (Exception ex) { throw new Exception("GetCategoriesByUser failed: " + ex.Message); }
 			}
-			return categories;
+
+			// Dedupe by (Name, Type) — the DB has multiple copies of the default
+			// categories (a system-default row plus per-user copies seeded at
+			// registration). Prefer the row with the lowest CategoryID.
+			return categories
+				.GroupBy(c => (c.Name.Trim().ToLowerInvariant(), c.Type.Trim().ToLowerInvariant()))
+				.Select(g => g.OrderBy(c => c.CategoryID).First())
+				.OrderBy(c => c.Type)
+				.ThenBy(c => c.Name)
+				.ToList();
 		}
 
 		public List<Account> GetAccountsByUser(int userId)
