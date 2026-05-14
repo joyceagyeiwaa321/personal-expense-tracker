@@ -24,8 +24,31 @@
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="Foreground" Value="#64748B"/>
 			<Setter Property="FontSize" Value="13"/>
-			<Setter Property="Margin" Value="10,0"/>
+			<Setter Property="Margin" Value="6,0"/>
+			<Setter Property="Padding" Value="12,6"/>
 			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="NavBg"
+								Background="{TemplateBinding Background}"
+								CornerRadius="6"
+								Padding="{TemplateBinding Padding}">
+							<ContentPresenter HorizontalAlignment="Center"
+											  VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="NavBg" Property="Background" Value="#E0F2F1"/>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter TargetName="NavBg" Property="Background" Value="#B2DFDB"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
 		</Style>
 
 		<Style x:Key="IconButtonStyle" TargetType="Button">
@@ -40,7 +63,7 @@
 	<DockPanel>
 
 		<Border x:Name="NavBar" DockPanel.Dock="Top" Height="72" Background="White">
-			<Grid Margin="120,12">
+			<Grid Margin="40,12">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>
@@ -63,38 +86,56 @@
 				</Border>
 
 				<TextBlock x:Name="LogoText"
-							Text="ExpenseTrack"
+							Text="Financy Application"
 							FontSize="17"
 							FontWeight="Bold"
 							Foreground="#1F2937"
-							VerticalAlignment="Center"/>
+							VerticalAlignment="Center"
+							TextTrimming="None"
+							TextWrapping="NoWrap"/>
 			</StackPanel>
 
 				<!-- NAV LINKS -->
 				<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-					<Button Content="Dashboard"
+					<Button x:Name="NavDashboardBtn"
+                            Content="Dashboard"
                             Style="{StaticResource NavButtonStyle}"
                             Foreground="#00B894"
                             FontWeight="Bold"
                             Click="NavDashboard_Click"/>
 
-					<Button Content="Transactions"
+					<Button x:Name="NavTransactionsBtn"
+                            Content="Transactions"
                             Style="{StaticResource NavButtonStyle}"
                             Click="NavTransactions_Click"/>
 
-					<Button Content="Budget"
+					<Button x:Name="NavCategoriesBtn"
+                            Content="Categories"
+                            Style="{StaticResource NavButtonStyle}"
+                            Click="NavCategories_Click"/>
+
+					<Button x:Name="NavAccountsBtn"
+                            Content="Accounts"
+                            Style="{StaticResource NavButtonStyle}"
+                            Click="NavAccounts_Click"/>
+
+					<Button x:Name="NavBudgetBtn"
+                            Content="Budget"
                             Style="{StaticResource NavButtonStyle}"
                             Click="NavBudget_Click"/>
 
-					<Button Content="Goals"
+					<Button x:Name="NavGoalsBtn"
+                            Content="Goals"
                             Style="{StaticResource NavButtonStyle}"
                             Click="NavGoals_Click"/>
 
-					<Button Content="Reports"
+					<Button x:Name="NavReportsBtn"
+                            Content="Reports"
                             Style="{StaticResource NavButtonStyle}"
                             Click="NavReports_Click"/>
 
-					<Button Content="Group"
+					<Button x:Name="NavGroupsBtn"
+                            Content="Group"
                             Style="{StaticResource NavButtonStyle}"
                             Click="NavGroups_Click"/>
 				</StackPanel>
@@ -317,7 +358,7 @@
 				</Border>
 
 				<Grid Margin="0,25,0,0">
-					<TextBlock Text="© 2026 ExpenseTrack. All rights reserved."
+					<TextBlock Text="© 2026 Financy Application. All rights reserved."
                                Foreground="#64748B"
                                FontSize="12"/>
 
@@ -332,8 +373,12 @@
 			</StackPanel>
 		</ScrollViewer>
 
-		<!-- Embedded profile lives here; created on demand by NavProfile_Click -->
+		<!-- Embedded views (profile / transactions / categories / accounts / reports) live here; one is visible at a time -->
 		<ContentControl x:Name="ProfileHost" Visibility="Collapsed"/>
+		<ContentControl x:Name="TransactionsHost" Visibility="Collapsed"/>
+		<ContentControl x:Name="CategoriesHost" Visibility="Collapsed"/>
+		<ContentControl x:Name="AccountsHost" Visibility="Collapsed"/>
+		<ContentControl x:Name="ReportsHost" Visibility="Collapsed"/>
 		</Grid>
 	</DockPanel>
 </Window>
