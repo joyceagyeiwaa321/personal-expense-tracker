@@ -551,35 +551,92 @@ namespace FinancyApplication
 			}
 		}
 
+		// ── ACTIVE NAV HIGHLIGHT ──────────────────────────────────────────
+		// Resets every nav button to the muted slate color, then paints the
+		// currently-active one in the brand green + bold. Called from every
+		// NavX_Click so the highlight follows the page the user is on.
+		private static readonly Brush NavMutedBrush = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B));
+		private static readonly Brush NavActiveBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xB8, 0x94));
+
+		private void HighlightNav(Button active)
+		{
+			Button[] all = { NavDashboardBtn, NavTransactionsBtn, NavCategoriesBtn,
+							 NavAccountsBtn, NavBudgetBtn, NavGoalsBtn,
+							 NavReportsBtn, NavGroupsBtn };
+			foreach (var b in all)
+			{
+				b.Foreground = NavMutedBrush;
+				b.FontWeight = FontWeights.Normal;
+			}
+			if (active != null)
+			{
+				active.Foreground = NavActiveBrush;
+				active.FontWeight = FontWeights.Bold;
+			}
+		}
+
 		private void NavDashboard_Click(object sender, RoutedEventArgs e)
 		{
 			ShowDashboardView();
+			HighlightNav(NavDashboardBtn);
 			RefreshDashboard();
 		}
 
 		private void NavTransactions_Click(object sender, RoutedEventArgs e)
 		{
 			ShowDashboardView();
-			MessageBox.Show("Transactions page is handled by Namariq.", "Navigation");
+			HighlightNav(NavTransactionsBtn);
+			_transactionsView = new TransactionsView(CurrentUser);
+			TransactionsHost.Content = _transactionsView;
+			DashboardContent.Visibility = Visibility.Collapsed;
+			TransactionsHost.Visibility = Visibility.Visible;
+		}
+
+		private void NavCategories_Click(object sender, RoutedEventArgs e)
+		{
+			ShowDashboardView();
+			HighlightNav(NavCategoriesBtn);
+			_categoriesView = new CategoriesView(CurrentUser);
+			CategoriesHost.Content = _categoriesView;
+			DashboardContent.Visibility = Visibility.Collapsed;
+			CategoriesHost.Visibility = Visibility.Visible;
+		}
+
+		private void NavAccounts_Click(object sender, RoutedEventArgs e)
+		{
+			ShowDashboardView();
+			HighlightNav(NavAccountsBtn);
+			_accountsView = new AccountsView(CurrentUser);
+			AccountsHost.Content = _accountsView;
+			DashboardContent.Visibility = Visibility.Collapsed;
+			AccountsHost.Visibility = Visibility.Visible;
 		}
 
 		private void NavBudget_Click(object sender, RoutedEventArgs e)
 		{
 			ShowDashboardView();
+			HighlightNav(NavBudgetBtn);
 			MessageBox.Show("Budget page coming soon.", "Navigation");
 		}
 
 		private void NavGoals_Click(object sender, RoutedEventArgs e)
 		{
 			ShowDashboardView();
+			HighlightNav(NavGoalsBtn);
 			MessageBox.Show("Goals page coming soon.", "Navigation");
 		}
 
 		private ProfileView _profileView;
+		private TransactionsView _transactionsView;
+		private CategoriesView _categoriesView;
+		private AccountsView _accountsView;
+		private ReportsView _reportsView;
 
 		private void NavProfile_Click(object sender, RoutedEventArgs e)
 		{
 			// Lazy-create the embedded view; rebuild each open so the form reflects current DB state
+			ShowDashboardView();
+			HighlightNav(null); // Profile isn't a top-nav item — clear all highlights
 			_profileView = new ProfileView(CurrentUser);
 			ProfileHost.Content = _profileView;
 
@@ -587,12 +644,29 @@ namespace FinancyApplication
 			ProfileHost.Visibility = Visibility.Visible;
 		}
 
-		// Used by every "leave the profile page" path
+		// Used by every "leave the current sub-page" path — tears down whichever embed is open
 		private void ShowDashboardView()
 		{
 			ProfileHost.Visibility = Visibility.Collapsed;
 			ProfileHost.Content = null;
 			_profileView = null;
+
+			TransactionsHost.Visibility = Visibility.Collapsed;
+			TransactionsHost.Content = null;
+			_transactionsView = null;
+
+			CategoriesHost.Visibility = Visibility.Collapsed;
+			CategoriesHost.Content = null;
+			_categoriesView = null;
+
+			AccountsHost.Visibility = Visibility.Collapsed;
+			AccountsHost.Content = null;
+			_accountsView = null;
+
+			ReportsHost.Visibility = Visibility.Collapsed;
+			ReportsHost.Content = null;
+			_reportsView = null;
+
 			DashboardContent.Visibility = Visibility.Visible;
 			// Avatar may have changed while inside the profile
 			RefreshDashboardAvatar();
@@ -601,17 +675,23 @@ namespace FinancyApplication
 		private void NavGroups_Click(object sender, RoutedEventArgs e)
 		{
 			ShowDashboardView();
+			HighlightNav(NavGroupsBtn);
 			MessageBox.Show("Groups page coming soon.", "Navigation");
 		}
 
 		private void NavReports_Click(object sender, RoutedEventArgs e)
 		{
 			ShowDashboardView();
-			MessageBox.Show("Reports page coming soon.", "Navigation");
+			HighlightNav(NavReportsBtn);
+			_reportsView = new ReportsView(CurrentUser);
+			ReportsHost.Content = _reportsView;
+			DashboardContent.Visibility = Visibility.Collapsed;
+			ReportsHost.Visibility = Visibility.Visible;
 		}
 
 		private void ViewAllTransactions_Click(object sender, RoutedEventArgs e)
 		{
+			// Forward to the same embed flow as the top-nav Transactions button
 			NavTransactions_Click(sender, e);
 		}
 
