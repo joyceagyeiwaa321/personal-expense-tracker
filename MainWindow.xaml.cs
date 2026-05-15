@@ -240,7 +240,17 @@ namespace FinancyApplication
 			{
 				var user = db.GetUserByEmail(email);
 				Application.Current.Properties["CurrentUser"] = user;
-				new Dashboard { CurrentUser = user }.Show();
+
+				// Admins land on the Access Management console instead of the
+				// regular Dashboard — they don't need the personal finance views.
+				if (user.Role == UserRole.Admin)
+				{
+					new AdminWindow { CurrentUser = user }.Show();
+				}
+				else
+				{
+					new Dashboard { CurrentUser = user }.Show();
+				}
 				this.Close();
 			}
 			else
@@ -324,10 +334,19 @@ namespace FinancyApplication
 
 			if (db.InsertUser(newUser, hashed) > 0)
 			{
-				// Auto-login after signup — open Dashboard directly
+				// Auto-login after signup. The first-ever account is silently
+				// promoted to Admin in the User constructor, so honour that and
+				// route them straight into the Access Management console.
 				var user = db.GetUserByEmail(newUser.Email);
 				Application.Current.Properties["CurrentUser"] = user;
-				new Dashboard { CurrentUser = user }.Show();
+				if (user.Role == UserRole.Admin)
+				{
+					new AdminWindow { CurrentUser = user }.Show();
+				}
+				else
+				{
+					new Dashboard { CurrentUser = user }.Show();
+				}
 				this.Close();
 			}
 			else
