@@ -215,8 +215,20 @@ namespace FinancyApplication
 				// "All Time" — no filter
 			}
 
-			List<TransactionRow> rows = q
-				.OrderByDescending(t => t.Date)
+			// Sort
+			string sort = "Newest first";
+			if (SortFilter?.SelectedItem is ComboBoxItem sortItem)
+				sort = sortItem.Content.ToString();
+
+			IOrderedEnumerable<Transaction> sorted = sort switch
+			{
+				"Oldest first" => q.OrderBy(t => t.Date),
+				"Highest amount" => q.OrderByDescending(t => t.Amount),
+				"Lowest amount" => q.OrderBy(t => t.Amount),
+				_ => q.OrderByDescending(t => t.Date), // Newest first (default)
+			};
+
+			List<TransactionRow> rows = sorted
 				.Select(t => new TransactionRow
 				{
 					TransactionID = t.TransactionID,
@@ -245,6 +257,7 @@ namespace FinancyApplication
 			CategoryFilter.SelectedIndex = 0;
 			AccountFilter.SelectedIndex = 0;
 			PeriodFilter.SelectedIndex = 0;
+			SortFilter.SelectedIndex = 0;
 			ApplyFilters();
 		}
 

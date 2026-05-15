@@ -143,6 +143,7 @@
 								<ColumnDefinition Width="Auto"/>
 								<ColumnDefinition Width="Auto"/>
 								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
 							</Grid.ColumnDefinitions>
 
 							<TextBox x:Name="SearchInput"
@@ -187,7 +188,20 @@
 								<ComboBoxItem Content="All Time"/>
 							</ComboBox>
 
-							<Button Grid.Column="5"
+							<ComboBox x:Name="SortFilter"
+                                      Grid.Column="5"
+                                      Style="{StaticResource FilterCombo}"
+                                      SelectedIndex="0"
+                                      Margin="0,0,10,0"
+                                      ToolTip="Sort order"
+                                      SelectionChanged="Filter_Changed">
+								<ComboBoxItem Content="Newest first"/>
+								<ComboBoxItem Content="Oldest first"/>
+								<ComboBoxItem Content="Highest amount"/>
+								<ComboBoxItem Content="Lowest amount"/>
+							</ComboBox>
+
+							<Button Grid.Column="6"
                                     Content="Clear"
                                     Style="{StaticResource GhostButton}"
                                     Click="ClearFilters_Click"/>
