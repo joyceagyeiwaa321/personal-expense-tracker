@@ -13,7 +13,6 @@ namespace FinancyApplication
 		private readonly Data db = new Data();
 		private readonly User _user;
 
-		// Brushes (kept as fields to avoid re-allocating per draw)
 		private readonly Brush incomeBrush = new SolidColorBrush(Color.FromRgb(0, 184, 148));
 		private readonly Brush expenseBrush = new SolidColorBrush(Color.FromRgb(239, 68, 68));
 		private readonly Brush gridBrush = new SolidColorBrush(Color.FromRgb(229, 231, 235));

@@ -447,7 +447,20 @@ namespace FinancyApplication
 		}
 
 		private void ShowReset_Click(object sender, RoutedEventArgs e) { HideAllViews(); ResetView.Visibility = Visibility.Visible; }
-		private void ShowRegister_Click(object sender, RoutedEventArgs e) { HideAllViews(); RegisterView.Visibility = Visibility.Visible; }
+		private void ShowRegister_Click(object sender, RoutedEventArgs e)
+		{
+			if (!ConsentDialog.HasConsented())
+			{
+				ConsentDialog dlg = new ConsentDialog();
+				bool? result = dlg.ShowDialog();
+				if (result != true)
+				{
+					return;
+				}
+			}
+			HideAllViews();
+			RegisterView.Visibility = Visibility.Visible;
+		}
 		private void ShowLogin_Click(object sender, RoutedEventArgs e) { HideAllViews(); LoginView.Visibility = Visibility.Visible; }
 
 		// ── TIMERS ────────────────────────────────────────────────────────

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,14 +32,18 @@ namespace FinancyApplication
 		private string GetSelectedType()
 		{
 			ComboBoxItem item = TypeComboBox.SelectedItem as ComboBoxItem;
-			return item?.Content?.ToString() ?? "Expense";
+			if (item == null || item.Content == null)
+			{
+				return "Expense";
+			}
+			return item.Content.ToString();
 		}
 
 		private void PopulateAccounts()
 		{
 			AccountComboBox.Items.Clear();
 			List<Account> accounts = db.GetAccountsByUser(_currentUser.UserID);
-			foreach (var a in accounts)
+			foreach (Account a in accounts)
 			{
 				AccountComboBox.Items.Add(new ComboBoxItem
 				{
@@ -49,19 +52,32 @@ namespace FinancyApplication
 				});
 			}
 			if (AccountComboBox.Items.Count > 0)
+			{
 				AccountComboBox.SelectedIndex = 0;
+			}
 		}
 
 		private void PopulateCategoriesForType(string type)
 		{
-			if (CategoryComboBox == null) return;
+			if (CategoryComboBox == null)
+			{
+				return;
+			}
 
 			CategoryComboBox.Items.Clear();
-			IEnumerable<Category> filtered = _allCategories
-				.Where(c => string.Equals(c.Type, type, StringComparison.OrdinalIgnoreCase))
-				.OrderBy(c => c.Name);
 
-			foreach (var c in filtered)
+			// Filter categories by type and sort by name
+			List<Category> filtered = new List<Category>();
+			foreach (Category c in _allCategories)
+			{
+				if (string.Equals(c.Type, type, StringComparison.OrdinalIgnoreCase))
+				{
+					filtered.Add(c);
+				}
+			}
+			filtered.Sort((a, b) => string.Compare(a.Name, b.Name));
+
+			foreach (Category c in filtered)
 			{
 				CategoryComboBox.Items.Add(new ComboBoxItem
 				{
@@ -71,7 +87,9 @@ namespace FinancyApplication
 			}
 
 			if (CategoryComboBox.Items.Count > 0)
+			{
 				CategoryComboBox.SelectedIndex = 0;
+			}
 		}
 
 		private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -112,11 +130,16 @@ namespace FinancyApplication
 				return;
 			}
 
-			int accountId = (int)(AccountComboBox.SelectedItem as ComboBoxItem).Tag;
-			int categoryId = (int)(CategoryComboBox.SelectedItem as ComboBoxItem).Tag;
+			int accountId = (int)((ComboBoxItem)AccountComboBox.SelectedItem).Tag;
+			int categoryId = (int)((ComboBoxItem)CategoryComboBox.SelectedItem).Tag;
 			string type = GetSelectedType();
-			string frequency = (FrequencyComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-			DateTime start = StartDatePicker.SelectedDate ?? DateTime.Today;
+			string frequency = ((ComboBoxItem)FrequencyComboBox.SelectedItem).Content.ToString();
+
+			DateTime start = DateTime.Today;
+			if (StartDatePicker.SelectedDate != null)
+			{
+				start = StartDatePicker.SelectedDate.Value;
+			}
 
 			try
 			{
@@ -130,7 +153,10 @@ namespace FinancyApplication
 					startDate: start);
 				rt.Create();
 
-				Closed?.Invoke(true);
+				if (Closed != null)
+				{
+					Closed(true);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -140,7 +166,10 @@ namespace FinancyApplication
 
 		private void Cancel_Click(object sender, RoutedEventArgs e)
 		{
-			Closed?.Invoke(false);
+			if (Closed != null)
+			{
+				Closed(false);
+			}
 		}
 	}
 }

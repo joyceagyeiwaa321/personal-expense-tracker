@@ -6,7 +6,7 @@
         Height="320"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="#F4F6F8">
+        Background="{DynamicResource BackgroundBrush}">
 
 	<Window.Resources>
 		<Style x:Key="FieldLabel" TargetType="TextBlock">
@@ -42,7 +42,7 @@
 		</Style>
 	</Window.Resources>
 
-	<Border Background="White" CornerRadius="10" Margin="16">
+	<Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Margin="16">
 		<Border.Effect>
 			<DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.10"/>
 		</Border.Effect>
@@ -52,7 +52,7 @@
 			<TextBlock x:Name="DialogTitle"
                        Text="Add New Budget"
                        FontSize="18" FontWeight="Bold"
-                       Foreground="#1F2937"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,20"/>
 
 			<!-- Category -->
@@ -94,7 +94,7 @@
                         Content="Cancel"
                         Height="40"
                         Background="#F3F4F6"
-                        Foreground="#374151"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
                         BorderThickness="0"
                         FontSize="13"
                         Cursor="Hand"

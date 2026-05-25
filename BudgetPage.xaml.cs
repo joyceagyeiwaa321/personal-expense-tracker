@@ -29,14 +29,27 @@ namespace FinancyApplication
         private readonly Data db = new Data();
         public User CurrentUser { get; set; }
 
-        private bool isDarkMode = false;
         private List<BudgetRowViewModel> _allRows = new List<BudgetRowViewModel>();
         private Dictionary<int, string> _categoryNames = new Dictionary<int, string>();
 
-        // Brushes matching Dashboard
-        private readonly Brush gridBrush = new SolidColorBrush(Color.FromRgb(229, 231, 235));
-        private readonly Brush textBrush = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-        private readonly Brush mutedBrush = new SolidColorBrush(Color.FromRgb(100, 116, 139));
+        // Brushes matching Dashboard, theme-aware so charts repaint correctly
+        private Brush gridBrush  => Budget_ThemeBrush("BorderBrush",        Color.FromRgb(229, 231, 235));
+        private Brush textBrush  => Budget_ThemeBrush("TextPrimaryBrush",   Color.FromRgb(31, 41, 55));
+        private Brush mutedBrush => Budget_ThemeBrush("TextSecondaryBrush", Color.FromRgb(100, 116, 139));
+
+        private static Brush Budget_ThemeBrush(string key, Color fallback)
+        {
+            try
+            {
+                if (Application.Current != null &&
+                    Application.Current.Resources.Contains(key))
+                {
+                    return (Brush)Application.Current.Resources[key];
+                }
+            }
+            catch { /* fall through */ }
+            return new SolidColorBrush(fallback);
+        }
         private readonly Brush blueBrush = new SolidColorBrush(Color.FromRgb(59, 130, 246));
         private readonly Brush redBrush = new SolidColorBrush(Color.FromRgb(239, 68, 68));
 
@@ -54,6 +67,13 @@ namespace FinancyApplication
         {
             InitializeComponent();
             Loaded += BudgetPage_Loaded;
+            Closed += BudgetPage_Closed;
+            ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
+        }
+
+        private void BudgetPage_Closed(object sender, EventArgs e)
+        {
+            ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
         }
 
         // ── LOADED ────────────────────────────────────────────────────────
@@ -65,6 +85,8 @@ namespace FinancyApplication
 
             if (CurrentUser != null && !string.IsNullOrWhiteSpace(CurrentUser.Username))
                 AvatarInitial.Text = CurrentUser.Username.Substring(0, 1).ToUpper();
+
+            UpdateThemeIcon();
 
             PopulateMonthComboBox();
             LoadCategoryNames();
@@ -693,6 +715,16 @@ namespace FinancyApplication
             MessageBox.Show("Groups page coming soon.", "Navigation");
         }
 
+                // Footer privacy / terms / contact all open the Privacy page on Dashboard.
+        // BudgetPage is its own Window, so we close it and pass a flag.
+        private void FooterPrivacy_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Properties["ShowPrivacyOnLoad"] = true;
+            Dashboard dash = new Dashboard { CurrentUser = CurrentUser };
+            dash.Show();
+            this.Close();
+        }
+
         private void NavProfile_Click(object sender, RoutedEventArgs e)
         {
             // Profile is now embedded inside Dashboard as a UserControl (ProfileView),
@@ -704,23 +736,19 @@ namespace FinancyApplication
 
         private void ThemeToggle_Click(object sender, RoutedEventArgs e)
         {
-            isDarkMode = !isDarkMode;
-            if (isDarkMode)
-            {
-                Background = new SolidColorBrush(Color.FromRgb(17, 24, 39));
-                NavBar.Background = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-                LogoText.Foreground = Brushes.White;
-                ThemeIcon.Text = "\uE708";
-                ThemeIcon.Foreground = Brushes.White;
-            }
-            else
-            {
-                Background = new SolidColorBrush(Color.FromRgb(244, 246, 248));
-                NavBar.Background = Brushes.White;
-                LogoText.Foreground = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-                ThemeIcon.Text = "\uE706";
-                ThemeIcon.Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139));
-            }
+            ThemeManager.Toggle();
+        }
+
+        private void UpdateThemeIcon()
+        {
+            if (ThemeIcon == null) return;
+            ThemeIcon.Text = ThemeManager.IsDarkMode ? "\uE708" : "\uE706";
+        }
+
+        private void ThemeManager_ThemeChanged(object sender, EventArgs e)
+        {
+            UpdateThemeIcon();
+            try { DrawCharts(); } catch { /* page may not be ready */ }
         }
 
         // ── UTILS ─────────────────────────────────────────────────────────

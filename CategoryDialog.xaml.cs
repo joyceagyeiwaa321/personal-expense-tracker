@@ -23,7 +23,10 @@ namespace FinancyApplication
 
 		private void CategoryDialog_Loaded(object sender, RoutedEventArgs e)
 		{
-			if (_existing == null) return;
+			if (_existing == null)
+			{
+				return;
+			}
 
 			// Edit mode
 			DialogTitle.Text = "Edit Category";
@@ -40,7 +43,7 @@ namespace FinancyApplication
 				}
 			}
 
-			// Default categories: name is editable but type is locked (don't break Salary semantics)
+			// Default categories: type is locked so Salary stays income
 			if (_existing.IsDefault)
 			{
 				TypeComboBox.IsEnabled = false;
@@ -57,7 +60,8 @@ namespace FinancyApplication
 				return;
 			}
 
-			string type = (TypeComboBox.SelectedItem as ComboBoxItem).Content.ToString();
+			ComboBoxItem selectedType = TypeComboBox.SelectedItem as ComboBoxItem;
+			string type = selectedType.Content.ToString();
 
 			try
 			{
@@ -72,7 +76,10 @@ namespace FinancyApplication
 					_existing.Update(name);
 				}
 
-				Closed?.Invoke(true);
+				if (Closed != null)
+				{
+					Closed(true);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -82,7 +89,10 @@ namespace FinancyApplication
 
 		private void Cancel_Click(object sender, RoutedEventArgs e)
 		{
-			Closed?.Invoke(false);
+			if (Closed != null)
+			{
+				Closed(false);
+			}
 		}
 	}
 }

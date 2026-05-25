@@ -5,11 +5,11 @@
         Width="1180"
         Height="760"
         WindowStartupLocation="CenterScreen"
-        Background="#F4F6F8">
+        Background="{DynamicResource BackgroundBrush}">
 
 	<Window.Resources>
 		<Style x:Key="CardStyle" TargetType="Border">
-			<Setter Property="Background" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="20"/>
 			<Setter Property="Effect">
@@ -22,7 +22,7 @@
 		<Style x:Key="NavButtonStyle" TargetType="Button">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="Foreground" Value="#64748B"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
 			<Setter Property="FontSize" Value="13"/>
 			<Setter Property="Margin" Value="6,0"/>
 			<Setter Property="Padding" Value="12,6"/>
@@ -40,10 +40,10 @@
 						</Border>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="NavBg" Property="Background" Value="#E0F2F1"/>
+								<Setter TargetName="NavBg" Property="Background" Value="{DynamicResource AccentMutedBrush}"/>
 							</Trigger>
 							<Trigger Property="IsPressed" Value="True">
-								<Setter TargetName="NavBg" Property="Background" Value="#B2DFDB"/>
+								<Setter TargetName="NavBg" Property="Background" Value="{DynamicResource AccentMutedPressedBrush}"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -62,7 +62,7 @@
 
 	<DockPanel>
 
-		<Border x:Name="NavBar" DockPanel.Dock="Top" Height="72" Background="White">
+		<Border x:Name="NavBar" DockPanel.Dock="Top" Height="72" Background="{DynamicResource NavBarBrush}">
 			<Grid Margin="40,12">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
@@ -89,7 +89,7 @@
 							Text="Financy Application"
 							FontSize="17"
 							FontWeight="Bold"
-							Foreground="#1F2937"
+							Foreground="{DynamicResource TextPrimaryBrush}"
 							VerticalAlignment="Center"
 							TextTrimming="None"
 							TextWrapping="NoWrap"/>
@@ -152,7 +152,7 @@
                                    FontFamily="Segoe Fluent Icons"
                                    Text="&#xE706;"
                                    FontSize="23"
-                                   Foreground="#64748B"/>
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
 					</Button>
 
 					<Button Style="{StaticResource IconButtonStyle}"
@@ -187,32 +187,32 @@
 
 					<Border x:Name="BalanceCard" Style="{StaticResource CardStyle}" Margin="0,0,14,0">
 						<StackPanel>
-							<TextBlock Text="Total Balance" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiBalance" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
+							<TextBlock Text="Total Balance" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+							<TextBlock x:Name="KpiBalance" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
 							<TextBlock x:Name="KpiBalanceSub" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
 						</StackPanel>
 					</Border>
 
 					<Border x:Name="IncomeCard" Style="{StaticResource CardStyle}" Margin="7,0,7,0">
 						<StackPanel>
-							<TextBlock Text="Total Income" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiIncome" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
+							<TextBlock Text="Total Income" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+							<TextBlock x:Name="KpiIncome" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
 							<TextBlock x:Name="KpiIncomeChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
 						</StackPanel>
 					</Border>
 
 					<Border x:Name="ExpenseCard" Style="{StaticResource CardStyle}" Margin="7,0,7,0">
 						<StackPanel>
-							<TextBlock Text="Total Expense" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiExpenses" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
+							<TextBlock Text="Total Expense" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+							<TextBlock x:Name="KpiExpenses" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
 							<TextBlock x:Name="KpiExpensesChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
 						</StackPanel>
 					</Border>
 
 					<Border x:Name="SavingsCard" Style="{StaticResource CardStyle}" Margin="14,0,0,0">
 						<StackPanel>
-							<TextBlock Text="Savings Rate" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiSavings" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
+							<TextBlock Text="Savings Rate" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+							<TextBlock x:Name="KpiSavings" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
 							<TextBlock x:Name="KpiSavingsChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
 						</StackPanel>
 					</Border>
@@ -224,7 +224,7 @@
                                Text="Spending Overview"
                                FontSize="18"
                                FontWeight="Bold"
-                               Foreground="#1F2937"/>
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
 
 					<ComboBox x:Name="PeriodComboBox"
                               Width="112"
@@ -232,7 +232,7 @@
                               HorizontalAlignment="Right"
                               SelectedIndex="0"
                               FontSize="12"
-                              Foreground="#64748B"
+                              Foreground="{DynamicResource TextSecondaryBrush}"
                               SelectionChanged="PeriodComboBox_SelectionChanged">
 						<ComboBoxItem Content="This Month"/>
 						<ComboBoxItem Content="Last Month"/>
@@ -256,12 +256,12 @@
 								<TextBlock Text="Income vs Expense"
                                            FontSize="15"
                                            FontWeight="Bold"
-                                           Foreground="#1F2937"/>
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
 
 								<TextBlock Text="Monthly trend"
                                            HorizontalAlignment="Right"
                                            FontSize="12"
-                                           Foreground="#64748B"/>
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
 							</Grid>
 
 							<Canvas x:Name="IncomeExpenseCanvas"
@@ -292,10 +292,10 @@
 								<TextBlock Text="Expense Breakdown"
                                            FontSize="18"
                                            FontWeight="Bold"
-                                           Foreground="#1F2937"/>
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
 
 								<TextBlock Text="This month's spending by category"
-                                           Foreground="#64748B"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
                                            FontSize="13"
                                            Margin="0,5,0,5"/>
 
@@ -322,7 +322,7 @@
 						<TextBlock Text="Recent Transactions"
                                    FontSize="19"
                                    FontWeight="Bold"
-                                   Foreground="#1F2937"/>
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
 
 						<Button Content="View All"
                                 HorizontalAlignment="Left"
@@ -335,7 +335,7 @@
 
 						<StackPanel x:Name="NoTxPanel">
 							<TextBlock Text="No transactions available"
-                                       Foreground="#64748B"/>
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
 						</StackPanel>
 
 						<DataGrid x:Name="TxTable"
@@ -344,7 +344,10 @@
                                   HeadersVisibility="Column"
                                   GridLinesVisibility="Horizontal"
                                   BorderThickness="0"
-                                  Background="White"
+                                  Background="{DynamicResource SurfaceBrush}"
+                                  RowBackground="{DynamicResource SurfaceBrush}"
+                                  AlternatingRowBackground="{DynamicResource SurfaceAltBrush}"
+                                  Foreground="{DynamicResource TextPrimaryBrush}"
                                   CanUserAddRows="False">
 
 							<DataGrid.Columns>
@@ -359,14 +362,26 @@
 
 				<Grid Margin="0,25,0,0">
 					<TextBlock Text="© 2026 Financy Application. All rights reserved."
-                               Foreground="#64748B"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                FontSize="12"/>
 
 					<StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right">
-						<TextBlock Text="Privacy Policy" Foreground="#64748B" Margin="0,0,25,0"/>
-						<TextBlock Text="Terms of Use" Foreground="#64748B" Margin="0,0,25,0"/>
-						<TextBlock Text="Contact" Foreground="#64748B"/>
+						<Button Content="Privacy Policy"
+						        Background="Transparent" BorderThickness="0"
+						        Foreground="{DynamicResource TextSecondaryBrush}"
+						        FontSize="12" Padding="0" Margin="0,0,25,0"
+						        Cursor="Hand" Click="FooterPrivacy_Click"/>
+						<Button Content="Terms of Use"
+						        Background="Transparent" BorderThickness="0"
+						        Foreground="{DynamicResource TextSecondaryBrush}"
+						        FontSize="12" Padding="0" Margin="0,0,25,0"
+						        Cursor="Hand" Click="FooterPrivacy_Click"/>
+						<Button Content="Contact"
+						        Background="Transparent" BorderThickness="0"
+						        Foreground="{DynamicResource TextSecondaryBrush}"
+						        FontSize="12" Padding="0"
+						        Cursor="Hand" Click="FooterPrivacy_Click"/>
 					</StackPanel>
 				</Grid>
 
@@ -379,6 +394,7 @@
 		<ContentControl x:Name="CategoriesHost" Visibility="Collapsed"/>
 		<ContentControl x:Name="AccountsHost" Visibility="Collapsed"/>
 		<ContentControl x:Name="ReportsHost" Visibility="Collapsed"/>
+		<ContentControl x:Name="PrivacyHost" Visibility="Collapsed"/>
 		</Grid>
 	</DockPanel>
 </Window>

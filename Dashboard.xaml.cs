@@ -23,18 +23,41 @@ namespace FinancyApplication
 
 		public User CurrentUser { get; set; }
 
-		private bool isDarkMode = false;
+		// Chart brushes resolve from the active theme at access time, so
+		// LoadCharts() always draws with the correct colors. ThemeChanged
+		// triggers a re-render via ThemeManager_ThemeChanged.
+		private Brush incomeBrush  => Dashboard_ThemeBrush("AccentBrush",        Color.FromRgb(0, 184, 148));
+		private Brush expenseBrush => Dashboard_ThemeBrush("DangerBrush",        Color.FromRgb(239, 68, 68));
+		private Brush gridBrush    => Dashboard_ThemeBrush("BorderBrush",        Color.FromRgb(229, 231, 235));
+		private Brush textBrush    => Dashboard_ThemeBrush("TextPrimaryBrush",   Color.FromRgb(31, 41, 55));
+		private Brush mutedBrush   => Dashboard_ThemeBrush("TextSecondaryBrush", Color.FromRgb(100, 116, 139));
 
-		private readonly Brush incomeBrush = new SolidColorBrush(Color.FromRgb(0, 184, 148));
-		private readonly Brush expenseBrush = new SolidColorBrush(Color.FromRgb(239, 68, 68));
-		private readonly Brush gridBrush = new SolidColorBrush(Color.FromRgb(229, 231, 235));
-		private readonly Brush textBrush = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-		private readonly Brush mutedBrush = new SolidColorBrush(Color.FromRgb(100, 116, 139));
+		private static Brush Dashboard_ThemeBrush(string key, Color fallback)
+		{
+			try
+			{
+				if (Application.Current != null &&
+					Application.Current.Resources.Contains(key))
+				{
+					return (Brush)Application.Current.Resources[key];
+				}
+			}
+			catch { /* fall through */ }
+			return new SolidColorBrush(fallback);
+		}
 
 		public Dashboard()
 		{
 			InitializeComponent();
 			Loaded += Dashboard_Loaded;
+			Closed += Dashboard_Closed;
+			ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
+		}
+
+		private void Dashboard_Closed(object sender, EventArgs e)
+		{
+			// Detach so the static event doesn't hold a reference to this Window
+			ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
 		}
 
 		private void Dashboard_Loaded(object sender, RoutedEventArgs e)
@@ -49,9 +72,20 @@ namespace FinancyApplication
 				}
 			}
 
+			// Reflect the theme that was restored by App.OnStartup
+			UpdateThemeIcon();
+
 			// Load avatar photo on dashboard if one is saved
 			RefreshDashboardAvatar();
 			RefreshDashboard();
+
+			// If we got here via the footer Privacy link on another page, jump to it
+			if (Application.Current.Properties.Contains("ShowPrivacyOnLoad") &&
+				Application.Current.Properties["ShowPrivacyOnLoad"] is bool flag && flag)
+			{
+				Application.Current.Properties.Remove("ShowPrivacyOnLoad");
+				FooterPrivacy_Click(this, new RoutedEventArgs());
+			}
 		}
 
 		// ── AVATAR ────────────────────────────────────────────────────────
@@ -523,24 +557,24 @@ namespace FinancyApplication
 
 		private void ThemeToggle_Click(object sender, RoutedEventArgs e)
 		{
-			isDarkMode = !isDarkMode;
+			// Global theme swap — every page bound to DynamicResource updates.
+			ThemeManager.Toggle();
+		}
 
-			if (isDarkMode)
-			{
-				Background = new SolidColorBrush(Color.FromRgb(17, 24, 39));
-				NavBar.Background = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-				LogoText.Foreground = Brushes.White;
-				ThemeIcon.Text = "\uE708";
-				ThemeIcon.Foreground = Brushes.White;
-			}
-			else
-			{
-				Background = new SolidColorBrush(Color.FromRgb(244, 246, 248));
-				NavBar.Background = Brushes.White;
-				LogoText.Foreground = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-				ThemeIcon.Text = "\uE706";
-				ThemeIcon.Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139));
-			}
+		// Keep the moon/sun glyph in sync with the active theme.
+		private void UpdateThemeIcon()
+		{
+			if (ThemeIcon == null) return;
+			// E708 = sun (shown when in dark mode, click returns to light)
+			// E706 = moon (shown when in light mode)
+			ThemeIcon.Text = ThemeManager.IsDarkMode ? "\uE708" : "\uE706";
+		}
+
+		private void ThemeManager_ThemeChanged(object sender, EventArgs e)
+		{
+			UpdateThemeIcon();
+			// Redraw the canvas-based charts so colors track the new theme.
+			try { LoadCharts(); } catch { /* page may not be ready */ }
 		}
 
 		private void PeriodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -631,6 +665,7 @@ namespace FinancyApplication
 		private CategoriesView _categoriesView;
 		private AccountsView _accountsView;
 		private ReportsView _reportsView;
+		private PrivacyView _privacyView;
 
 		private void NavProfile_Click(object sender, RoutedEventArgs e)
 		{
@@ -667,9 +702,38 @@ namespace FinancyApplication
 			ReportsHost.Content = null;
 			_reportsView = null;
 
+			PrivacyHost.Visibility = Visibility.Collapsed;
+			PrivacyHost.Content = null;
+			if (_privacyView != null)
+			{
+				_privacyView.BackRequested -= PrivacyView_BackRequested;
+				_privacyView = null;
+			}
+
 			DashboardContent.Visibility = Visibility.Visible;
 			// Avatar may have changed while inside the profile
 			RefreshDashboardAvatar();
+		}
+
+		// Footer "Privacy Policy" / "Terms of Use" / "Contact" all open the
+		// same in-app PrivacyView (it contains all three sections). User
+		// explicitly asked for in-app navigation, not a popup window.
+		private void FooterPrivacy_Click(object sender, RoutedEventArgs e)
+		{
+			ShowDashboardView();
+			HighlightNav(null);
+			_privacyView = new PrivacyView();
+			_privacyView.BackRequested += PrivacyView_BackRequested;
+			PrivacyHost.Content = _privacyView;
+			DashboardContent.Visibility = Visibility.Collapsed;
+			PrivacyHost.Visibility = Visibility.Visible;
+		}
+
+		private void PrivacyView_BackRequested(object sender, EventArgs e)
+		{
+			ShowDashboardView();
+			HighlightNav(NavDashboardBtn);
+			RefreshDashboard();
 		}
 
 		private void NavGroups_Click(object sender, RoutedEventArgs e)

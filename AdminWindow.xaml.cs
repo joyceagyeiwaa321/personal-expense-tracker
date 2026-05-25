@@ -1,80 +1,86 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace FinancyApplication
 {
-	// Row VM bound to a single line in the Users DataGrid.
-	// Strings are pre-computed so the grid can stay dumb and just bind by name.
+	// Row bound to a single line in the Users DataGrid
 	public class AdminUserRow
 	{
 		public int UserID { get; set; }
 		public string Username { get; set; }
 		public string Email { get; set; }
-		public string Role { get; set; }          // "Admin" / "User"
-		public string Status { get; set; }        // "Active" / "Suspended"
+		public string Role { get; set; }
+		public string Status { get; set; }
 		public DateTime CreatedAt { get; set; }
-		public string CreatedDisplay => CreatedAt == default ? "—" : CreatedAt.ToString("dd MMM yyyy");
 
-		// "Suspend" if currently active, otherwise "Activate"
+		public string CreatedDisplay
+		{
+			get
+			{
+				if (CreatedAt == default(DateTime))
+				{
+					return "—";
+				}
+				return CreatedAt.ToString("dd MMM yyyy");
+			}
+		}
+
 		public string StatusActionLabel { get; set; }
-
-		// "Make Admin" if currently a User, otherwise "Make User"
 		public string RoleActionLabel { get; set; }
-
-		// False on the row representing the signed-in admin — protects them from
-		// suspending / demoting / deleting themselves.
 		public bool CanEdit { get; set; }
+	}
+
+	// Simple class to hold phone country info for the dropdown
+	public class PhoneCountry
+	{
+		public string Flag { get; set; }
+		public string Dial { get; set; }
+		public string Code { get; set; }
+
+		public PhoneCountry(string flag, string dial, string code)
+		{
+			Flag = flag;
+			Dial = dial;
+			Code = code;
+		}
 	}
 
 	public partial class AdminWindow : Window
 	{
 		private readonly Data db = new Data();
-
-		// The signed-in admin. Required so we can both (a) display their name in
-		// the navbar and (b) prevent them mutating their own row in the table.
 		public User CurrentUser { get; set; }
-
-		// Last full load from the DB. The grid is rebuilt from this list every
-		// time the search / role filter changes — keeps things simple and means
-		// we don't need to round-trip the DB on each keystroke.
 		private List<User> _allUsers = new List<User>();
-
-		// Current admin's profile
 		private UserProfile _currentUserProfile;
 
-		// ── PHONE COUNTRY DATA ────────────────────────────────────────────────
-		private record PhoneCountry(string Flag, string Dial, string Code);
 		private static readonly List<PhoneCountry> _countries = BuildCountryList();
 
 		private static List<PhoneCountry> BuildCountryList()
 		{
-			var countries = new List<PhoneCountry>
-			{
-				new("🇺🇸", "+1", "US"),
-				new("🇬🇧", "+44", "GB"),
-				new("🇨🇦", "+1", "CA"),
-				new("🇦🇺", "+61", "AU"),
-				new("🇩🇪", "+49", "DE"),
-				new("🇫🇷", "+33", "FR"),
-				new("🇮🇹", "+39", "IT"),
-				new("🇪🇸", "+34", "ES"),
-				new("🇲🇽", "+52", "MX"),
-				new("🇧🇷", "+55", "BR"),
-				new("🇮🇳", "+91", "IN"),
-				new("🇯🇵", "+81", "JP"),
-				new("🇨🇳", "+86", "CN"),
-				new("🇳🇿", "+64", "NZ"),
-				new("🇳🇱", "+31", "NL"),
-				new("🇧🇪", "+32", "BE"),
-				new("🇸🇪", "+46", "SE"),
-				new("🇳🇴", "+47", "NO"),
-			};
-			return countries.OrderBy(c => c.Code).ToList();
+			// Pre-sorted by country code
+			List<PhoneCountry> countries = new List<PhoneCountry>();
+			countries.Add(new PhoneCountry("🇦🇺", "+61", "AU"));
+			countries.Add(new PhoneCountry("🇧🇪", "+32", "BE"));
+			countries.Add(new PhoneCountry("🇧🇷", "+55", "BR"));
+			countries.Add(new PhoneCountry("🇨🇦", "+1",  "CA"));
+			countries.Add(new PhoneCountry("🇨🇳", "+86", "CN"));
+			countries.Add(new PhoneCountry("🇩🇪", "+49", "DE"));
+			countries.Add(new PhoneCountry("🇪🇸", "+34", "ES"));
+			countries.Add(new PhoneCountry("🇫🇷", "+33", "FR"));
+			countries.Add(new PhoneCountry("🇬🇧", "+44", "GB"));
+			countries.Add(new PhoneCountry("🇮🇳", "+91", "IN"));
+			countries.Add(new PhoneCountry("🇮🇹", "+39", "IT"));
+			countries.Add(new PhoneCountry("🇯🇵", "+81", "JP"));
+			countries.Add(new PhoneCountry("🇲🇽", "+52", "MX"));
+			countries.Add(new PhoneCountry("🇳🇱", "+31", "NL"));
+			countries.Add(new PhoneCountry("🇳🇴", "+47", "NO"));
+			countries.Add(new PhoneCountry("🇳🇿", "+64", "NZ"));
+			countries.Add(new PhoneCountry("🇸🇪", "+46", "SE"));
+			countries.Add(new PhoneCountry("🇺🇸", "+1",  "US"));
+			return countries;
 		}
 
 		public AdminWindow()
@@ -85,8 +91,6 @@ namespace FinancyApplication
 
 		private void AdminWindow_Loaded(object sender, RoutedEventArgs e)
 		{
-			// Pull CurrentUser from Application.Properties if the caller didn't
-			// set it explicitly — mirrors what Dashboard does.
 			if (CurrentUser == null && Application.Current.Properties.Contains("CurrentUser"))
 			{
 				CurrentUser = Application.Current.Properties["CurrentUser"] as User;
@@ -96,18 +100,22 @@ namespace FinancyApplication
 			{
 				AdminGreeting.Text = "Hello, " + CurrentUser.Username;
 
-				// Update avatar initial in the button template
-				if (AdminAvatarButton.Template.FindName("AdminInitial", AdminAvatarButton) is TextBlock tb)
+				TextBlock tb = AdminAvatarButton.Template.FindName("AdminInitial", AdminAvatarButton) as TextBlock;
+				if (tb != null)
 				{
 					tb.Text = CurrentUser.Username.Substring(0, 1).ToUpper();
+				}
+
+				UserProfile profile = db.GetProfileByUserId(CurrentUser.UserID);
+				if (profile != null && !string.IsNullOrWhiteSpace(profile.AvatarUrl))
+				{
+					LoadAvatarImage(profile.AvatarUrl);
 				}
 			}
 
 			LoadStats();
 			LoadUsers();
 		}
-
-		// ── STATS STRIP ───────────────────────────────────────────────────
 
 		private void LoadStats()
 		{
@@ -130,12 +138,13 @@ namespace FinancyApplication
 				MessageBox.Show("Could not load system stats: " + ex.Message,
 					"Admin", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-				KpiUsers.Text = KpiActive.Text = KpiInactive.Text = "—";
-				KpiAccounts.Text = KpiTransactions.Text = "—";
+				KpiUsers.Text = "—";
+				KpiActive.Text = "—";
+				KpiInactive.Text = "—";
+				KpiAccounts.Text = "—";
+				KpiTransactions.Text = "—";
 			}
 		}
-
-		// ── USERS GRID ────────────────────────────────────────────────────
 
 		private void LoadUsers()
 		{
@@ -153,64 +162,138 @@ namespace FinancyApplication
 			ApplyFilters();
 		}
 
-		// Rebuilds the rows on screen from _allUsers using the current search
-		// box + role filter. Called from LoadUsers and from each filter event.
 		private void ApplyFilters()
 		{
-			string search = SearchBox?.Text?.Trim().ToLowerInvariant() ?? "";
-			string roleFilter = (RoleFilter?.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "All roles";
-
-			IEnumerable<User> q = _allUsers;
-
-			if (!string.IsNullOrEmpty(search))
+			string search = "";
+			if (SearchBox != null && SearchBox.Text != null)
 			{
-				q = q.Where(u =>
-					(u.Username ?? "").ToLowerInvariant().Contains(search) ||
-					(u.Email ?? "").ToLowerInvariant().Contains(search));
+				search = SearchBox.Text.Trim().ToLowerInvariant();
 			}
 
-			if (roleFilter == "Admins only")
+			string roleFilter = "All roles";
+			if (RoleFilter != null && RoleFilter.SelectedItem != null)
 			{
-				q = q.Where(u => u.Role == UserRole.Admin);
-			}
-			else if (roleFilter == "Users only")
-			{
-				q = q.Where(u => u.Role == UserRole.User);
-			}
-
-			List<AdminUserRow> rows = q
-				.OrderByDescending(u => u.CreatedAt)
-				.Select(u => new AdminUserRow
+				ComboBoxItem selectedRole = RoleFilter.SelectedItem as ComboBoxItem;
+				if (selectedRole != null && selectedRole.Content != null)
 				{
-					UserID = u.UserID,
-					Username = u.Username,
-					Email = u.Email,
-					Role = u.Role.ToString(),
-					Status = u.IsActive ? "Active" : "Suspended",
-					CreatedAt = u.CreatedAt,
-					StatusActionLabel = u.IsActive ? "Suspend" : "Activate",
-					RoleActionLabel = u.Role == UserRole.Admin ? "Make User" : "Make Admin",
-					CanEdit = CurrentUser == null || u.UserID != CurrentUser.UserID
-				})
-				.ToList();
+					roleFilter = selectedRole.Content.ToString();
+				}
+			}
+
+			// Filter users
+			List<User> filtered = new List<User>();
+			foreach (User u in _allUsers)
+			{
+				bool matchesSearch = true;
+				bool matchesRole = true;
+
+				if (!string.IsNullOrEmpty(search))
+				{
+					string uName = u.Username != null ? u.Username.ToLowerInvariant() : "";
+					string uEmail = u.Email != null ? u.Email.ToLowerInvariant() : "";
+					if (!uName.Contains(search) && !uEmail.Contains(search))
+					{
+						matchesSearch = false;
+					}
+				}
+
+				if (roleFilter == "Admins only" && u.Role != UserRole.Admin)
+				{
+					matchesRole = false;
+				}
+				else if (roleFilter == "Users only" && u.Role != UserRole.User)
+				{
+					matchesRole = false;
+				}
+
+				if (matchesSearch && matchesRole)
+				{
+					filtered.Add(u);
+				}
+			}
+
+			// Sort by CreatedAt descending
+			filtered.Sort((a, b) => b.CreatedAt.CompareTo(a.CreatedAt));
+
+			// Build rows
+			List<AdminUserRow> rows = new List<AdminUserRow>();
+			foreach (User u in filtered)
+			{
+				AdminUserRow row = new AdminUserRow();
+				row.UserID = u.UserID;
+				row.Username = u.Username;
+				row.Email = u.Email;
+				row.Role = u.Role.ToString();
+				row.CreatedAt = u.CreatedAt;
+
+				if (u.IsActive)
+				{
+					row.Status = "Active";
+					row.StatusActionLabel = "Suspend";
+				}
+				else
+				{
+					row.Status = "Suspended";
+					row.StatusActionLabel = "Activate";
+				}
+
+				if (u.Role == UserRole.Admin)
+				{
+					row.RoleActionLabel = "Make User";
+				}
+				else
+				{
+					row.RoleActionLabel = "Make Admin";
+				}
+
+				if (CurrentUser == null || u.UserID != CurrentUser.UserID)
+				{
+					row.CanEdit = true;
+				}
+				else
+				{
+					row.CanEdit = false;
+				}
+
+				rows.Add(row);
+			}
 
 			UsersGrid.ItemsSource = rows;
-			UsersGrid.Visibility = rows.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-			UsersEmpty.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
-			UsersSubtitle.Text = rows.Count == 1
-				? "1 user matches the current filters."
-				: rows.Count + " users match the current filters.";
+			if (rows.Count == 0)
+			{
+				UsersGrid.Visibility = Visibility.Collapsed;
+				UsersEmpty.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				UsersGrid.Visibility = Visibility.Visible;
+				UsersEmpty.Visibility = Visibility.Collapsed;
+			}
+
+			if (rows.Count == 1)
+			{
+				UsersSubtitle.Text = "1 user matches the current filters.";
+			}
+			else
+			{
+				UsersSubtitle.Text = rows.Count + " users match the current filters.";
+			}
 		}
-
-		// ── ROW ACTIONS ───────────────────────────────────────────────────
 
 		private void ToggleStatus_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is not Button b || b.Tag == null) return;
+			Button b = sender as Button;
+			if (b == null || b.Tag == null)
+			{
+				return;
+			}
 			int id = (int)b.Tag;
 			User u = _allUsers.Find(x => x.UserID == id);
-			if (u == null) return;
+			if (u == null)
+			{
+				return;
+			}
 
 			if (CurrentUser != null && u.UserID == CurrentUser.UserID)
 			{
@@ -220,14 +303,25 @@ namespace FinancyApplication
 			}
 
 			bool newStatus = !u.IsActive;
-			string verb = newStatus ? "activate" : "suspend";
+			string verb = "";
+			if (newStatus)
+			{
+				verb = "activate";
+			}
+			else
+			{
+				verb = "suspend";
+			}
 
 			MessageBoxResult confirm = MessageBox.Show(
-				$"Are you sure you want to {verb} \"{u.Username}\"?",
+				"Are you sure you want to " + verb + " \"" + u.Username + "\"?",
 				"Confirm",
 				MessageBoxButton.YesNo,
 				MessageBoxImage.Question);
-			if (confirm != MessageBoxResult.Yes) return;
+			if (confirm != MessageBoxResult.Yes)
+			{
+				return;
+			}
 
 			try
 			{
@@ -244,10 +338,17 @@ namespace FinancyApplication
 
 		private void ToggleRole_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is not Button b || b.Tag == null) return;
+			Button b = sender as Button;
+			if (b == null || b.Tag == null)
+			{
+				return;
+			}
 			int id = (int)b.Tag;
 			User u = _allUsers.Find(x => x.UserID == id);
-			if (u == null) return;
+			if (u == null)
+			{
+				return;
+			}
 
 			if (CurrentUser != null && u.UserID == CurrentUser.UserID)
 			{
@@ -256,15 +357,28 @@ namespace FinancyApplication
 				return;
 			}
 
-			UserRole newRole = u.Role == UserRole.Admin ? UserRole.User : UserRole.Admin;
-			string verb = newRole == UserRole.Admin ? "promote to Admin" : "demote to User";
+			UserRole newRole;
+			string verb;
+			if (u.Role == UserRole.Admin)
+			{
+				newRole = UserRole.User;
+				verb = "demote to User";
+			}
+			else
+			{
+				newRole = UserRole.Admin;
+				verb = "promote to Admin";
+			}
 
 			MessageBoxResult confirm = MessageBox.Show(
-				$"Are you sure you want to {verb} \"{u.Username}\"?",
+				"Are you sure you want to " + verb + " \"" + u.Username + "\"?",
 				"Confirm",
 				MessageBoxButton.YesNo,
 				MessageBoxImage.Question);
-			if (confirm != MessageBoxResult.Yes) return;
+			if (confirm != MessageBoxResult.Yes)
+			{
+				return;
+			}
 
 			try
 			{
@@ -280,10 +394,17 @@ namespace FinancyApplication
 
 		private void DeleteUser_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is not Button b || b.Tag == null) return;
+			Button b = sender as Button;
+			if (b == null || b.Tag == null)
+			{
+				return;
+			}
 			int id = (int)b.Tag;
 			User u = _allUsers.Find(x => x.UserID == id);
-			if (u == null) return;
+			if (u == null)
+			{
+				return;
+			}
 
 			if (CurrentUser != null && u.UserID == CurrentUser.UserID)
 			{
@@ -293,12 +414,14 @@ namespace FinancyApplication
 			}
 
 			MessageBoxResult confirm = MessageBox.Show(
-				$"Permanently delete \"{u.Username}\"?\n\n" +
-				"This removes the user record. Related accounts / transactions may be left in the database.",
+				"Permanently delete \"" + u.Username + "\"?\n\nThis removes the user record.",
 				"Confirm Delete",
 				MessageBoxButton.YesNo,
 				MessageBoxImage.Warning);
-			if (confirm != MessageBoxResult.Yes) return;
+			if (confirm != MessageBoxResult.Yes)
+			{
+				return;
+			}
 
 			try
 			{
@@ -313,21 +436,23 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── FILTER EVENTS ─────────────────────────────────────────────────
-
 		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (!IsLoaded) return;
+			if (!IsLoaded)
+			{
+				return;
+			}
 			ApplyFilters();
 		}
 
 		private void RoleFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (!IsLoaded) return;
+			if (!IsLoaded)
+			{
+				return;
+			}
 			ApplyFilters();
 		}
-
-		// ── TOOLBAR ACTIONS ───────────────────────────────────────────────
 
 		private void Refresh_Click(object sender, RoutedEventArgs e)
 		{
@@ -335,10 +460,6 @@ namespace FinancyApplication
 			LoadUsers();
 		}
 
-		// Writes a plain-text system report to ~/Downloads. Equivalent to
-		// Admin.GenerateReport() in UserRelated.cs but inlined so we can use
-		// it from a User instance (the logged-in admin) without having to
-		// rebuild the User as an Admin shim.
 		private void ExportReport_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -349,7 +470,11 @@ namespace FinancyApplication
 				int accounts = db.GetTotalAccountCount();
 				int transactions = db.GetTotalTransactionCount();
 
-				string generatedBy = CurrentUser?.Username ?? "admin";
+				string generatedBy = "admin";
+				if (CurrentUser != null)
+				{
+					generatedBy = CurrentUser.Username;
+				}
 
 				string report =
 					"================================================" + Environment.NewLine +
@@ -388,20 +513,19 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── AVATAR / PROFILE ──────────────────────────────────────────────
-
 		private void AdminAvatar_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentUser == null) return;
+			if (CurrentUser == null)
+			{
+				return;
+			}
 
-			// Load profile data
 			try
 			{
 				_currentUserProfile = db.GetProfileByUserId(CurrentUser.UserID);
 
 				if (_currentUserProfile == null)
 				{
-					// Create empty profile if doesn't exist
 					_currentUserProfile = new UserProfile
 					{
 						UserID = CurrentUser.UserID,
@@ -413,26 +537,37 @@ namespace FinancyApplication
 					};
 				}
 
-				// Populate profile form
-				ProfileFirstName.Text = _currentUserProfile.FirstName ?? "";
-				ProfileLastName.Text = _currentUserProfile.LastName ?? "";
-				AdminProfilePhone.Text = _currentUserProfile.PhoneNumber ?? "";
+				ProfileFirstName.Text = _currentUserProfile.FirstName != null ? _currentUserProfile.FirstName : "";
+				ProfileLastName.Text = _currentUserProfile.LastName != null ? _currentUserProfile.LastName : "";
+				AdminProfilePhone.Text = _currentUserProfile.PhoneNumber != null ? _currentUserProfile.PhoneNumber : "";
 				ProfileEmail.Text = CurrentUser.Email;
 				ProfileRole.Text = CurrentUser.Role.ToString();
 
-				string initial = CurrentUser.Username.Length > 0 ? CurrentUser.Username.Substring(0, 1).ToUpper() : "A";
-				// Update avatar initial in button template
-				if (ProfileAvatarButton.Template.FindName("AdminAvatarInitialText", ProfileAvatarButton) is TextBlock tb)
+				string initial = "A";
+				if (CurrentUser.Username.Length > 0)
+				{
+					initial = CurrentUser.Username.Substring(0, 1).ToUpper();
+				}
+
+				TextBlock tb = ProfileAvatarButton.Template.FindName("AdminAvatarInitialText", ProfileAvatarButton) as TextBlock;
+				if (tb != null)
 				{
 					tb.Text = initial;
 				}
 
-				// Populate country code dropdown
 				AdminPhoneCountryPicker.ItemsSource = _countries;
 
-				// Try to pre-select the country code from the stored phone number
-				string stored = _currentUserProfile.PhoneNumber ?? "";
-				PhoneCountry matched = _countries.FirstOrDefault(c => stored.StartsWith(c.Dial));
+				string stored = _currentUserProfile.PhoneNumber != null ? _currentUserProfile.PhoneNumber : "";
+				PhoneCountry matched = null;
+				foreach (PhoneCountry c in _countries)
+				{
+					if (stored.StartsWith(c.Dial))
+					{
+						matched = c;
+						break;
+					}
+				}
+
 				if (matched != null)
 				{
 					AdminPhoneCountryPicker.SelectedItem = matched;
@@ -445,13 +580,11 @@ namespace FinancyApplication
 
 				ProfileErrorMessage.Visibility = Visibility.Collapsed;
 
-				// If they already uploaded a photo before, show it
-				LoadAvatarImage(_currentUserProfile.AvatarUrl);
-
-				// Swap views: hide users, show profile
 				UsersView.Visibility = Visibility.Collapsed;
 				CreateUserView.Visibility = Visibility.Collapsed;
 				ProfileView.Visibility = Visibility.Visible;
+
+				LoadAvatarImage(_currentUserProfile.AvatarUrl);
 				SetActiveNav(NavProfile);
 			}
 			catch (Exception ex)
@@ -461,48 +594,66 @@ namespace FinancyApplication
 			}
 		}
 
-		// Pull the photo / circle / initial elements out of the avatar button template.
-		// They're inside a ControlTemplate so they aren't reachable as ordinary x:Name fields.
 		private void LoadAvatarImage(string path)
 		{
 			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+			{
 				return;
+			}
 
-			var image = ProfileAvatarButton.Template.FindName("AdminAvatarImage", ProfileAvatarButton) as System.Windows.Controls.Image;
-			var circle = ProfileAvatarButton.Template.FindName("AdminAvatarCircle", ProfileAvatarButton) as System.Windows.Controls.Border;
-			if (image == null || circle == null) return;
-
-			var bmp = new BitmapImage();
+			BitmapImage bmp = new BitmapImage();
 			bmp.BeginInit();
 			bmp.UriSource = new Uri(path, UriKind.Absolute);
 			bmp.CacheOption = BitmapCacheOption.OnLoad;
 			bmp.EndInit();
 
-			image.Source = bmp;
-			image.Visibility = Visibility.Visible;
-			circle.Visibility = Visibility.Collapsed;
+			// Update the large profile view button
+			ProfileAvatarButton.ApplyTemplate();
+			System.Windows.Controls.Image image = ProfileAvatarButton.Template.FindName("AdminAvatarImage", ProfileAvatarButton) as System.Windows.Controls.Image;
+			System.Windows.Controls.Border circle = ProfileAvatarButton.Template.FindName("AdminAvatarCircle", ProfileAvatarButton) as System.Windows.Controls.Border;
+			if (image != null)
+			{
+				image.Source = bmp;
+				image.Visibility = Visibility.Visible;
+			}
+			if (circle != null)
+			{
+				circle.Visibility = Visibility.Collapsed;
+			}
+
+			// Update the nav bar avatar button
+			AdminAvatarButton.ApplyTemplate();
+			System.Windows.Controls.Image navImage = AdminAvatarButton.Template.FindName("AdminNavImage", AdminAvatarButton) as System.Windows.Controls.Image;
+			System.Windows.Controls.Border navBg = AdminAvatarButton.Template.FindName("bg", AdminAvatarButton) as System.Windows.Controls.Border;
+			if (navImage != null)
+			{
+				navImage.Source = bmp;
+				navImage.Visibility = Visibility.Visible;
+			}
+			if (navBg != null)
+			{
+				navBg.Visibility = Visibility.Collapsed;
+			}
 		}
 
 		private void BackToUsers_Click(object sender, RoutedEventArgs e)
 		{
-			// Swap views: hide profile / create-user, show users
 			ProfileView.Visibility = Visibility.Collapsed;
 			CreateUserView.Visibility = Visibility.Collapsed;
 			UsersView.Visibility = Visibility.Visible;
 			SetActiveNav(NavUsers);
 		}
 
-		// ── SIDEBAR NAVIGATION ────────────────────────────────────────────
-
-		// The NavItem ControlTemplate has a DataTrigger watching its own Tag for
-		// the value "active" — so toggling Tag is enough to flip the highlight.
 		private void SetActiveNav(Button current)
 		{
 			NavUsers.Tag = null;
 			NavCreateUser.Tag = null;
 			NavProfile.Tag = null;
 			NavReports.Tag = null;
-			if (current != null) current.Tag = "active";
+			if (current != null)
+			{
+				current.Tag = "active";
+			}
 		}
 
 		private void NavUsers_Click(object sender, RoutedEventArgs e)
@@ -515,78 +666,76 @@ namespace FinancyApplication
 
 		private void NavCreateUser_Click(object sender, RoutedEventArgs e)
 		{
-			CreateUser_Click(sender, e); // reuses the existing reset + view-swap logic
+			CreateUser_Click(sender, e);
 			SetActiveNav(NavCreateUser);
 		}
 
 		private void NavProfile_Click(object sender, RoutedEventArgs e)
 		{
-			AdminAvatar_Click(sender, e); // reuses the existing profile-load logic
+			AdminAvatar_Click(sender, e);
 			SetActiveNav(NavProfile);
 		}
 
 		private void NavReports_Click(object sender, RoutedEventArgs e)
 		{
-			// Reports is an action, not a destination — fire the export and
-			// leave the sidebar selection where it was.
 			ExportReport_Click(sender, e);
 		}
 
-		// ── AVATAR UPLOAD ─────────────────────────────────────────────────
-
 		private void AdminAvatarUpload_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentUser == null || _currentUserProfile == null) return;
-
-			var dlg = new Microsoft.Win32.OpenFileDialog
+			if (CurrentUser == null || _currentUserProfile == null)
 			{
-				Title = "Choose profile photo",
-				Filter = "Image files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files|*.*"
-			};
+				return;
+			}
+
+			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+			dlg.Title = "Choose profile photo";
+			dlg.Filter = "Image files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files|*.*";
 
 			if (dlg.ShowDialog() != true)
+			{
 				return;
+			}
 
 			try
 			{
 				string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 				string destDir = Path.Combine(appData, "FinancyApplication", "Avatars");
 				Directory.CreateDirectory(destDir);
-				string destPath = Path.Combine(destDir, $"avatar_admin_{CurrentUser.UserID}.jpg");
+				string destPath = Path.Combine(destDir, "avatar_admin_" + CurrentUser.UserID + ".jpg");
 
-				// Decode the source file fully into memory before writing — otherwise
-				// reusing the same destination filename can race with the file lock.
-				var bmp = new BitmapImage();
+				BitmapImage bmp = new BitmapImage();
 				bmp.BeginInit();
 				bmp.UriSource = new Uri(dlg.FileName, UriKind.Absolute);
 				bmp.CacheOption = BitmapCacheOption.OnLoad;
 				bmp.EndInit();
 
-				var encoder = new JpegBitmapEncoder();
+				JpegBitmapEncoder encoder = new JpegBitmapEncoder();
 				encoder.Frames.Add(BitmapFrame.Create(bmp));
-				using (var fs = File.Create(destPath))
+				using (FileStream fs = File.Create(destPath))
 				{
 					encoder.Save(fs);
 				}
 
 				_currentUserProfile.AvatarUrl = destPath.Replace("\\", "/");
 
-				// Persist right away so it survives a restart even if they
-				// don't click "Save Changes".
 				try
 				{
 					UserProfile existing = db.GetProfileByUserId(CurrentUser.UserID);
 					if (existing != null)
+					{
 						db.UpdateProfile(_currentUserProfile);
+					}
 					else
+					{
 						db.InsertProfile(_currentUserProfile);
+					}
 				}
-				catch
+				catch (Exception)
 				{
-					// Non-fatal: file is still on disk; SaveProfile will retry persistence.
+					// Non-fatal: avatar file is saved, DB will sync on next Save
 				}
 
-				// Show the new photo in the avatar button immediately.
 				LoadAvatarImage(destPath);
 			}
 			catch (Exception ex)
@@ -598,31 +747,47 @@ namespace FinancyApplication
 
 		private void SaveProfile_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentUser == null || _currentUserProfile == null) return;
+			if (CurrentUser == null || _currentUserProfile == null)
+			{
+				return;
+			}
 
-			// Validate and collect data
-			string firstName = ProfileFirstName.Text?.Trim() ?? "";
-			string lastName = ProfileLastName.Text?.Trim() ?? "";
-			string localNumber = AdminProfilePhone.Text?.Trim() ?? "";
+			string firstName = "";
+			if (ProfileFirstName.Text != null)
+			{
+				firstName = ProfileFirstName.Text.Trim();
+			}
 
-			// Combine country dial code + local number, mirroring ProfileView
+			string lastName = "";
+			if (ProfileLastName.Text != null)
+			{
+				lastName = ProfileLastName.Text.Trim();
+			}
+
+			string localNumber = "";
+			if (AdminProfilePhone.Text != null)
+			{
+				localNumber = AdminProfilePhone.Text.Trim();
+			}
+
 			string phone;
-			var selectedCountry = AdminPhoneCountryPicker.SelectedItem as PhoneCountry;
+			PhoneCountry selectedCountry = AdminPhoneCountryPicker.SelectedItem as PhoneCountry;
 			if (selectedCountry != null && !string.IsNullOrEmpty(localNumber))
-				phone = $"{selectedCountry.Dial} {localNumber}";
+			{
+				phone = selectedCountry.Dial + " " + localNumber;
+			}
 			else
+			{
 				phone = localNumber;
+			}
 
-			// Update profile object
 			_currentUserProfile.FirstName = firstName;
 			_currentUserProfile.LastName = lastName;
 			_currentUserProfile.PhoneNumber = phone;
 
 			try
 			{
-				// Check if profile exists
 				UserProfile existing = db.GetProfileByUserId(CurrentUser.UserID);
-
 				if (existing != null)
 				{
 					db.UpdateProfile(_currentUserProfile);
@@ -632,7 +797,6 @@ namespace FinancyApplication
 					db.InsertProfile(_currentUserProfile);
 				}
 
-				// Return to users view
 				ProfileView.Visibility = Visibility.Collapsed;
 				UsersView.Visibility = Visibility.Visible;
 			}
@@ -643,11 +807,8 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── CREATE USER ───────────────────────────────────────────────────
-
 		private void CreateUser_Click(object sender, RoutedEventArgs e)
 		{
-			// Reset the inline form
 			NewUsernameInput.Text = "";
 			NewEmailInput.Text = "";
 			NewPasswordInput.Password = "";
@@ -656,7 +817,6 @@ namespace FinancyApplication
 			CreateUserError.Visibility = Visibility.Collapsed;
 			CreateUserError.Text = "";
 
-			// Swap views: hide users, show create-user
 			UsersView.Visibility = Visibility.Collapsed;
 			ProfileView.Visibility = Visibility.Collapsed;
 			CreateUserView.Visibility = Visibility.Visible;
@@ -665,11 +825,27 @@ namespace FinancyApplication
 
 		private void CreateUserSubmit_Click(object sender, RoutedEventArgs e)
 		{
-			string username = NewUsernameInput.Text?.Trim() ?? "";
-			string email = NewEmailInput.Text?.Trim() ?? "";
-			string password = NewPasswordInput.Password ?? "";
-			string confirmPassword = NewConfirmPasswordInput.Password ?? "";
-			string role = (NewRoleComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "User";
+			string username = "";
+			if (NewUsernameInput.Text != null)
+			{
+				username = NewUsernameInput.Text.Trim();
+			}
+
+			string email = "";
+			if (NewEmailInput.Text != null)
+			{
+				email = NewEmailInput.Text.Trim();
+			}
+
+			string password = NewPasswordInput.Password != null ? NewPasswordInput.Password : "";
+			string confirmPassword = NewConfirmPasswordInput.Password != null ? NewConfirmPasswordInput.Password : "";
+
+			string role = "User";
+			ComboBoxItem roleItem = NewRoleComboBox.SelectedItem as ComboBoxItem;
+			if (roleItem != null && roleItem.Content != null)
+			{
+				role = roleItem.Content.ToString();
+			}
 
 			CreateUserError.Visibility = Visibility.Collapsed;
 			CreateUserError.Text = "";
@@ -738,18 +914,23 @@ namespace FinancyApplication
 
 			try
 			{
-				User newUser = new User
+				User newUser = new User();
+				newUser.Username = username;
+				newUser.Email = email;
+				newUser.IsActive = true;
+				newUser.CreatedAt = DateTime.Now;
+
+				if (role == "Admin")
 				{
-					Username = username,
-					Email = email,
-					Role = role == "Admin" ? UserRole.Admin : UserRole.User,
-					IsActive = true,
-					CreatedAt = DateTime.Now
-				};
+					newUser.Role = UserRole.Admin;
+				}
+				else
+				{
+					newUser.Role = UserRole.User;
+				}
 
 				db.InsertUser(newUser, hashedPassword);
 
-				// Refresh and return to users view (no popup — feedback is the new row showing up)
 				LoadStats();
 				LoadUsers();
 				CreateUserView.Visibility = Visibility.Collapsed;
@@ -767,26 +948,33 @@ namespace FinancyApplication
 			CreateUserError.Visibility = Visibility.Visible;
 		}
 
-		// ── SEND PASSWORD RESET ───────────────────────────────────────────
-
 		private void SendReset_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is not Button b || b.Tag == null) return;
+			Button b = sender as Button;
+			if (b == null || b.Tag == null)
+			{
+				return;
+			}
 			int id = (int)b.Tag;
 			User u = _allUsers.Find(x => x.UserID == id);
-			if (u == null) return;
+			if (u == null)
+			{
+				return;
+			}
 
 			MessageBoxResult confirm = MessageBox.Show(
-				$"Send password reset email to \"{u.Username}\" ({u.Email})?",
+				"Send password reset email to \"" + u.Username + "\" (" + u.Email + ")?",
 				"Confirm",
 				MessageBoxButton.YesNo,
 				MessageBoxImage.Question);
-			if (confirm != MessageBoxResult.Yes) return;
+			if (confirm != MessageBoxResult.Yes)
+			{
+				return;
+			}
 
 			try
 			{
 				bool success = db.ResendPasswordReset(u.Email, u.Username);
-
 				if (success)
 				{
 					MessageBox.Show("Password reset email sent successfully!",
@@ -804,8 +992,6 @@ namespace FinancyApplication
 					"Admin", MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
-
-		// ── LOGOUT ────────────────────────────────────────────────────────
 
 		private void Logout_Click(object sender, RoutedEventArgs e)
 		{

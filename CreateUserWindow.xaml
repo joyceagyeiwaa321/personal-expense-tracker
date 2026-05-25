@@ -5,13 +5,13 @@
         Width="420"
         Height="420"
         WindowStartupLocation="CenterOwner"
-        Background="#F4F6F8"
+        Background="{DynamicResource BackgroundBrush}"
         FontFamily="Segoe UI Variable Display"
         ResizeMode="NoResize">
 
 	<Window.Resources>
 		<Style x:Key="FormInput" TargetType="TextBox">
-			<Setter Property="Background" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 			<Setter Property="BorderBrush" Value="#E2E8F0"/>
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="Padding" Value="10,8"/>
@@ -22,7 +22,7 @@
 		<Style x:Key="FormLabel" TargetType="TextBlock">
 			<Setter Property="FontSize" Value="12"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
-			<Setter Property="Foreground" Value="#1F2937"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
 			<Setter Property="Margin" Value="0,12,0,6"/>
 		</Style>
 
@@ -57,7 +57,7 @@
 
 		<Style x:Key="GrayButton" TargetType="Button">
 			<Setter Property="Background" Value="#F1F5F9"/>
-			<Setter Property="Foreground" Value="#64748B"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
 			<Setter Property="FontSize" Value="13"/>
 			<Setter Property="Cursor" Value="Hand"/>
@@ -82,16 +82,16 @@
 		</Style>
 	</Window.Resources>
 
-	<Border Background="White">
+	<Border Background="{DynamicResource SurfaceBrush}">
 		<StackPanel Margin="24">
 			<!-- Header -->
 			<TextBlock Text="Create New User"
                        FontSize="18"
                        FontWeight="Bold"
-                       Foreground="#1F2937"/>
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
 			<TextBlock Text="Fill in the details to create a new user account"
                        FontSize="12"
-                       Foreground="#64748B"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
                        Margin="0,6,0,16"/>
 
 			<!-- Form -->
@@ -108,8 +108,8 @@
 			<TextBlock Text="Password"
                        Style="{StaticResource FormLabel}"/>
 			<PasswordBox x:Name="PasswordInput"
-                         Background="White"
-                         BorderBrush="#E2E8F0"
+                         Background="{DynamicResource SurfaceBrush}"
+                         BorderBrush="{DynamicResource BorderBrush}"
                          BorderThickness="1"
                          Padding="10,8"
                          FontSize="12"
@@ -118,8 +118,8 @@
 			<TextBlock Text="Confirm Password"
                        Style="{StaticResource FormLabel}"/>
 			<PasswordBox x:Name="ConfirmPasswordInput"
-                         Background="White"
-                         BorderBrush="#E2E8F0"
+                         Background="{DynamicResource SurfaceBrush}"
+                         BorderBrush="{DynamicResource BorderBrush}"
                          BorderThickness="1"
                          Padding="10,8"
                          FontSize="12"

@@ -25,17 +25,26 @@ namespace FinancyApplication
 		{
 			if (_existing == null)
 			{
-				// Add mode — populate currencies and preselect USD if present.
+				// Add mode: populate currencies and preselect USD
 				List<string> currencies = Account.GetCurrencies();
 				foreach (string c in currencies)
+				{
 					CurrencyCombo.Items.Add(c);
+				}
 
 				int usdIdx = currencies.FindIndex(c => c.StartsWith("USD"));
-				CurrencyCombo.SelectedIndex = usdIdx >= 0 ? usdIdx : 0;
+				if (usdIdx >= 0)
+				{
+					CurrencyCombo.SelectedIndex = usdIdx;
+				}
+				else
+				{
+					CurrencyCombo.SelectedIndex = 0;
+				}
 			}
 			else
 			{
-				// Edit mode — only the name is editable (Account class only exposes Rename).
+				// Edit mode: only name is editable
 				DialogTitle.Text = "Rename Account";
 				SaveButton.Content = "Save";
 				NameInput.Text = _existing.Name;
@@ -45,7 +54,12 @@ namespace FinancyApplication
 
 		private void Save_Click(object sender, RoutedEventArgs e)
 		{
-			string name = NameInput.Text?.Trim() ?? "";
+			string name = "";
+			if (NameInput.Text != null)
+			{
+				name = NameInput.Text.Trim();
+			}
+
 			if (string.IsNullOrWhiteSpace(name))
 			{
 				MessageBox.Show("Please enter an account name.",
@@ -57,7 +71,10 @@ namespace FinancyApplication
 			{
 				// Rename existing account
 				_existing.Rename(name);
-				Closed?.Invoke(true);
+				if (Closed != null)
+				{
+					Closed(true);
+				}
 				return;
 			}
 
@@ -73,7 +90,11 @@ namespace FinancyApplication
 			}
 
 			ComboBoxItem typeItem = AccountTypeCombo.SelectedItem as ComboBoxItem;
-			string accountType = typeItem?.Content?.ToString() ?? "Checking";
+			string accountType = "Checking";
+			if (typeItem != null && typeItem.Content != null)
+			{
+				accountType = typeItem.Content.ToString();
+			}
 
 			string currencyDropdownValue = CurrencyCombo.SelectedItem as string;
 			if (string.IsNullOrWhiteSpace(currencyDropdownValue))
@@ -86,14 +107,19 @@ namespace FinancyApplication
 			Account acc = new Account(_currentUser.UserID, name, accountType, balance, currencyDropdownValue);
 			if (acc.Save())
 			{
-				Closed?.Invoke(true);
+				if (Closed != null)
+				{
+					Closed(true);
+				}
 			}
-			// If Save() failed it already showed a MessageBox; leave the form open.
 		}
 
 		private void Cancel_Click(object sender, RoutedEventArgs e)
 		{
-			Closed?.Invoke(false);
+			if (Closed != null)
+			{
+				Closed(false);
+			}
 		}
 	}
 }

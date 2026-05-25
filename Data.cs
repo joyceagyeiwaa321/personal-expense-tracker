@@ -121,18 +121,35 @@ namespace FinancyApplication
 
 		public int InsertUser(User user, string password)
 		{
-			string query = "INSERT INTO user(Username, Email, Password, Role, CreatedAt, IsActive) VALUES('" +
-						   user.Username + "', '" + user.Email + "', '" + password + "', '" +
-						   user.Role + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 1);";
-			return this.Insert(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "INSERT INTO user(Username, Email, Password, Role, CreatedAt, IsActive) VALUES(@username, @email, @password, @role, @createdAt, 1)";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@username", user.Username);
+				cmd.Parameters.AddWithValue("@email", user.Email);
+				cmd.Parameters.AddWithValue("@password", password);
+				cmd.Parameters.AddWithValue("@role", user.Role.ToString());
+				cmd.Parameters.AddWithValue("@createdAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+					return (int)cmd.LastInsertedId;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("InsertUser failed: " + ex.Message);
+				}
+			}
 		}
 
 		public string GetPasswordHash(string email)
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "SELECT Password FROM user WHERE Email = '" + email + "' LIMIT 1";
+				string query = "SELECT Password FROM user WHERE Email = @email LIMIT 1";
 				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@email", email);
 				try
 				{
 					connection.Open();
@@ -174,8 +191,22 @@ namespace FinancyApplication
 
 		public void UpdateResetToken(string email, string token)
 		{
-			string query = "UPDATE user SET ResetToken = '" + token + "' WHERE Email = '" + email + "'";
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE user SET ResetToken = @token WHERE Email = @email";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@token", token);
+				cmd.Parameters.AddWithValue("@email", email);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateResetToken failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void UpdateUserStatus(int userId, bool isActive)
@@ -196,51 +227,164 @@ namespace FinancyApplication
 
 		public void UpdateUserRole(int userId, string role)
 		{
-			string query = "UPDATE user SET Role = '" + role + "' WHERE UserID = " + userId;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE user SET Role = @role WHERE UserID = " + userId;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@role", role);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateUserRole failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void UpdateUserPassword(int userId, string newHashedPassword)
 		{
-			string query = "UPDATE user SET Password = '" + newHashedPassword + "' WHERE UserID = " + userId;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE user SET Password = @password WHERE UserID = " + userId;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@password", newHashedPassword);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateUserPassword failed: " + ex.Message);
+				}
+			}
 		}
+
 		public void UpdateUsername(int userId, string newUsername)
 		{
-			string query = "UPDATE user SET Username = '" + newUsername + "' WHERE UserID = " + userId;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE user SET Username = @username WHERE UserID = " + userId;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@username", newUsername);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateUsername failed: " + ex.Message);
+				}
+			}
 		}
-
-
 		public void DeleteUser(int userId)
 		{
-			string query = "DELETE FROM user WHERE UserID = " + userId;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				try
+				{
+					connection.Open();
+
+					string[] queries = new string[]
+					{
+						"DELETE FROM receipt WHERE TransactionID IN (SELECT TransactionID FROM `transaction` WHERE UserID = " + userId + ")",
+						"DELETE FROM `transaction` WHERE UserID = " + userId,
+						"DELETE FROM recurring_transaction WHERE AccountID IN (SELECT AccountID FROM account WHERE UserID = " + userId + ")",
+						"DELETE FROM budget WHERE UserID = " + userId,
+						"DELETE FROM account WHERE UserID = " + userId,
+						"DELETE FROM category WHERE UserID = " + userId,
+						"DELETE FROM user_profile WHERE UserID = " + userId,
+						"DELETE FROM user WHERE UserID = " + userId
+					};
+
+					foreach (string q in queries)
+					{
+						MySqlCommand cmd = new MySqlCommand(q, connection);
+						cmd.ExecuteNonQuery();
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("Delete failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void UpdateProfile(UserProfile profile)
 		{
-			string query = "UPDATE user_profile SET FirstName='" + profile.FirstName + "', LastName='" + profile.LastName +
-						   "', PhoneNumber='" + profile.PhoneNumber + "', AvatarURL='" + profile.AvatarUrl +
-						   "', PreferedCurrency='" + profile.PreferredCurrency + "' WHERE UserID = " + profile.UserID + ";";
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE user_profile SET FirstName=@firstName, LastName=@lastName, PhoneNumber=@phone, AvatarURL=@avatar, PreferedCurrency=@currency WHERE UserID = " + profile.UserID;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@firstName", profile.FirstName);
+				cmd.Parameters.AddWithValue("@lastName", profile.LastName);
+				cmd.Parameters.AddWithValue("@phone", profile.PhoneNumber);
+				cmd.Parameters.AddWithValue("@avatar", profile.AvatarUrl);
+				cmd.Parameters.AddWithValue("@currency", profile.PreferredCurrency);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateProfile failed: " + ex.Message);
+				}
+			}
 		}
 
 		public int InsertProfile(UserProfile profile)
 		{
-			string query = "INSERT INTO user_profile(UserID, FirstName, LastName, PhoneNumber, AvatarURL, PreferedCurrency) " +
-						   "VALUES(" + profile.UserID + ", '" + profile.FirstName + "', '" + profile.LastName + "', '" +
-						   profile.PhoneNumber + "', '" + profile.AvatarUrl + "', '" + profile.PreferredCurrency + "');";
-			return this.Insert(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "INSERT INTO user_profile(UserID, FirstName, LastName, PhoneNumber, AvatarURL, PreferedCurrency) VALUES(@userId, @firstName, @lastName, @phone, @avatar, @currency)";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@userId", profile.UserID);
+				cmd.Parameters.AddWithValue("@firstName", profile.FirstName);
+				cmd.Parameters.AddWithValue("@lastName", profile.LastName);
+				cmd.Parameters.AddWithValue("@phone", profile.PhoneNumber);
+				cmd.Parameters.AddWithValue("@avatar", profile.AvatarUrl);
+				cmd.Parameters.AddWithValue("@currency", profile.PreferredCurrency);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+					return (int)cmd.LastInsertedId;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("InsertProfile failed: " + ex.Message);
+				}
+			}
 		}
 
 		public int InsertAccount(Account acc)
 		{
-			string balance = acc.Balance.ToString(System.Globalization.CultureInfo.InvariantCulture);
-			string query = "INSERT INTO account(UserID, Name, AccountType, Balance, Currency, CreatedAt) VALUES(" +
-						   acc.UserID + ", '" + acc.Name + "', '" + acc.AccountType + "', " + balance +
-						   ", '" + acc.Currency + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');";
-			return this.Insert(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "INSERT INTO account(UserID, Name, AccountType, Balance, Currency, CreatedAt) VALUES(@userId, @name, @type, @balance, @currency, @createdAt)";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@userId", acc.UserID);
+				cmd.Parameters.AddWithValue("@name", acc.Name);
+				cmd.Parameters.AddWithValue("@type", acc.AccountType);
+				cmd.Parameters.AddWithValue("@balance", acc.Balance.ToString(System.Globalization.CultureInfo.InvariantCulture));
+				cmd.Parameters.AddWithValue("@currency", acc.Currency);
+				cmd.Parameters.AddWithValue("@createdAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+					return (int)cmd.LastInsertedId;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("InsertAccount failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void UpdateAccountBalance(int accountId, decimal amount)
@@ -252,8 +396,21 @@ namespace FinancyApplication
 
 		public void RenameAccount(int accountId, string newName)
 		{
-			string query = "UPDATE account SET Name = '" + newName + "' WHERE AccountID = " + accountId;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE account SET Name = @name WHERE AccountID = " + accountId;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@name", newName);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("RenameAccount failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void DeleteAccount(int accountId)
@@ -379,7 +536,6 @@ namespace FinancyApplication
 			return transactions;
 		}
 
-		// All-time version used by the Transactions page (filtering done client-side)
 		public List<Transaction> GetTransactionsByUser(int userId)
 		{
 			List<Transaction> transactions = new List<Transaction>();
@@ -469,19 +625,32 @@ namespace FinancyApplication
 
 		public int InsertTransaction(Transaction t)
 		{
-			string amount = t.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture);
-
-			string gIDValue = "NULL";
-			if (t.GroupID > 0)
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				gIDValue = t.GroupID.ToString();
-			}
+				string gIDValue = "NULL";
+				if (t.GroupID > 0)
+				{
+					gIDValue = t.GroupID.ToString();
+				}
 
-			string query = "INSERT INTO `transaction` (UserID, AccountID, CategoryID, GroupID, Type, Amount, Description, `Date`) " +
-						   "VALUES (" + t.UserID + ", " + t.AccountID + ", " + t.CategoryID + ", " + gIDValue + ", '" + t.Type + "', " +
-						   amount + ", '" + t.Description + "', '" +
-						   t.Date.ToString("yyyy-MM-dd HH:mm:ss") + "');";
-			return this.Insert(query);
+				string query = "INSERT INTO `transaction` (UserID, AccountID, CategoryID, GroupID, Type, Amount, Description, `Date`) " +
+							   "VALUES (" + t.UserID + ", " + t.AccountID + ", " + t.CategoryID + ", " + gIDValue + ", @type, " +
+							   t.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture) + ", @description, '" +
+							   t.Date.ToString("yyyy-MM-dd HH:mm:ss") + "')";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@type", t.Type);
+				cmd.Parameters.AddWithValue("@description", t.Description);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+					return (int)cmd.LastInsertedId;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("InsertTransaction failed: " + ex.Message);
+				}
+			}
 		}
 
 		public int InsertGroup(Group group)
@@ -548,12 +717,25 @@ namespace FinancyApplication
 
 		public void UpdateTransaction(Transaction t)
 		{
-			string amount = t.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture);
-			string query = "UPDATE `transaction` SET CategoryID = " + t.CategoryID + ", Type = '" + t.Type +
-						   "', Amount = " + amount + ", Description = '" + t.Description +
-						   "', `Date` = '" + t.Date.ToString("yyyy-MM-dd HH:mm:ss") +
-						   "' WHERE TransactionID = " + t.TransactionID;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE `transaction` SET CategoryID = " + t.CategoryID + ", Type = @type" +
+							   ", Amount = " + t.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture) + ", Description = @description" +
+							   ", `Date` = '" + t.Date.ToString("yyyy-MM-dd HH:mm:ss") +
+							   "' WHERE TransactionID = " + t.TransactionID;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@type", t.Type);
+				cmd.Parameters.AddWithValue("@description", t.Description);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateTransaction failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void DeleteTransaction(int transactionId)
@@ -586,15 +768,42 @@ namespace FinancyApplication
 				defaultVal = 0;
 			}
 
-			string query = "INSERT INTO category(UserID, Name, Type, IsDefault) VALUES(" +
-						   cat.UserID + ", '" + cat.Name + "', '" + cat.Type + "', " + defaultVal + ");";
-			return this.Insert(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "INSERT INTO category(UserID, Name, Type, IsDefault) VALUES(" + cat.UserID + ", @name, @type, " + defaultVal + ")";
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@name", cat.Name);
+				cmd.Parameters.AddWithValue("@type", cat.Type);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+					return (int)cmd.LastInsertedId;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("InsertCategory failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void UpdateCategory(int categoryId, string newName)
 		{
-			string query = "UPDATE category SET Name = '" + newName + "' WHERE CategoryID = " + categoryId;
-			this.ExecuteSimple(query);
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				string query = "UPDATE category SET Name = @name WHERE CategoryID = " + categoryId;
+				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@name", newName);
+				try
+				{
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("UpdateCategory failed: " + ex.Message);
+				}
+			}
 		}
 
 		public void DeleteCategory(int categoryId)
@@ -632,13 +841,6 @@ namespace FinancyApplication
 			}
 			return categories;
 		}
-
-		public void DeleteProfile(int userId)
-		{
-			string query = "DELETE FROM user_profile WHERE UserID = " + userId;
-			this.ExecuteSimple(query);
-		}
-
 		public void UpdateVerificationStatus(int userId, bool isVerified)
 		{
 			int val;
@@ -653,31 +855,13 @@ namespace FinancyApplication
 			string query = "UPDATE user SET IsVerified = " + val + " WHERE UserID = " + userId;
 			this.ExecuteSimple(query);
 		}
-
-		public bool GetVerificationStatus(int userId)
-		{
-			using (MySqlConnection connection = new MySqlConnection(connectionString))
-			{
-				string query = "SELECT IsVerified FROM user WHERE UserID = " + userId;
-				MySqlCommand cmd = new MySqlCommand(query, connection);
-				try
-				{
-					connection.Open();
-					return Convert.ToInt32(cmd.ExecuteScalar()) == 1;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("GetVerificationStatus failed: " + ex.Message);
-				}
-			}
-		}
-
 		public string GetResetToken(string email)
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "SELECT ResetToken FROM user WHERE Email = '" + email + "' LIMIT 1";
+				string query = "SELECT ResetToken FROM user WHERE Email = @email LIMIT 1";
 				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@email", email);
 
 				try
 				{
@@ -844,7 +1028,6 @@ namespace FinancyApplication
 			this.ExecuteSimple(query);
 		}
 
-		// Recurring rows for one user — joined through the account they belong to
 		public List<RecurringTransaction> GetRecurringByUser(int userId)
 		{
 			List<RecurringTransaction> list = new List<RecurringTransaction>();
@@ -1038,33 +1221,21 @@ namespace FinancyApplication
 				}
 			}
 		}
-
-		public bool ResendVerification(string email, string username)
-		{
-			string newCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
-
-			try
-			{
-				string query = "UPDATE user SET ResetToken = '" + newCode + "' WHERE Email = '" + email + "'";
-				this.ExecuteSimple(query);
-
-				EmailService mail = new EmailService();
-				return mail.SendVerificationCode(email, username, newCode);
-			}
-			catch
-			{
-				return false;
-			}
-		}
-
 		public bool ResendPasswordReset(string email, string username)
 		{
 			string newCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
 
 			try
 			{
-				string query = "UPDATE user SET ResetToken = '" + newCode + "' WHERE Email = '" + email + "'";
-				this.ExecuteSimple(query);
+				using (MySqlConnection connection = new MySqlConnection(connectionString))
+				{
+					string query = "UPDATE user SET ResetToken = @token WHERE Email = @email";
+					MySqlCommand cmd = new MySqlCommand(query, connection);
+					cmd.Parameters.AddWithValue("@token", newCode);
+					cmd.Parameters.AddWithValue("@email", email);
+					connection.Open();
+					cmd.ExecuteNonQuery();
+				}
 
 				EmailService mail = new EmailService();
 				return mail.SendResetToken(email, username, newCode);
@@ -1079,8 +1250,9 @@ namespace FinancyApplication
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "SELECT COUNT(*) FROM user WHERE Email = '" + email + "'";
+				string query = "SELECT COUNT(*) FROM user WHERE Email = @email";
 				MySqlCommand cmd = new MySqlCommand(query, connection);
+				cmd.Parameters.AddWithValue("@email", email);
 				try
 				{
 					connection.Open();
@@ -1113,7 +1285,14 @@ namespace FinancyApplication
 							u.UserID = Convert.ToInt32(reader["UserID"]);
 							u.Username = reader["Username"].ToString();
 							u.Email = reader["Email"].ToString();
-							u.Role = reader["Role"].ToString() == "Admin" ? UserRole.Admin : UserRole.User;
+							if (reader["Role"].ToString() == "Admin")
+							{
+								u.Role = UserRole.Admin;
+							}
+							else
+							{
+								u.Role = UserRole.User;
+							}
 							u.IsActive = Convert.ToInt32(reader["IsActive"]) == 1;
 							return u;
 						}
