@@ -81,6 +81,7 @@
 		</Style>
 	</UserControl.Resources>
 
+	<Border>
 		<Border.Effect>
 			<DropShadowEffect BlurRadius="18" ShadowDepth="3" Opacity="0.18"/>
 		</Border.Effect>

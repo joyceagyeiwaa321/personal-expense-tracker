@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace FinancyApplication
 {
-    public class TransactionViewModel
+    public class DashboardTransactionViewModel
     {
         public string Description { get; set; }
         public string Category { get; set; }
@@ -103,7 +103,7 @@ namespace FinancyApplication
                 var cats = db.GetCategoriesByUser(_currentUser.UserID)
                              .ToDictionary(c => c.CategoryID, c => c.Name);
 
-                TxTable.ItemsSource = txs.Select(t => new TransactionViewModel
+                TxTable.ItemsSource = txs.Select(t => new DashboardTransactionViewModel
                 {
                     Description = string.IsNullOrWhiteSpace(t.Description) ? "—" : t.Description,
                     Category = cats.ContainsKey(t.CategoryID) ? cats[t.CategoryID] : "Uncategorised",

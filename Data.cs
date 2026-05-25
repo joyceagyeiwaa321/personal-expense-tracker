@@ -8,7 +8,7 @@ namespace FinancyApplication
 {
 	public class Data
 	{
-		private string connectionString = "datasource=127.0.0.1;port=3308;username=root;password=;database=expense_tracker;";
+		private string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=expense_tracker;";
 
 		private int Insert(string query)
 		{
@@ -1403,5 +1403,209 @@ namespace FinancyApplication
 			}
 			return accounts;
 		}
-	}
+
+        public List<Group> GetGroupsByUser(int userId)
+        {
+            List<Group> groups = new List<Group>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT g.* FROM `group` g " +
+                               "INNER JOIN group_member gm ON g.GroupID = gm.GroupID " +
+                               "WHERE gm.UserID = @userId";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@userId", userId);
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        groups.Add(new Group
+                        {
+                            GroupID = Convert.ToInt32(reader["GroupID"]),
+                            CreatedByUserID = Convert.ToInt32(reader["CreatedByUserID"]),
+                            Name = reader["Name"].ToString(),
+                            Description = reader["Description"].ToString(),
+                            InviteCode = reader["InviteCode"].ToString(),
+                            CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                        });
+                    }
+                }
+                catch (Exception ex) { throw new Exception("GetGroupsByUser failed: " + ex.Message); }
+            }
+            return groups;
+        }
+
+        public void CreateGroupInvite(int groupId, int fromUserId, int toUserId)
+        {
+            using (MySqlConnection con = new MySqlConnection(connectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand(
+                    "INSERT INTO groupinvites (GroupID, FromUserID, ToUserID) VALUES (@g, @f, @t)", con);
+                cmd.Parameters.AddWithValue("@g", groupId);
+                cmd.Parameters.AddWithValue("@f", fromUserId);
+                cmd.Parameters.AddWithValue("@t", toUserId);
+                try { con.Open(); cmd.ExecuteNonQuery(); }
+                catch (Exception ex) { throw new Exception("CreateGroupInvite failed: " + ex.Message); }
+            }
+        }
+
+        public List<GroupInvite> GetPendingInvites(int toUserId)
+        {
+            var list = new List<GroupInvite>();
+            using (MySqlConnection con = new MySqlConnection(connectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand(
+                    "SELECT * FROM groupinvites WHERE ToUserID = @u AND Status = 'Pending'", con);
+                cmd.Parameters.AddWithValue("@u", toUserId);
+                try
+                {
+                    con.Open();
+                    MySqlDataReader r = cmd.ExecuteReader();
+                    while (r.Read())
+                        list.Add(new GroupInvite
+                        {
+                            InviteID = Convert.ToInt32(r["InviteID"]),
+                            GroupID = Convert.ToInt32(r["GroupID"]),
+                            FromUserID = Convert.ToInt32(r["FromUserID"]),
+                            ToUserID = Convert.ToInt32(r["ToUserID"]),
+                            Status = r["Status"].ToString(),
+                            SentAt = Convert.ToDateTime(r["SentAt"])
+                        });
+                }
+                catch (Exception ex) { throw new Exception("GetPendingInvites failed: " + ex.Message); }
+            }
+            return list;
+        }
+
+        public void RespondToInvite(int inviteId, bool accepted)
+        {
+            using (MySqlConnection con = new MySqlConnection(connectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand(
+                    "UPDATE groupinvites SET Status = @s WHERE InviteID = @i", con);
+                cmd.Parameters.AddWithValue("@s", accepted ? "Accepted" : "Declined");
+                cmd.Parameters.AddWithValue("@i", inviteId);
+                try { con.Open(); cmd.ExecuteNonQuery(); }
+                catch (Exception ex) { throw new Exception("RespondToInvite failed: " + ex.Message); }
+            }
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            using (MySqlConnection con = new MySqlConnection(connectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM user WHERE Username = @u LIMIT 1", con);
+                cmd.Parameters.AddWithValue("@u", username);
+                try
+                {
+                    con.Open();
+                    MySqlDataReader r = cmd.ExecuteReader();
+                    if (r.Read())
+                        return new User
+                        {
+                            UserID = Convert.ToInt32(r["UserID"]),
+                            Username = r["Username"].ToString()
+                        };
+                    return null;
+                }
+                catch (Exception ex) { throw new Exception("GetUserByUsername failed: " + ex.Message); }
+            }
+        }
+
+        public Dictionary<int, string> GetAllCategoriesRaw()
+        {
+            var dict = new Dictionary<int, string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT CategoryID, Name FROM category";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                        dict[Convert.ToInt32(reader["CategoryID"])] = reader["Name"].ToString();
+                }
+                catch (Exception ex) { throw new Exception("GetAllCategoriesRaw failed: " + ex.Message); }
+            }
+            return dict;
+        }
+
+        public string GetCategoryName(int categoryId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT Name FROM category WHERE CategoryID = " + categoryId;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                try
+                {
+                    connection.Open();
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? result.ToString() : "—";
+                }
+                catch { return "—"; }
+            }
+        }
+
+        public void UpdateTransactionStatus(int transactionId, string status)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "UPDATE `transaction` SET Status = @status WHERE TransactionID = " + transactionId;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@status", status);
+                try
+                {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex) { throw new Exception("UpdateTransactionStatus failed: " + ex.Message); }
+            }
+        }
+
+        public void DeleteProfile(int userId)
+        {
+            string query = "DELETE FROM user_profile WHERE UserID = " + userId;
+            this.ExecuteSimple(query);
+        }
+
+        public bool GetVerificationStatus(int userId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT IsVerified FROM user WHERE UserID = " + userId;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                try
+                {
+                    connection.Open();
+                    return Convert.ToInt32(cmd.ExecuteScalar()) == 1;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("GetVerificationStatus failed: " + ex.Message);
+                }
+            }
+        }
+
+        public bool ResendVerification(string email, string username)
+        {
+            string newCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    string query = "UPDATE user SET ResetToken = @token WHERE Email = @email";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@token", newCode);
+                    cmd.Parameters.AddWithValue("@email", email);
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                EmailService mail = new EmailService();
+                return mail.SendVerificationCode(email, username, newCode);
+            }
+            catch { return false; }
+        }
+    }
 }
