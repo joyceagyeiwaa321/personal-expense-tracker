@@ -1,12 +1,12 @@
 <UserControl x:Class="FinancyApplication.CategoriesView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Background="#F4F6F8"
+        Background="{DynamicResource BackgroundBrush}"
         FontFamily="Segoe UI Variable Display">
 
 	<UserControl.Resources>
 		<Style x:Key="CardStyle" TargetType="Border">
-			<Setter Property="Background" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 			<Setter Property="CornerRadius" Value="12"/>
 			<Setter Property="Padding" Value="24"/>
 			<Setter Property="Effect">
@@ -45,7 +45,7 @@
 		<Style x:Key="CategoryRow" TargetType="Border">
 			<Setter Property="CornerRadius" Value="10"/>
 			<Setter Property="Padding" Value="14,10"/>
-			<Setter Property="Background" Value="#F9FAFB"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}"/>
 			<Setter Property="BorderBrush" Value="#E5E7EB"/>
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="Margin" Value="0,0,0,8"/>
@@ -68,9 +68,9 @@
 
 					<StackPanel>
 						<TextBlock Text="Categories"
-                                   FontSize="26" FontWeight="Bold" Foreground="#1F2937"/>
+                                   FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
 						<TextBlock Text="Organize what your money is for."
-                                   FontSize="13" Foreground="#64748B" Margin="0,4,0,0"/>
+                                   FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"/>
 					</StackPanel>
 
 					<Button Grid.Column="1"
@@ -99,11 +99,11 @@
 								<TextBlock Text="Income Categories"
                                            FontSize="16"
                                            FontWeight="SemiBold"
-                                           Foreground="#1F2937"/>
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
 								<TextBlock x:Name="IncomeCount"
                                            Text=" (0)"
                                            FontSize="13"
-                                           Foreground="#94A3B8"
+                                           Foreground="{DynamicResource TextMutedBrush}"
                                            VerticalAlignment="Center"/>
 							</StackPanel>
 
@@ -121,15 +121,15 @@
 													<TextBlock Text="{Binding Name}"
                                                                FontSize="13"
                                                                FontWeight="SemiBold"
-                                                               Foreground="#1F2937"/>
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
 													<Border CornerRadius="999" Padding="8,2"
-                                                            Background="#E0F2F1"
+                                                            Background="{DynamicResource AccentMutedBrush}"
                                                             Margin="10,0,0,0"
                                                             Visibility="{Binding DefaultBadgeVisibility}">
 														<TextBlock Text="Default"
                                                                    FontSize="10"
                                                                    FontWeight="SemiBold"
-                                                                   Foreground="#00695C"/>
+                                                                   Foreground="{DynamicResource AccentBrush}"/>
 													</Border>
 												</StackPanel>
 
@@ -165,7 +165,7 @@
 							<TextBlock x:Name="IncomeEmpty"
                                        Text="No income categories yet."
                                        FontSize="12"
-                                       Foreground="#94A3B8"
+                                       Foreground="{DynamicResource TextMutedBrush}"
                                        HorizontalAlignment="Center"
                                        Margin="0,20,0,10"
                                        Visibility="Collapsed"/>
@@ -184,11 +184,11 @@
 								<TextBlock Text="Expense Categories"
                                            FontSize="16"
                                            FontWeight="SemiBold"
-                                           Foreground="#1F2937"/>
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
 								<TextBlock x:Name="ExpenseCount"
                                            Text=" (0)"
                                            FontSize="13"
-                                           Foreground="#94A3B8"
+                                           Foreground="{DynamicResource TextMutedBrush}"
                                            VerticalAlignment="Center"/>
 							</StackPanel>
 
@@ -206,15 +206,15 @@
 													<TextBlock Text="{Binding Name}"
                                                                FontSize="13"
                                                                FontWeight="SemiBold"
-                                                               Foreground="#1F2937"/>
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
 													<Border CornerRadius="999" Padding="8,2"
-                                                            Background="#E0F2F1"
+                                                            Background="{DynamicResource AccentMutedBrush}"
                                                             Margin="10,0,0,0"
                                                             Visibility="{Binding DefaultBadgeVisibility}">
 														<TextBlock Text="Default"
                                                                    FontSize="10"
                                                                    FontWeight="SemiBold"
-                                                                   Foreground="#00695C"/>
+                                                                   Foreground="{DynamicResource AccentBrush}"/>
 													</Border>
 												</StackPanel>
 
@@ -250,7 +250,7 @@
 							<TextBlock x:Name="ExpenseEmpty"
                                        Text="No expense categories yet."
                                        FontSize="12"
-                                       Foreground="#94A3B8"
+                                       Foreground="{DynamicResource TextMutedBrush}"
                                        HorizontalAlignment="Center"
                                        Margin="0,20,0,10"
                                        Visibility="Collapsed"/>
@@ -258,10 +258,9 @@
 					</Border>
 				</Grid>
 
-				<!-- HINT -->
-				<TextBlock Text="Default categories can be renamed but not deleted — they keep your historical data tidy."
+				<TextBlock Text="Default categories can be renamed but not deleted."
                            FontSize="12"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource TextMutedBrush}"
                            Margin="0,16,0,0"
                            HorizontalAlignment="Center"/>
 			</StackPanel>

@@ -69,8 +69,8 @@
 			<Setter Property="Padding" Value="10,0"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
 			<Setter Property="FontSize" Value="13"/>
-			<Setter Property="Foreground" Value="#1F2937"/>
-			<Setter Property="Background" Value="#F9FAFB"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}"/>
 			<Setter Property="BorderBrush" Value="#E5E7EB"/>
 			<Setter Property="BorderThickness" Value="1.5"/>
 		</Style>
@@ -83,7 +83,7 @@
 		</Style>
 	</UserControl.Resources>
 
-	<Border Background="White" CornerRadius="12">
+	<Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12">
 		<Border.Effect>
 			<DropShadowEffect BlurRadius="18" ShadowDepth="3" Opacity="0.18"/>
 		</Border.Effect>
@@ -93,10 +93,10 @@
 
 				<TextBlock Text="Add Recurring Transaction"
                            FontSize="18" FontWeight="Bold"
-                           Foreground="#1F2937"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            Margin="0,0,0,4"/>
 				<TextBlock Text="Schedule an income or expense that repeats automatically."
-                           FontSize="12" Foreground="#64748B"
+                           FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                            Margin="0,0,0,18"/>
 
 				<TextBlock Text="Type" Style="{StaticResource FieldLabel}"/>

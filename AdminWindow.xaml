@@ -5,7 +5,7 @@
         Width="1240"
         Height="780"
         WindowStartupLocation="CenterScreen"
-        Background="#F8FAFC"
+        Background="{DynamicResource BackgroundBrush}"
         FontFamily="Segoe UI Variable Display">
 
 	<Window.Resources>
@@ -14,12 +14,10 @@
 		<SolidColorBrush x:Key="TealBrush" Color="#00B894"/>
 		<SolidColorBrush x:Key="TealDarkBrush" Color="#00796B"/>
 		<SolidColorBrush x:Key="TealTintBrush" Color="#E0F2F1"/>
-		<SolidColorBrush x:Key="TextDarkBrush" Color="#1F2937"/>
-		<SolidColorBrush x:Key="TextMutedBrush" Color="#64748B"/>
 		<SolidColorBrush x:Key="BorderBrushSoft" Color="#EEF2F6"/>
 
 		<Style x:Key="CardStyle" TargetType="Border">
-			<Setter Property="Background" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 			<Setter Property="CornerRadius" Value="14"/>
 			<Setter Property="Padding" Value="22"/>
 			<Setter Property="Effect">
@@ -63,7 +61,7 @@
 
 		<!-- Secondary outline -->
 		<Style x:Key="GhostButton" TargetType="Button">
-			<Setter Property="Background" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 			<Setter Property="Foreground" Value="#00796B"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
 			<Setter Property="FontSize" Value="13"/>
@@ -152,7 +150,7 @@
 		<!-- Sidebar nav item -->
 		<Style x:Key="NavItem" TargetType="Button">
 			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="Foreground" Value="#64748B"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
 			<Setter Property="HorizontalContentAlignment" Value="Left"/>
 			<Setter Property="FontSize" Value="13"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
@@ -207,7 +205,7 @@
 	<DockPanel>
 
 		<!-- ═══════════════════════════ LEFT SIDEBAR ═══════════════════════════ -->
-		<Border DockPanel.Dock="Left" Width="230" Background="White"
+		<Border DockPanel.Dock="Left" Width="230" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{StaticResource BorderBrushSoft}" BorderThickness="0,0,1,0">
 			<DockPanel>
 
@@ -220,8 +218,8 @@
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 						</Border>
 						<StackPanel VerticalAlignment="Center">
-							<TextBlock Text="Financy" FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
-							<TextBlock Text="Admin Console" FontSize="10" Foreground="#94A3B8"/>
+							<TextBlock Text="Financy" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+							<TextBlock Text="Admin Console" FontSize="10" Foreground="{DynamicResource TextMutedBrush}"/>
 						</StackPanel>
 					</StackPanel>
 				</Border>
@@ -241,7 +239,7 @@
 
 				<!-- Section label -->
 				<TextBlock DockPanel.Dock="Top" Text="MENU"
-                           FontSize="10" FontWeight="Bold" Foreground="#94A3B8"
+                           FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}"
                            Margin="26,8,0,8"/>
 
 				<!-- Nav items -->
@@ -305,9 +303,9 @@
 						<TextBlock x:Name="AdminGreeting"
                                    Text="Hello, admin"
                                    FontSize="20" FontWeight="Bold"
-                                   Foreground="#1F2937"/>
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
 						<TextBlock Text="Welcome back to your admin console."
-                                   FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
 					</StackPanel>
 
 					<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -318,16 +316,21 @@
                                 FocusVisualStyle="{x:Null}">
 							<Button.Template>
 								<ControlTemplate TargetType="Button">
-									<Border x:Name="bg" Width="40" Height="40" CornerRadius="20"
-                                            Background="#00B894">
-										<TextBlock x:Name="AdminInitial"
-                                                   Text="A"
-                                                   Foreground="White"
-                                                   FontSize="17"
-                                                   FontWeight="Bold"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
-									</Border>
+									<Grid>
+										<Border x:Name="bg" Width="40" Height="40" CornerRadius="20"
+                                                Background="#00B894">
+											<TextBlock x:Name="AdminInitial"
+                                                       Text="A"
+                                                       Foreground="White"
+                                                       FontSize="17"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+										</Border>
+										<Border Width="40" Height="40" CornerRadius="20" ClipToBounds="True">
+											<Image x:Name="AdminNavImage" Stretch="UniformToFill" Visibility="Collapsed"/>
+										</Border>
+									</Grid>
 									<ControlTemplate.Triggers>
 										<Trigger Property="IsMouseOver" Value="True">
 											<Setter TargetName="bg" Property="Background" Value="#00967A"/>
@@ -353,9 +356,9 @@
 						<Grid Margin="0,0,0,18">
 							<StackPanel>
 								<TextBlock Text="Access Management"
-                                           FontSize="22" FontWeight="Bold" Foreground="#1F2937"/>
+                                           FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
 								<TextBlock Text="Manage users, roles, and system-wide statistics."
-                                           FontSize="12" Foreground="#64748B" Margin="0,4,0,0"/>
+                                           FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"/>
 							</StackPanel>
 
 							<StackPanel Orientation="Horizontal"
@@ -384,7 +387,7 @@
 									<StackPanel VerticalAlignment="Center">
 										<TextBlock x:Name="KpiUsers" Text="0"
                                                    FontSize="20" FontWeight="Bold" Foreground="#00B894"/>
-										<TextBlock Text="Total Users" FontSize="11" Foreground="#94A3B8"/>
+										<TextBlock Text="Total Users" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
 									</StackPanel>
 								</StackPanel>
 							</Border>
@@ -399,7 +402,7 @@
 									<StackPanel VerticalAlignment="Center">
 										<TextBlock x:Name="KpiActive" Text="0"
                                                    FontSize="20" FontWeight="Bold" Foreground="#00B894"/>
-										<TextBlock Text="Active Users" FontSize="11" Foreground="#94A3B8"/>
+										<TextBlock Text="Active Users" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
 									</StackPanel>
 								</StackPanel>
 							</Border>
@@ -414,7 +417,7 @@
 									<StackPanel VerticalAlignment="Center">
 										<TextBlock x:Name="KpiInactive" Text="0"
                                                    FontSize="20" FontWeight="Bold" Foreground="#EF4444"/>
-										<TextBlock Text="Inactive" FontSize="11" Foreground="#94A3B8"/>
+										<TextBlock Text="Inactive" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
 									</StackPanel>
 								</StackPanel>
 							</Border>
@@ -429,7 +432,7 @@
 									<StackPanel VerticalAlignment="Center">
 										<TextBlock x:Name="KpiAccounts" Text="0"
                                                    FontSize="20" FontWeight="Bold" Foreground="#00B894"/>
-										<TextBlock Text="Accounts" FontSize="11" Foreground="#94A3B8"/>
+										<TextBlock Text="Accounts" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
 									</StackPanel>
 								</StackPanel>
 							</Border>
@@ -444,7 +447,7 @@
 									<StackPanel VerticalAlignment="Center">
 										<TextBlock x:Name="KpiTransactions" Text="0"
                                                    FontSize="20" FontWeight="Bold" Foreground="#00B894"/>
-										<TextBlock Text="Transactions" FontSize="11" Foreground="#94A3B8"/>
+										<TextBlock Text="Transactions" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
 									</StackPanel>
 								</StackPanel>
 							</Border>
@@ -456,10 +459,10 @@
 								<Grid Margin="0,0,0,14">
 									<StackPanel>
 										<TextBlock Text="Users"
-                                                   FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+                                                   FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
 										<TextBlock x:Name="UsersSubtitle"
                                                    Text="Everyone registered on Financy."
-                                                   FontSize="12" Foreground="#94A3B8" Margin="0,3,0,0"/>
+                                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,3,0,0"/>
 									</StackPanel>
 
 									<StackPanel Orientation="Horizontal"
@@ -474,7 +477,7 @@
                                                 Height="36">
 											<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 												<TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
-                                                           Foreground="#94A3B8" FontSize="12"
+                                                           Foreground="{DynamicResource TextMutedBrush}" FontSize="12"
                                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
 												<TextBox x:Name="SearchBox"
                                                          Width="220"
@@ -482,7 +485,7 @@
                                                          BorderThickness="0"
                                                          Background="Transparent"
                                                          FontSize="12"
-                                                         Foreground="#1F2937"
+                                                         Foreground="{DynamicResource TextPrimaryBrush}"
                                                          TextChanged="SearchBox_TextChanged"/>
 											</StackPanel>
 										</Border>
@@ -506,8 +509,8 @@
                                           HeadersVisibility="Column"
                                           GridLinesVisibility="None"
                                           BorderThickness="0"
-                                          Background="White"
-                                          RowBackground="White"
+                                          Background="{DynamicResource SurfaceBrush}"
+                                          RowBackground="{DynamicResource SurfaceBrush}"
                                           AlternatingRowBackground="#FAFBFC"
                                           CanUserAddRows="False"
                                           CanUserResizeRows="False"
@@ -517,11 +520,11 @@
                                           RowHeight="46"
                                           ColumnHeaderHeight="40"
                                           FontSize="13"
-                                          Foreground="#1F2937">
+                                          Foreground="{DynamicResource TextPrimaryBrush}">
 									<DataGrid.ColumnHeaderStyle>
 										<Style TargetType="DataGridColumnHeader">
 											<Setter Property="Background" Value="#F8FAFC"/>
-											<Setter Property="Foreground" Value="#64748B"/>
+											<Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
 											<Setter Property="FontSize" Value="11"/>
 											<Setter Property="FontWeight" Value="SemiBold"/>
 											<Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -586,7 +589,7 @@
 
 								<TextBlock x:Name="UsersEmpty"
                                            Text="No users match the current filters."
-                                           Foreground="#64748B"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
                                            FontSize="13"
                                            HorizontalAlignment="Center"
                                            Margin="0,16,0,4"
@@ -595,7 +598,7 @@
 						</Border>
 
 						<TextBlock Text="© 2026 Financy Application — Admin Console"
-                                   Foreground="#94A3B8"
+                                   Foreground="{DynamicResource TextMutedBrush}"
                                    FontSize="11"
                                    Margin="0,18,0,0"/>
 					</StackPanel>
@@ -662,15 +665,15 @@
 										</Button.Template>
 									</Button>
 									<TextBlock Text="My Profile"
-                                               FontSize="22" FontWeight="Bold" Foreground="#1F2937"
+                                               FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
                                                HorizontalAlignment="Center" Margin="0,14,0,2"/>
 									<TextBlock Text="Click your photo to change it"
-                                               FontSize="12" Foreground="#64748B"
+                                               FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                                HorizontalAlignment="Center"/>
 								</StackPanel>
 
 								<TextBlock Text="PERSONAL INFORMATION"
-                                           FontSize="11" FontWeight="Bold" Foreground="#94A3B8"
+                                           FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}"
                                            Margin="0,8,0,12"/>
 
 								<Grid Margin="0,0,0,16">
@@ -680,16 +683,16 @@
 										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
 									<StackPanel Grid.Column="0">
-										<TextBlock Text="First Name" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
-										<TextBox x:Name="ProfileFirstName" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" Padding="10,8" FontSize="13" Height="38"/>
+										<TextBlock Text="First Name" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+										<TextBox x:Name="ProfileFirstName" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10,8" FontSize="13" Height="38"/>
 									</StackPanel>
 									<StackPanel Grid.Column="2">
-										<TextBlock Text="Last Name" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
-										<TextBox x:Name="ProfileLastName" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" Padding="10,8" FontSize="13" Height="38"/>
+										<TextBlock Text="Last Name" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+										<TextBox x:Name="ProfileLastName" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10,8" FontSize="13" Height="38"/>
 									</StackPanel>
 								</Grid>
 
-								<TextBlock Text="Phone Number" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+								<TextBlock Text="Phone Number" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
 								<Grid Margin="0,0,0,8">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto"/>
@@ -699,8 +702,8 @@
                                               Grid.Column="0"
                                               Height="38" Width="110"
                                               FontSize="12"
-                                              Background="White"
-                                              BorderBrush="#E2E8F0"
+                                              Background="{DynamicResource SurfaceBrush}"
+                                              BorderBrush="{DynamicResource BorderBrush}"
                                               Margin="0,0,10,0"
                                               VerticalContentAlignment="Center"
                                               Cursor="Hand">
@@ -714,12 +717,12 @@
 										</ComboBox.ItemTemplate>
 									</ComboBox>
 									<TextBox x:Name="AdminProfilePhone" Grid.Column="1"
-                                             Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                                             Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                              Padding="10,8" FontSize="13" Height="38"/>
 								</Grid>
 
 								<TextBlock Text="ACCOUNT INFORMATION"
-                                           FontSize="11" FontWeight="Bold" Foreground="#94A3B8"
+                                           FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}"
                                            Margin="0,22,0,12"/>
 
 								<Grid Margin="0,0,0,16">
@@ -729,12 +732,12 @@
 										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
 									<StackPanel Grid.Column="0">
-										<TextBlock Text="Email" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
-										<TextBox x:Name="ProfileEmail" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Padding="10,8" FontSize="13" Height="38" IsReadOnly="True"/>
+										<TextBlock Text="Email" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+										<TextBox x:Name="ProfileEmail" Background="#F8FAFC" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10,8" FontSize="13" Height="38" IsReadOnly="True"/>
 									</StackPanel>
 									<StackPanel Grid.Column="2">
-										<TextBlock Text="Role" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
-										<TextBox x:Name="ProfileRole" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Padding="10,8" FontSize="13" Height="38" IsReadOnly="True"/>
+										<TextBlock Text="Role" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+										<TextBox x:Name="ProfileRole" Background="#F8FAFC" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10,8" FontSize="13" Height="38" IsReadOnly="True"/>
 									</StackPanel>
 								</Grid>
 
@@ -774,18 +777,18 @@
 						<Border Style="{StaticResource CardStyle}" Padding="32">
 							<StackPanel>
 								<TextBlock Text="Create New User"
-                                           FontSize="22" FontWeight="Bold" Foreground="#1F2937"/>
+                                           FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
 								<TextBlock Text="Fill in the details to create a new user account."
-                                           FontSize="13" Foreground="#64748B" Margin="0,4,0,22"/>
+                                           FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,22"/>
 
-								<TextBlock Text="Username" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+								<TextBlock Text="Username" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
 								<TextBox x:Name="NewUsernameInput"
-                                         Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                                         Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                          Padding="10,8" FontSize="13" Height="38" Margin="0,0,0,14"/>
 
-								<TextBlock Text="Email Address" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+								<TextBlock Text="Email Address" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
 								<TextBox x:Name="NewEmailInput"
-                                         Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                                         Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                          Padding="10,8" FontSize="13" Height="38" Margin="0,0,0,14"/>
 
 								<Grid Margin="0,0,0,14">
@@ -795,20 +798,20 @@
 										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
 									<StackPanel Grid.Column="0">
-										<TextBlock Text="Password" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+										<TextBlock Text="Password" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
 										<PasswordBox x:Name="NewPasswordInput"
-                                                     Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                                                     Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                                      Padding="10,8" FontSize="13" Height="38"/>
 									</StackPanel>
 									<StackPanel Grid.Column="2">
-										<TextBlock Text="Confirm Password" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+										<TextBlock Text="Confirm Password" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
 										<PasswordBox x:Name="NewConfirmPasswordInput"
-                                                     Background="White" BorderBrush="#E2E8F0" BorderThickness="1"
+                                                     Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                                      Padding="10,8" FontSize="13" Height="38"/>
 									</StackPanel>
 								</Grid>
 
-								<TextBlock Text="Role" FontSize="12" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+								<TextBlock Text="Role" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
 								<ComboBox x:Name="NewRoleComboBox"
                                           Height="38"
                                           FontSize="13"

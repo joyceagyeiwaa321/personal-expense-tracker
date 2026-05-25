@@ -5,7 +5,7 @@ using System.Windows.Controls;
 
 namespace FinancyApplication
 {
-	// Row VM bound to the account list
+	// Row bound to the account list in the DataGrid
 	public class AccountRow
 	{
 		public int AccountID { get; set; }
@@ -19,7 +19,11 @@ namespace FinancyApplication
 		{
 			get
 			{
-				string sym = string.IsNullOrEmpty(CurrencySymbol) ? "" : CurrencySymbol;
+				string sym = "";
+				if (!string.IsNullOrEmpty(CurrencySymbol))
+				{
+					sym = CurrencySymbol;
+				}
 				return sym + Balance.ToString("N2");
 			}
 		}
@@ -35,7 +39,12 @@ namespace FinancyApplication
 		{
 			InitializeComponent();
 			_currentUser = user;
-			Loaded += (s, e) => LoadAccounts();
+			Loaded += AccountsView_Loaded;
+		}
+
+		private void AccountsView_Loaded(object sender, RoutedEventArgs e)
+		{
+			LoadAccounts();
 		}
 
 		private void LoadAccounts()
@@ -53,19 +62,26 @@ namespace FinancyApplication
 			List<AccountRow> rows = new List<AccountRow>();
 			foreach (Account a in _accounts)
 			{
-				rows.Add(new AccountRow
-				{
-					AccountID = a.AccountID,
-					Name = a.Name,
-					AccountType = a.AccountType,
-					Balance = a.Balance,
-					Currency = a.Currency,
-					CurrencySymbol = a.CurrencySymbol
-				});
+				AccountRow row = new AccountRow();
+				row.AccountID = a.AccountID;
+				row.Name = a.Name;
+				row.AccountType = a.AccountType;
+				row.Balance = a.Balance;
+				row.Currency = a.Currency;
+				row.CurrencySymbol = a.CurrencySymbol;
+				rows.Add(row);
 			}
 
 			AccountList.ItemsSource = rows;
-			EmptyState.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+			if (rows.Count == 0)
+			{
+				EmptyState.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				EmptyState.Visibility = Visibility.Collapsed;
+			}
 		}
 
 		private void AddAccount_Click(object sender, RoutedEventArgs e)
@@ -75,26 +91,43 @@ namespace FinancyApplication
 
 		private void EditAccount_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is not Button b || b.Tag == null) return;
+			Button b = sender as Button;
+			if (b == null || b.Tag == null)
+			{
+				return;
+			}
 			int id = (int)b.Tag;
 			Account acc = _accounts.Find(a => a.AccountID == id);
-			if (acc == null) return;
+			if (acc == null)
+			{
+				return;
+			}
 			ShowAccountForm(acc);
 		}
 
 		private void DeleteAccount_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is not Button b || b.Tag == null) return;
+			Button b = sender as Button;
+			if (b == null || b.Tag == null)
+			{
+				return;
+			}
 			int id = (int)b.Tag;
 			Account acc = _accounts.Find(a => a.AccountID == id);
-			if (acc == null) return;
+			if (acc == null)
+			{
+				return;
+			}
 
 			MessageBoxResult confirm = MessageBox.Show(
 				"Delete account \"" + acc.Name + "\"?\nIts transactions may also be affected.",
 				"Confirm Delete",
 				MessageBoxButton.YesNo,
 				MessageBoxImage.Warning);
-			if (confirm != MessageBoxResult.Yes) return;
+			if (confirm != MessageBoxResult.Yes)
+			{
+				return;
+			}
 
 			acc.Delete();
 			LoadAccounts();
@@ -103,14 +136,19 @@ namespace FinancyApplication
 		private void ShowAccountForm(Account existing)
 		{
 			AccountDialog dlg = new AccountDialog(_currentUser, existing);
-			dlg.Closed += didSave =>
-			{
-				ModalContent.Content = null;
-				ModalHost.Visibility = Visibility.Collapsed;
-				if (didSave) LoadAccounts();
-			};
+			dlg.Closed += AccountDialog_Closed;
 			ModalContent.Content = dlg;
 			ModalHost.Visibility = Visibility.Visible;
+		}
+
+		private void AccountDialog_Closed(bool didSave)
+		{
+			ModalContent.Content = null;
+			ModalHost.Visibility = Visibility.Collapsed;
+			if (didSave)
+			{
+				LoadAccounts();
+			}
 		}
 	}
 }
