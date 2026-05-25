@@ -24,7 +24,7 @@ namespace FinancyApplication
         public string Month { get; set; }
     }
 
-    public partial class BudgetPage : Window
+    public partial class BudgetPage : UserControl
     {
         private readonly Data db = new Data();
         public User CurrentUser { get; set; }
@@ -50,9 +50,10 @@ namespace FinancyApplication
             new SolidColorBrush(Color.FromRgb(20,  184, 166))
         };
 
-        public BudgetPage()
+        public BudgetPage(User user)
         {
             InitializeComponent();
+            CurrentUser = user;
             Loaded += BudgetPage_Loaded;
         }
 
@@ -60,12 +61,6 @@ namespace FinancyApplication
 
         private void BudgetPage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Application.Current.Properties.Contains("CurrentUser"))
-                CurrentUser = Application.Current.Properties["CurrentUser"] as User;
-
-            if (CurrentUser != null && !string.IsNullOrWhiteSpace(CurrentUser.Username))
-                AvatarInitial.Text = CurrentUser.Username.Substring(0, 1).ToUpper();
-
             PopulateMonthComboBox();
             LoadCategoryNames();
             PopulateCategoryFilter();
@@ -660,67 +655,6 @@ namespace FinancyApplication
         private void CategoryFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded) ApplyCategoryFilter();
-        }
-
-        // ── NAV (mirrors Dashboard) ───────────────────────────────────────
-
-        private void NavDashboard_Click(object sender, RoutedEventArgs e)
-        {
-            Dashboard dash = new Dashboard { CurrentUser = CurrentUser };
-            dash.Show();
-            this.Close();
-        }
-
-        private void NavTransactions_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Transactions page is handled by Namariq.", "Navigation");
-        }
-
-        private void NavBudget_Click(object sender, RoutedEventArgs e) { /* already here */ }
-
-        private void NavGoals_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Goals page coming soon.", "Navigation");
-        }
-
-        private void NavReports_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Reports page coming soon.", "Navigation");
-        }
-
-        private void NavGroups_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Groups page coming soon.", "Navigation");
-        }
-
-        private void NavProfile_Click(object sender, RoutedEventArgs e)
-        {
-            // Profile is now embedded inside Dashboard as a UserControl (ProfileView),
-            // so navigate back to Dashboard rather than opening a standalone window.
-            Dashboard dash = new Dashboard { CurrentUser = CurrentUser };
-            dash.Show();
-            this.Close();
-        }
-
-        private void ThemeToggle_Click(object sender, RoutedEventArgs e)
-        {
-            isDarkMode = !isDarkMode;
-            if (isDarkMode)
-            {
-                Background = new SolidColorBrush(Color.FromRgb(17, 24, 39));
-                NavBar.Background = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-                LogoText.Foreground = Brushes.White;
-                ThemeIcon.Text = "\uE708";
-                ThemeIcon.Foreground = Brushes.White;
-            }
-            else
-            {
-                Background = new SolidColorBrush(Color.FromRgb(244, 246, 248));
-                NavBar.Background = Brushes.White;
-                LogoText.Foreground = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-                ThemeIcon.Text = "\uE706";
-                ThemeIcon.Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139));
-            }
         }
 
         // ── UTILS ─────────────────────────────────────────────────────────

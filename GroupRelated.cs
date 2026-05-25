@@ -12,8 +12,9 @@ namespace FinancyApplication
 		public string Description { get; set; } // New
 		public string InviteCode { get; set; }  // New
 		public DateTime CreatedAt { get; set; }
+        public int MemberCount { get; set; }
 
-		public Group()
+        public Group()
 		{
 		}
 

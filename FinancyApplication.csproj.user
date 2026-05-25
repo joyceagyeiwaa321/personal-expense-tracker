@@ -8,7 +8,13 @@
     <Compile Update="BudgetPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Dashboard.xaml.cs">
+    <Compile Update="DashboardView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="GroupsView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MainAppWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="ProfileWindow.xaml.cs">

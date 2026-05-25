@@ -17,7 +17,8 @@ namespace FinancyApplication
 		public string Type { get; set; }
 		public decimal Amount { get; set; }
 		public string Description { get; set; }
-		public DateTime Date { get; set; }
+        public string Status { get; set; } = "Paid";
+        public DateTime Date { get; set; }
 
 		public Transaction() { }
 

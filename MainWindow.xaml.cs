@@ -249,7 +249,7 @@ namespace FinancyApplication
 				}
 				else
 				{
-					new Dashboard { CurrentUser = user }.Show();
+					new MainAppWindow(user).Show();
 				}
 				this.Close();
 			}
@@ -345,7 +345,7 @@ namespace FinancyApplication
 				}
 				else
 				{
-					new Dashboard { CurrentUser = user }.Show();
+					new MainAppWindow(user).Show();
 				}
 				this.Close();
 			}
