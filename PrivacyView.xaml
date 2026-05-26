@@ -1,0 +1,99 @@
+<UserControl x:Class="FinancyApplication.PrivacyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <UserControl.Resources>
+        <Style x:Key="PrivacyCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="28"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.10"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Width="780" HorizontalAlignment="Center" Margin="0,40,0,40">
+
+            <TextBlock Text="Privacy &amp; Terms"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="Short version, because this is a student project."
+                       FontSize="13"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,6,0,28"/>
+
+            <!-- Privacy Policy -->
+            <Border Style="{StaticResource PrivacyCard}">
+                <StackPanel>
+                    <TextBlock Text="Privacy Policy"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,12"/>
+					<TextBlock TextWrapping="Wrap"
+                               LineHeight="22"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextPrimaryBrush}"><Run Text="Financy Application is a student project built for the Inspiration Lab course at Thomas More. Your data"/><Run Language="en-gb" Text=","/><Run Text=" accounts, transactions, budgets, categories"/><Run Language="en-gb" Text=", "/><Run Text=" lives only on your computer, in the local MySQL database you set up. We do not collect, transmit, sell, share, or back up anything to a remote server. Your password is stored hashed (BCrypt). If you delete the database, your data is gone for good."/></TextBlock>
+					<TextBlock TextWrapping="Wrap"
+                               LineHeight="22"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,12,0,0"><Run Text="Optional features that talk to third parties (e.g. an AI-powered insight or receipt scan, when enabled) only send the specific data you trigger them with"/><Run Language="en-gb" Text=", "/><Run Text="aggregated monthly totals, or the receipt image you uploaded. They never send your name, email, or full transaction history. You can use the entire app without ever turning these on."/></TextBlock>
+				</StackPanel>
+            </Border>
+
+            <!-- Terms of Use -->
+            <Border Style="{StaticResource PrivacyCard}">
+                <StackPanel>
+                    <TextBlock Text="Terms of Use"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,12"/>
+					<TextBlock TextWrapping="Wrap"
+                               LineHeight="22"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextPrimaryBrush}"><Run Text="Use Financy Application at your own discretion. It comes with no warranty and is not a substitute for professional financial advice. We don't take responsibility for any financial decisions made based on what the app shows you"/><Run Language="en-gb" Text=","/><Run Text=" the numbers reflect whatever you, or the bank export you imported, put in. Don't rely on it for tax filings or anything legally binding."/></TextBlock>
+				</StackPanel>
+            </Border>
+
+            <!-- Contact -->
+            <Border Style="{StaticResource PrivacyCard}">
+                <StackPanel>
+                    <TextBlock Text="Contact"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap"
+                               LineHeight="22"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextPrimaryBrush}">
+                        Found a bug or want to suggest something? Open an issue on the project's GitHub repository, or
+                        reach out to the team via the Thomas More course channel.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Back to Dashboard -->
+            <Button Content="← Back to Dashboard"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="{DynamicResource AccentBrush}"
+                    FontSize="13"
+                    FontWeight="SemiBold"
+                    HorizontalAlignment="Left"
+                    Cursor="Hand"
+                    Padding="0,8,0,8"
+                    Click="BackToDashboard_Click"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

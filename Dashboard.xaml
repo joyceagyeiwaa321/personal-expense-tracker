@@ -5,11 +5,11 @@
         Width="1180"
         Height="760"
         WindowStartupLocation="CenterScreen"
-        Background="#F4F6F8">
+        Background="{DynamicResource BackgroundBrush}">
 
 	<Window.Resources>
 		<Style x:Key="CardStyle" TargetType="Border">
-			<Setter Property="Background" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="20"/>
 			<Setter Property="Effect">
@@ -22,10 +22,33 @@
 		<Style x:Key="NavButtonStyle" TargetType="Button">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="Foreground" Value="#64748B"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
 			<Setter Property="FontSize" Value="13"/>
-			<Setter Property="Margin" Value="10,0"/>
+			<Setter Property="Margin" Value="6,0"/>
+			<Setter Property="Padding" Value="12,6"/>
 			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="NavBg"
+								Background="{TemplateBinding Background}"
+								CornerRadius="6"
+								Padding="{TemplateBinding Padding}">
+							<ContentPresenter HorizontalAlignment="Center"
+											  VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="NavBg" Property="Background" Value="{DynamicResource AccentMutedBrush}"/>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter TargetName="NavBg" Property="Background" Value="{DynamicResource AccentMutedPressedBrush}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
 		</Style>
 
 		<Style x:Key="IconButtonStyle" TargetType="Button">
@@ -39,293 +62,233 @@
 
 	<DockPanel>
 
-		<Border x:Name="NavBar" DockPanel.Dock="Top" Height="72" Background="White">
-			<Grid Margin="120,12">
+		<Border x:Name="NavBar" DockPanel.Dock="Top" Height="72" Background="{DynamicResource NavBarBrush}">
+			<Grid Margin="40,12">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 
-					<!-- LOGO -->
-			<StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-				<Border Width="46"
-						Height="46"
-						CornerRadius="11"
-						Background="#00B894"
-						Margin="0,0,10,0">
-					<Image Source="pack://application:,,,/Images/logo.png"
-							Width="36"
-							Height="36"
-							Stretch="Uniform"
-							HorizontalAlignment="Center"
-							VerticalAlignment="Center"/>
-				</Border>
-
-				<TextBlock x:Name="LogoText"
-							Text="ExpenseTrack"
-							FontSize="17"
-							FontWeight="Bold"
-							Foreground="#1F2937"
-							VerticalAlignment="Center"/>
-			</StackPanel>
+				<!-- LOGO -->
+				<StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+					<Border Width="46" Height="46" CornerRadius="11" Background="#00B894" Margin="0,0,10,0">
+						<Image Source="pack://application:,,,/Images/logo.png"
+							   Width="36" Height="36" Stretch="Uniform"
+							   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					</Border>
+					<TextBlock x:Name="LogoText"
+							   Text="Financy Application"
+							   FontSize="17" FontWeight="Bold"
+							   Foreground="{DynamicResource TextPrimaryBrush}"
+							   VerticalAlignment="Center"
+							   TextTrimming="None" TextWrapping="NoWrap"/>
+				</StackPanel>
 
 				<!-- NAV LINKS -->
 				<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-					<Button Content="Dashboard"
-                            Style="{StaticResource NavButtonStyle}"
-                            Foreground="#00B894"
-                            FontWeight="Bold"
-                            Click="NavDashboard_Click"/>
-
-					<Button Content="Transactions"
-                            Style="{StaticResource NavButtonStyle}"
-                            Click="NavTransactions_Click"/>
-
-					<Button Content="Budget"
-                            Style="{StaticResource NavButtonStyle}"
-                            Click="NavBudget_Click"/>
-
-					<Button Content="Goals"
-                            Style="{StaticResource NavButtonStyle}"
-                            Click="NavGoals_Click"/>
-
-					<Button Content="Reports"
-                            Style="{StaticResource NavButtonStyle}"
-                            Click="NavReports_Click"/>
-
-					<Button Content="Group"
-                            Style="{StaticResource NavButtonStyle}"
-                            Click="NavGroups_Click"/>
+					<Button x:Name="NavDashboardBtn" Content="Dashboard"
+							Style="{StaticResource NavButtonStyle}"
+							Foreground="#00B894" FontWeight="Bold"
+							Click="NavDashboard_Click"/>
+					<Button x:Name="NavTransactionsBtn" Content="Transactions"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavTransactions_Click"/>
+					<Button x:Name="NavCategoriesBtn" Content="Categories"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavCategories_Click"/>
+					<Button x:Name="NavAccountsBtn" Content="Accounts"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavAccounts_Click"/>
+					<Button x:Name="NavBudgetBtn" Content="Budget"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavBudget_Click"/>
+					<Button x:Name="NavGoalsBtn" Content="Goals"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavGoals_Click"/>
+					<Button x:Name="NavReportsBtn" Content="Reports"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavReports_Click"/>
+					<Button x:Name="NavGroupsBtn" Content="Group"
+							Style="{StaticResource NavButtonStyle}"
+							Click="NavGroups_Click"/>
 				</StackPanel>
 
 				<!-- RIGHT ICONS -->
-				<StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center">
-
-					<Button Style="{StaticResource IconButtonStyle}"
-                            Click="ThemeToggle_Click">
+				<StackPanel Grid.Column="2" Orientation="Horizontal"
+							HorizontalAlignment="Right" VerticalAlignment="Center">
+					<Button Style="{StaticResource IconButtonStyle}" Click="ThemeToggle_Click">
 						<TextBlock x:Name="ThemeIcon"
-                                   FontFamily="Segoe Fluent Icons"
-                                   Text="&#xE706;"
-                                   FontSize="23"
-                                   Foreground="#64748B"/>
+								   FontFamily="Segoe Fluent Icons"
+								   Text="&#xE706;" FontSize="23"
+								   Foreground="{DynamicResource TextSecondaryBrush}"/>
 					</Button>
-
-					<Button Style="{StaticResource IconButtonStyle}"
-                            Click="NavProfile_Click">
-						<Border Width="38"
-                                Height="38"
-                                CornerRadius="19"
-                                Background="#00B894">
-							<TextBlock x:Name="AvatarInitial"
-                                       Text="U"
-                                       Foreground="White"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+					<Button Style="{StaticResource IconButtonStyle}" Click="NavProfile_Click">
+						<Border Width="38" Height="38" CornerRadius="19"
+								Background="#00B894" ClipToBounds="True">
+							<Grid>
+								<TextBlock x:Name="AvatarInitial" Text="U"
+										   Foreground="White" FontSize="18" FontWeight="Bold"
+										   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<Image x:Name="NavAvatarImage"
+									   Stretch="UniformToFill" Visibility="Collapsed"/>
+							</Grid>
 						</Border>
 					</Button>
 				</StackPanel>
 			</Grid>
 		</Border>
 
-		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<StackPanel Width="880"
-                        HorizontalAlignment="Center"
-                        Margin="0,48,0,30">
+		<Grid x:Name="MainContentHost">
 
-				<UniformGrid Columns="4" Margin="0,0,0,34">
+			<ScrollViewer x:Name="DashboardContent" VerticalScrollBarVisibility="Auto">
+				<StackPanel Width="880" HorizontalAlignment="Center" Margin="0,48,0,30">
 
-					<Border x:Name="BalanceCard" Style="{StaticResource CardStyle}" Margin="0,0,14,0">
-						<StackPanel>
-							<TextBlock Text="Total Balance" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiBalance" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
-							<TextBlock x:Name="KpiBalanceSub" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
-						</StackPanel>
-					</Border>
-
-					<Border x:Name="IncomeCard" Style="{StaticResource CardStyle}" Margin="7,0,7,0">
-						<StackPanel>
-							<TextBlock Text="Total Income" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiIncome" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
-							<TextBlock x:Name="KpiIncomeChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
-						</StackPanel>
-					</Border>
-
-					<Border x:Name="ExpenseCard" Style="{StaticResource CardStyle}" Margin="7,0,7,0">
-						<StackPanel>
-							<TextBlock Text="Total Expense" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiExpenses" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
-							<TextBlock x:Name="KpiExpensesChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
-						</StackPanel>
-					</Border>
-
-					<Border x:Name="SavingsCard" Style="{StaticResource CardStyle}" Margin="14,0,0,0">
-						<StackPanel>
-							<TextBlock Text="Savings Rate" FontSize="12" Foreground="#64748B"/>
-							<TextBlock x:Name="KpiSavings" FontSize="26" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,12,0,0"/>
-							<TextBlock x:Name="KpiSavingsChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
-						</StackPanel>
-					</Border>
-
-				</UniformGrid>
-
-				<Grid Margin="0,0,0,18">
-					<TextBlock x:Name="SpendingOverviewTitle"
-                               Text="Spending Overview"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground="#1F2937"/>
-
-					<ComboBox x:Name="PeriodComboBox"
-                              Width="112"
-                              Height="28"
-                              HorizontalAlignment="Right"
-                              SelectedIndex="0"
-                              FontSize="12"
-                              Foreground="#64748B"
-                              SelectionChanged="PeriodComboBox_SelectionChanged">
-						<ComboBoxItem Content="This Month"/>
-						<ComboBoxItem Content="Last Month"/>
-						<ComboBoxItem Content="Last 6 Months"/>
-					</ComboBox>
-				</Grid>
-
-				<Grid Margin="0,0,0,38">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="1.05*"/>
-						<ColumnDefinition Width="1*"/>
-					</Grid.ColumnDefinitions>
-
-					<Border x:Name="LineChartCard"
-                            Grid.Column="0"
-                            Style="{StaticResource CardStyle}"
-                            Height="280"
-                            Margin="0,0,30,0">
-						<StackPanel>
-							<Grid>
-								<TextBlock Text="Income vs Expense"
-                                           FontSize="15"
-                                           FontWeight="Bold"
-                                           Foreground="#1F2937"/>
-
-								<TextBlock Text="Monthly trend"
-                                           HorizontalAlignment="Right"
-                                           FontSize="12"
-                                           Foreground="#64748B"/>
-							</Grid>
-
-							<Canvas x:Name="IncomeExpenseCanvas"
-                                    Height="205"
-                                    Margin="0,12,0,0"/>
-
-							<StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Center">
-								<TextBlock Text="━ Income"
-                                           Foreground="#00B894"
-                                           FontSize="12"
-                                           Margin="10,0"/>
-
-								<TextBlock Text="━ Expense"
-                                           Foreground="#EF4444"
-                                           FontSize="12"
-                                           Margin="10,0"/>
-							</StackPanel>
-						</StackPanel>
-					</Border>
-
-					<Border x:Name="PieChartCard"
-                            Grid.Column="1"
-                            Style="{StaticResource CardStyle}"
-                            Height="280">
-						<Grid>
+					<UniformGrid Columns="4" Margin="0,0,0,34">
+						<Border x:Name="BalanceCard" Style="{StaticResource CardStyle}" Margin="0,0,14,0">
 							<StackPanel>
-								<TextBlock Text="Expense Breakdown"
-                                           FontSize="18"
-                                           FontWeight="Bold"
-                                           Foreground="#1F2937"/>
-
-								<TextBlock Text="This month's spending by category"
-                                           Foreground="#64748B"
-                                           FontSize="13"
-                                           Margin="0,5,0,5"/>
-
-								<Canvas x:Name="ExpensePieCanvas"
-                                        Width="250"
-                                        Height="190"
-                                        HorizontalAlignment="Left"/>
+								<TextBlock Text="Total Balance" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+								<TextBlock x:Name="KpiBalance" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
+								<TextBlock x:Name="KpiBalanceSub" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
 							</StackPanel>
+						</Border>
+						<Border x:Name="IncomeCard" Style="{StaticResource CardStyle}" Margin="7,0,7,0">
+							<StackPanel>
+								<TextBlock Text="Total Income" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+								<TextBlock x:Name="KpiIncome" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
+								<TextBlock x:Name="KpiIncomeChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
+							</StackPanel>
+						</Border>
+						<Border x:Name="ExpenseCard" Style="{StaticResource CardStyle}" Margin="7,0,7,0">
+							<StackPanel>
+								<TextBlock Text="Total Expense" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+								<TextBlock x:Name="KpiExpenses" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
+								<TextBlock x:Name="KpiExpensesChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
+							</StackPanel>
+						</Border>
+						<Border x:Name="SavingsCard" Style="{StaticResource CardStyle}" Margin="14,0,0,0">
+							<StackPanel>
+								<TextBlock Text="Savings Rate" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+								<TextBlock x:Name="KpiSavings" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,12,0,0"/>
+								<TextBlock x:Name="KpiSavingsChange" FontSize="12" Foreground="#EF4444" Margin="0,10,0,0"/>
+							</StackPanel>
+						</Border>
+					</UniformGrid>
 
-							<StackPanel x:Name="PieLegendPanel"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Margin="0,30,8,0"/>
-						</Grid>
-					</Border>
-				</Grid>
+					<Grid Margin="0,0,0,18">
+						<TextBlock x:Name="SpendingOverviewTitle" Text="Spending Overview"
+								   FontSize="18" FontWeight="Bold"
+								   Foreground="{DynamicResource TextPrimaryBrush}"/>
+						<ComboBox x:Name="PeriodComboBox" Width="112" Height="28"
+								  HorizontalAlignment="Right" SelectedIndex="0"
+								  FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+								  SelectionChanged="PeriodComboBox_SelectionChanged">
+							<ComboBoxItem Content="This Month"/>
+							<ComboBoxItem Content="Last Month"/>
+							<ComboBoxItem Content="Last 6 Months"/>
+						</ComboBox>
+					</Grid>
 
-				<Border x:Name="TransactionsCard"
-                        Style="{StaticResource CardStyle}"
-                        Width="720"
-                        HorizontalAlignment="Left">
+					<Grid Margin="0,0,0,38">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="1.05*"/>
+							<ColumnDefinition Width="1*"/>
+						</Grid.ColumnDefinitions>
+						<Border x:Name="LineChartCard" Grid.Column="0"
+								Style="{StaticResource CardStyle}" Height="280" Margin="0,0,30,0">
+							<StackPanel>
+								<Grid>
+									<TextBlock Text="Income vs Expense" FontSize="15" FontWeight="Bold"
+											   Foreground="{DynamicResource TextPrimaryBrush}"/>
+									<TextBlock Text="Monthly trend" HorizontalAlignment="Right"
+											   FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+								</Grid>
+								<Canvas x:Name="IncomeExpenseCanvas" Height="205" Margin="0,12,0,0"/>
+								<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+									<TextBlock Text="━ Income" Foreground="#00B894" FontSize="12" Margin="10,0"/>
+									<TextBlock Text="━ Expense" Foreground="#EF4444" FontSize="12" Margin="10,0"/>
+								</StackPanel>
+							</StackPanel>
+						</Border>
+						<Border x:Name="PieChartCard" Grid.Column="1"
+								Style="{StaticResource CardStyle}" Height="280">
+							<Grid>
+								<StackPanel>
+									<TextBlock Text="Expense Breakdown" FontSize="18" FontWeight="Bold"
+											   Foreground="{DynamicResource TextPrimaryBrush}"/>
+									<TextBlock Text="This month's spending by category"
+											   Foreground="{DynamicResource TextSecondaryBrush}"
+											   FontSize="13" Margin="0,5,0,5"/>
+									<Canvas x:Name="ExpensePieCanvas" Width="250" Height="190"
+											HorizontalAlignment="Left"/>
+								</StackPanel>
+								<StackPanel x:Name="PieLegendPanel"
+										    HorizontalAlignment="Right" VerticalAlignment="Center"
+										    Margin="0,30,8,0"/>
+							</Grid>
+						</Border>
+					</Grid>
 
-					<StackPanel>
-						<TextBlock Text="Recent Transactions"
-                                   FontSize="19"
-                                   FontWeight="Bold"
-                                   Foreground="#1F2937"/>
-
-						<Button Content="View All"
-                                HorizontalAlignment="Left"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="#2563EB"
-                                Padding="0"
-                                Margin="0,12,0,12"
-                                Click="ViewAllTransactions_Click"/>
-
-						<StackPanel x:Name="NoTxPanel">
-							<TextBlock Text="No transactions available"
-                                       Foreground="#64748B"/>
+					<Border x:Name="TransactionsCard" Style="{StaticResource CardStyle}"
+							Width="720" HorizontalAlignment="Left">
+						<StackPanel>
+							<TextBlock Text="Recent Transactions" FontSize="19" FontWeight="Bold"
+									   Foreground="{DynamicResource TextPrimaryBrush}"/>
+							<Button Content="View All" HorizontalAlignment="Left"
+									Background="Transparent" BorderThickness="0"
+									Foreground="#2563EB" Padding="0" Margin="0,12,0,12"
+									Click="ViewAllTransactions_Click"/>
+							<StackPanel x:Name="NoTxPanel">
+								<TextBlock Text="No transactions available"
+										   Foreground="{DynamicResource TextSecondaryBrush}"/>
+							</StackPanel>
+							<DataGrid x:Name="TxTable" Height="190"
+									  AutoGenerateColumns="False" HeadersVisibility="Column"
+									  GridLinesVisibility="Horizontal" BorderThickness="0"
+									  Background="{DynamicResource SurfaceBrush}"
+									  RowBackground="{DynamicResource SurfaceBrush}"
+									  AlternatingRowBackground="{DynamicResource SurfaceAltBrush}"
+									  Foreground="{DynamicResource TextPrimaryBrush}"
+									  CanUserAddRows="False">
+								<DataGrid.Columns>
+									<DataGridTextColumn Header="Transaction" Binding="{Binding Description}" Width="*"/>
+									<DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*"/>
+									<DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="*"/>
+									<DataGridTextColumn Header="Amount" Binding="{Binding AmountDisplay}" Width="*"/>
+								</DataGrid.Columns>
+							</DataGrid>
 						</StackPanel>
+					</Border>
 
-						<DataGrid x:Name="TxTable"
-                                  Height="190"
-                                  AutoGenerateColumns="False"
-                                  HeadersVisibility="Column"
-                                  GridLinesVisibility="Horizontal"
-                                  BorderThickness="0"
-                                  Background="White"
-                                  CanUserAddRows="False">
+					<Grid Margin="0,25,0,0">
+						<TextBlock Text="© 2026 Financy Application. All rights reserved."
+								   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+							<Button Content="Privacy Policy" Background="Transparent" BorderThickness="0"
+									Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+									Padding="0" Margin="0,0,25,0" Cursor="Hand" Click="FooterPrivacy_Click"/>
+							<Button Content="Terms of Use" Background="Transparent" BorderThickness="0"
+									Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+									Padding="0" Margin="0,0,25,0" Cursor="Hand" Click="FooterPrivacy_Click"/>
+							<Button Content="Contact" Background="Transparent" BorderThickness="0"
+									Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+									Padding="0" Cursor="Hand" Click="FooterPrivacy_Click"/>
+						</StackPanel>
+					</Grid>
 
-							<DataGrid.Columns>
-								<DataGridTextColumn Header="Transaction" Binding="{Binding Description}" Width="*"/>
-								<DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*"/>
-								<DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="*"/>
-								<DataGridTextColumn Header="Amount" Binding="{Binding AmountDisplay}" Width="*"/>
-							</DataGrid.Columns>
-						</DataGrid>
-					</StackPanel>
-				</Border>
+				</StackPanel>
+			</ScrollViewer>
 
-				<Grid Margin="0,25,0,0">
-					<TextBlock Text="© 2026 ExpenseTrack. All rights reserved."
-                               Foreground="#64748B"
-                               FontSize="12"/>
+			<!-- Embedded views — one visible at a time -->
+			<ContentControl x:Name="ProfileHost"      Visibility="Collapsed"/>
+			<ContentControl x:Name="TransactionsHost" Visibility="Collapsed"/>
+			<ContentControl x:Name="CategoriesHost"   Visibility="Collapsed"/>
+			<ContentControl x:Name="AccountsHost"     Visibility="Collapsed"/>
+			<ContentControl x:Name="ReportsHost"      Visibility="Collapsed"/>
+			<ContentControl x:Name="PrivacyHost"      Visibility="Collapsed"/>
+			<ContentControl x:Name="BudgetHost"       Visibility="Collapsed"/>
+			<ContentControl x:Name="GroupsHost"       Visibility="Collapsed"/>
 
-					<StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Right">
-						<TextBlock Text="Privacy Policy" Foreground="#64748B" Margin="0,0,25,0"/>
-						<TextBlock Text="Terms of Use" Foreground="#64748B" Margin="0,0,25,0"/>
-						<TextBlock Text="Contact" Foreground="#64748B"/>
-					</StackPanel>
-				</Grid>
-
-			</StackPanel>
-		</ScrollViewer>
+		</Grid>
 	</DockPanel>
 </Window>

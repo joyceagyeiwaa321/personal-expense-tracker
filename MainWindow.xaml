@@ -117,7 +117,7 @@
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsFocused" Value="True">
 								<Setter Property="BorderBrush" Value="#00B894"/>
-								<Setter Property="Background" Value="White"/>
+								<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -147,7 +147,7 @@
 									<ColumnDefinition Width="32"/>
 								</Grid.ColumnDefinitions>
 								<TextBlock Grid.Column="0" Text="🔒" FontSize="13"
-                                           Foreground="#9CA3AF"
+                                           Foreground="{DynamicResource TextMutedBrush}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
 								<ScrollViewer x:Name="PART_ContentHost"
@@ -159,7 +159,7 @@
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsFocused" Value="True">
 								<Setter Property="BorderBrush" Value="#00B894"/>
-								<Setter Property="Background" Value="White"/>
+								<Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -175,7 +175,7 @@
 		</Style>
 	</Window.Resources>
 
-	<Border CornerRadius="20" Background="White" ClipToBounds="True">
+	<Border CornerRadius="20" Background="{DynamicResource SurfaceBrush}" ClipToBounds="True">
 		<Border.Effect>
 			<DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.2"/>
 		</Border.Effect>
@@ -233,14 +233,14 @@
 					<StackPanel x:Name="LoginView" VerticalAlignment="Center" Visibility="Visible">
 						<TextBlock Text="Welcome Back!" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
-						<TextBlock Text="Sign in to your account" Foreground="#6B7280"
+						<TextBlock Text="Sign in to your account" Foreground="{DynamicResource TextSecondaryBrush}"
                                    FontSize="13" Margin="0,0,0,28"/>
 
 						<TextBlock Text="Email Address" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,18">
 							<TextBox x:Name="EmailInput" Style="{StaticResource InputBox}">
 								<TextBox.Tag>
-									<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"/>
+									<TextBlock Text="✉" FontSize="14" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 						</Grid>
@@ -250,7 +250,7 @@
 							<PasswordBox x:Name="PasswordInput" Style="{StaticResource PassBox}"/>
 							<TextBox x:Name="PasswordInputVisible" Style="{StaticResource InputBox}" Visibility="Collapsed">
 								<TextBox.Tag>
-									<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"/>
+									<TextBlock Text="🔒" FontSize="13" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 							<Button x:Name="LoginShowPassBtn" Content="👁" Background="Transparent"
@@ -272,14 +272,14 @@
 					<StackPanel x:Name="RegisterView" VerticalAlignment="Center" Visibility="Collapsed">
 						<TextBlock Text="Get Started" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
-						<TextBlock Text="Step 1 of 3 — Create Credentials" Foreground="#6B7280"
+						<TextBlock Text="Step 1 of 3 — Create Credentials" Foreground="{DynamicResource TextSecondaryBrush}"
                                    FontSize="13" Margin="0,0,0,24"/>
 
 						<TextBlock Text="Email Address" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,16">
 							<TextBox x:Name="RegEmail" Style="{StaticResource InputBox}">
 								<TextBox.Tag>
-									<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"/>
+									<TextBlock Text="✉" FontSize="14" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 						</Grid>
@@ -291,7 +291,7 @@
 							<TextBox x:Name="RegPassVisible" Style="{StaticResource InputBox}"
                                      Visibility="Collapsed" TextChanged="RegPassVisible_TextChanged">
 								<TextBox.Tag>
-									<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"/>
+									<TextBlock Text="🔒" FontSize="13" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 							<Button Content="👁" Background="Transparent" BorderThickness="0"
@@ -312,7 +312,7 @@
 									</ControlTemplate>
 								</ProgressBar.Template>
 							</ProgressBar>
-							<TextBlock x:Name="StrengthLabel" FontSize="11" Foreground="#6B7280"/>
+							<TextBlock x:Name="StrengthLabel" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
 						</StackPanel>
 
 						<TextBlock Text="Confirm Password" Style="{StaticResource FieldLabel}" Margin="2,10,0,6"/>
@@ -321,7 +321,7 @@
 							<TextBox x:Name="RegConfirmPassVisible" Style="{StaticResource InputBox}"
                                      Visibility="Collapsed">
 								<TextBox.Tag>
-									<TextBlock Text="🔒" FontSize="13" Foreground="#9CA3AF"/>
+									<TextBlock Text="🔒" FontSize="13" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 							<Button Content="👁" Background="Transparent" BorderThickness="0"
@@ -340,7 +340,7 @@
 					<StackPanel x:Name="RegVerifyView" VerticalAlignment="Center" Visibility="Collapsed">
 						<TextBlock Text="Check Your Email" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
-						<TextBlock Text="Step 2 of 3 — Enter verification code" Foreground="#6B7280"
+						<TextBlock Text="Step 2 of 3 — Enter verification code" Foreground="{DynamicResource TextSecondaryBrush}"
                                    FontSize="13" Margin="0,0,0,28"/>
 						<TextBox x:Name="RegCodeInput" Height="55" Margin="0,0,0,22"
                                  VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
@@ -351,7 +351,7 @@
 						<Button x:Name="RegResendBtn" Style="{StaticResource TextButton}"
                                 Content="Resend Code" Click="RegisterStep1_Click" Margin="0,14,0,0"/>
 						<TextBlock x:Name="RegTimerText" HorizontalAlignment="Center"
-                                   Margin="0,4,0,0" Foreground="#9CA3AF" Visibility="Collapsed" FontSize="12"/>
+                                   Margin="0,4,0,0" Foreground="{DynamicResource TextMutedBrush}" Visibility="Collapsed" FontSize="12"/>
 						<Button Style="{StaticResource TextButton}" Content="Back"
                                 Click="ShowRegister_Click" Margin="0,12,0,0" FontSize="13"/>
 					</StackPanel>
@@ -360,13 +360,13 @@
 					<StackPanel x:Name="RegUsernameView" VerticalAlignment="Center" Visibility="Collapsed">
 						<TextBlock Text="Almost Done!" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
-						<TextBlock Text="Step 3 of 3 — Choose your username" Foreground="#6B7280"
+						<TextBlock Text="Step 3 of 3 — Choose your username" Foreground="{DynamicResource TextSecondaryBrush}"
                                    FontSize="13" Margin="0,0,0,28"/>
 						<TextBlock Text="Username" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,26">
 							<TextBox x:Name="RegUsername" Style="{StaticResource InputBox}">
 								<TextBox.Tag>
-									<TextBlock Text="👤" FontSize="13" Foreground="#9CA3AF"/>
+									<TextBlock Text="👤" FontSize="13" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 						</Grid>
@@ -381,12 +381,12 @@
 						<TextBlock Text="Reset Password" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
 						<TextBlock Text="Enter your email to receive a reset code"
-                                   Foreground="#6B7280" FontSize="13" Margin="0,0,0,24"/>
+                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,24"/>
 						<TextBlock Text="Email Address" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,20">
 							<TextBox x:Name="ResetEmailInput" Style="{StaticResource InputBox}">
 								<TextBox.Tag>
-									<TextBlock Text="✉" FontSize="14" Foreground="#9CA3AF"/>
+									<TextBlock Text="✉" FontSize="14" Foreground="{DynamicResource TextMutedBrush}"/>
 								</TextBox.Tag>
 							</TextBox>
 						</Grid>
@@ -401,7 +401,7 @@
 						<TextBlock Text="Verify Code" FontSize="28" FontWeight="Bold"
                                    Foreground="#004D40" Margin="0,0,0,4"/>
 						<TextBlock Text="Enter the 6-digit code sent to your email"
-                                   Foreground="#6B7280" FontSize="13" Margin="0,0,0,24"/>
+                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,24"/>
 						<TextBox x:Name="CodeInput" Height="55" Margin="0,0,0,22"
                                  VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                  FontSize="26" FontWeight="Bold" MaxLength="6"
@@ -411,7 +411,7 @@
 						<Button x:Name="SendCodeBtn" Style="{StaticResource TextButton}"
                                 Content="Resend Code" Click="SendReset_Click" Margin="0,14,0,0"/>
 						<TextBlock x:Name="TimerText" HorizontalAlignment="Center"
-                                   Margin="0,4,0,0" Foreground="#9CA3AF" Visibility="Collapsed" FontSize="12"/>
+                                   Margin="0,4,0,0" Foreground="{DynamicResource TextMutedBrush}" Visibility="Collapsed" FontSize="12"/>
 						<Button Style="{StaticResource TextButton}" Content="Back"
                                 Click="ShowReset_Click" Margin="0,12,0,0" FontSize="13"/>
 					</StackPanel>
@@ -419,15 +419,38 @@
 					<!-- 7. PASSWORD RESET: NEW PASSWORD -->
 					<StackPanel x:Name="NewPasswordView" VerticalAlignment="Center" Visibility="Collapsed">
 						<TextBlock Text="Set New Password" FontSize="28" FontWeight="Bold"
-                                   Foreground="#004D40" Margin="0,0,0,26"/>
+                                   Foreground="#004D40" Margin="0,0,0,4"/>
+						<TextBlock Text="Choose a strong password you haven't used before"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,22"/>
+
 						<TextBlock Text="New Password" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,16">
 							<PasswordBox x:Name="NewPass" Style="{StaticResource PassBox}"/>
+							<TextBox x:Name="NewPassVisible" Style="{StaticResource InputBox}" Visibility="Collapsed">
+								<TextBox.Tag>
+									<TextBlock Text="🔒" FontSize="13" Foreground="{DynamicResource TextMutedBrush}"/>
+								</TextBox.Tag>
+							</TextBox>
+							<Button Content="👁" Background="Transparent" BorderThickness="0"
+                                    HorizontalAlignment="Right" Cursor="Hand"
+                                    VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"
+                                    Click="ResetTogglePass_Click"/>
 						</Grid>
+
 						<TextBlock Text="Confirm New Password" Style="{StaticResource FieldLabel}"/>
 						<Grid Margin="0,0,0,26">
 							<PasswordBox x:Name="RepeatPass" Style="{StaticResource PassBox}"/>
+							<TextBox x:Name="RepeatPassVisible" Style="{StaticResource InputBox}" Visibility="Collapsed">
+								<TextBox.Tag>
+									<TextBlock Text="🔒" FontSize="13" Foreground="{DynamicResource TextMutedBrush}"/>
+								</TextBox.Tag>
+							</TextBox>
+							<Button Content="👁" Background="Transparent" BorderThickness="0"
+                                    HorizontalAlignment="Right" Cursor="Hand"
+                                    VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"
+                                    Click="ResetToggleConfirmPass_Click"/>
 						</Grid>
+
 						<Button Style="{StaticResource MainGreenButton}" Content="UPDATE PASSWORD"
                                 Click="FinalReset_Click" IsDefault="True"/>
 					</StackPanel>
