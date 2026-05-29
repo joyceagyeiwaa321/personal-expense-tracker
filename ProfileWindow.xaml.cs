@@ -481,37 +481,45 @@ namespace FinancyApplication
 			}
 		}
 
-		private void ClearAllData_Click(object sender, RoutedEventArgs e)
-		{
-			MessageBoxResult result = MessageBox.Show(
-				"Are you sure you want to clear all your transaction data? This cannot be undone.",
-				"Clear All Data",
-				MessageBoxButton.YesNo,
-				MessageBoxImage.Warning);
+        private void ClearAllData_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult first = MessageBox.Show(
+                "Are you sure you want to clear all your transaction data?\n\nThis will permanently delete all your transactions and cannot be undone.",
+                "Clear All Data",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
 
-			if (result == MessageBoxResult.Yes)
-			{
-				try
-				{
-					List<Account> accounts = db.GetAccountsByUser(_currentUser.UserID);
-					foreach (Account acc in accounts)
-					{
-						List<Transaction> transactions = db.GetTransactionsByAccount(acc.AccountID);
-						foreach (Transaction t in transactions)
-						{
-							db.DeleteTransaction(t.TransactionID);
-						}
-					}
-					MessageBox.Show("All transaction data has been cleared.");
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show("Error clearing data: " + ex.Message);
-				}
-			}
-		}
+            if (first != MessageBoxResult.Yes) return;
 
-		private void AvatarButton_Click(object sender, RoutedEventArgs e)
+            MessageBoxResult second = MessageBox.Show(
+                "⚠️ FINAL WARNING\n\nYou are about to permanently delete ALL your transactions.\n\nThis action is irreversible. Are you absolutely sure?",
+                "Confirm Permanent Deletion",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Stop);
+
+            if (second != MessageBoxResult.Yes) return;
+
+            try
+            {
+                List<Account> accounts = db.GetAccountsByUser(_currentUser.UserID);
+                foreach (Account acc in accounts)
+                {
+                    List<Transaction> transactions = db.GetTransactionsByAccount(acc.AccountID);
+                    foreach (Transaction t in transactions)
+                    {
+                        db.DeleteTransaction(t.TransactionID);
+                    }
+                }
+                MessageBox.Show("All transaction data has been cleared successfully.",
+                    "Done", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error clearing data: " + ex.Message);
+            }
+        }
+
+        private void AvatarButton_Click(object sender, RoutedEventArgs e)
 		{
 			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 			dlg.Title = "Choose profile photo";

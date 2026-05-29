@@ -144,17 +144,6 @@
                                                             FontWeight="SemiBold"
                                                             Cursor="Hand"
                                                             Padding="8,4"/>
-													<Button Content="Delete"
-                                                            Tag="{Binding CategoryID}"
-                                                            Click="DeleteCategory_Click"
-                                                            IsEnabled="{Binding CanDelete}"
-                                                            Background="Transparent"
-                                                            BorderThickness="0"
-                                                            Foreground="#EF4444"
-                                                            FontSize="12"
-                                                            FontWeight="SemiBold"
-                                                            Cursor="Hand"
-                                                            Padding="8,4"/>
 												</StackPanel>
 											</Grid>
 										</Border>
@@ -225,17 +214,6 @@
                                                             Background="Transparent"
                                                             BorderThickness="0"
                                                             Foreground="#00796B"
-                                                            FontSize="12"
-                                                            FontWeight="SemiBold"
-                                                            Cursor="Hand"
-                                                            Padding="8,4"/>
-													<Button Content="Delete"
-                                                            Tag="{Binding CategoryID}"
-                                                            Click="DeleteCategory_Click"
-                                                            IsEnabled="{Binding CanDelete}"
-                                                            Background="Transparent"
-                                                            BorderThickness="0"
-                                                            Foreground="#EF4444"
                                                             FontSize="12"
                                                             FontWeight="SemiBold"
                                                             Cursor="Hand"
