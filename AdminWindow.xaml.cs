@@ -515,83 +515,6 @@ namespace FinancyApplication
 
 		private void AdminAvatar_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentUser == null)
-			{
-				return;
-			}
-
-			try
-			{
-				_currentUserProfile = db.GetProfileByUserId(CurrentUser.UserID);
-
-				if (_currentUserProfile == null)
-				{
-					_currentUserProfile = new UserProfile
-					{
-						UserID = CurrentUser.UserID,
-						FirstName = "",
-						LastName = "",
-						PhoneNumber = "",
-						AvatarUrl = "",
-						PreferredCurrency = "USD"
-					};
-				}
-
-				ProfileFirstName.Text = _currentUserProfile.FirstName != null ? _currentUserProfile.FirstName : "";
-				ProfileLastName.Text = _currentUserProfile.LastName != null ? _currentUserProfile.LastName : "";
-				AdminProfilePhone.Text = _currentUserProfile.PhoneNumber != null ? _currentUserProfile.PhoneNumber : "";
-				ProfileEmail.Text = CurrentUser.Email;
-				ProfileRole.Text = CurrentUser.Role.ToString();
-
-				string initial = "A";
-				if (CurrentUser.Username.Length > 0)
-				{
-					initial = CurrentUser.Username.Substring(0, 1).ToUpper();
-				}
-
-				TextBlock tb = ProfileAvatarButton.Template.FindName("AdminAvatarInitialText", ProfileAvatarButton) as TextBlock;
-				if (tb != null)
-				{
-					tb.Text = initial;
-				}
-
-				AdminPhoneCountryPicker.ItemsSource = _countries;
-
-				string stored = _currentUserProfile.PhoneNumber != null ? _currentUserProfile.PhoneNumber : "";
-				PhoneCountry matched = null;
-				foreach (PhoneCountry c in _countries)
-				{
-					if (stored.StartsWith(c.Dial))
-					{
-						matched = c;
-						break;
-					}
-				}
-
-				if (matched != null)
-				{
-					AdminPhoneCountryPicker.SelectedItem = matched;
-					AdminProfilePhone.Text = stored.Substring(matched.Dial.Length).Trim();
-				}
-				else
-				{
-					AdminPhoneCountryPicker.SelectedIndex = 0;
-				}
-
-				ProfileErrorMessage.Visibility = Visibility.Collapsed;
-
-				UsersView.Visibility = Visibility.Collapsed;
-				CreateUserView.Visibility = Visibility.Collapsed;
-				ProfileView.Visibility = Visibility.Visible;
-
-				LoadAvatarImage(_currentUserProfile.AvatarUrl);
-				SetActiveNav(NavProfile);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Error loading profile: " + ex.Message,
-					"Admin", MessageBoxButton.OK, MessageBoxImage.Warning);
-			}
 		}
 
 		private void LoadAvatarImage(string path)
@@ -606,20 +529,6 @@ namespace FinancyApplication
 			bmp.UriSource = new Uri(path, UriKind.Absolute);
 			bmp.CacheOption = BitmapCacheOption.OnLoad;
 			bmp.EndInit();
-
-			// Update the large profile view button
-			ProfileAvatarButton.ApplyTemplate();
-			System.Windows.Controls.Image image = ProfileAvatarButton.Template.FindName("AdminAvatarImage", ProfileAvatarButton) as System.Windows.Controls.Image;
-			System.Windows.Controls.Border circle = ProfileAvatarButton.Template.FindName("AdminAvatarCircle", ProfileAvatarButton) as System.Windows.Controls.Border;
-			if (image != null)
-			{
-				image.Source = bmp;
-				image.Visibility = Visibility.Visible;
-			}
-			if (circle != null)
-			{
-				circle.Visibility = Visibility.Collapsed;
-			}
 
 			// Update the nav bar avatar button
 			AdminAvatarButton.ApplyTemplate();
@@ -638,7 +547,6 @@ namespace FinancyApplication
 
 		private void BackToUsers_Click(object sender, RoutedEventArgs e)
 		{
-			ProfileView.Visibility = Visibility.Collapsed;
 			CreateUserView.Visibility = Visibility.Collapsed;
 			UsersView.Visibility = Visibility.Visible;
 			SetActiveNav(NavUsers);
@@ -647,8 +555,6 @@ namespace FinancyApplication
 		private void SetActiveNav(Button current)
 		{
 			NavUsers.Tag = null;
-			NavCreateUser.Tag = null;
-			NavProfile.Tag = null;
 			NavReports.Tag = null;
 			if (current != null)
 			{
@@ -658,22 +564,9 @@ namespace FinancyApplication
 
 		private void NavUsers_Click(object sender, RoutedEventArgs e)
 		{
-			ProfileView.Visibility = Visibility.Collapsed;
 			CreateUserView.Visibility = Visibility.Collapsed;
 			UsersView.Visibility = Visibility.Visible;
 			SetActiveNav(NavUsers);
-		}
-
-		private void NavCreateUser_Click(object sender, RoutedEventArgs e)
-		{
-			CreateUser_Click(sender, e);
-			SetActiveNav(NavCreateUser);
-		}
-
-		private void NavProfile_Click(object sender, RoutedEventArgs e)
-		{
-			AdminAvatar_Click(sender, e);
-			SetActiveNav(NavProfile);
 		}
 
 		private void NavReports_Click(object sender, RoutedEventArgs e)
@@ -683,128 +576,10 @@ namespace FinancyApplication
 
 		private void AdminAvatarUpload_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentUser == null || _currentUserProfile == null)
-			{
-				return;
-			}
-
-			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-			dlg.Title = "Choose profile photo";
-			dlg.Filter = "Image files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files|*.*";
-
-			if (dlg.ShowDialog() != true)
-			{
-				return;
-			}
-
-			try
-			{
-				string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-				string destDir = Path.Combine(appData, "FinancyApplication", "Avatars");
-				Directory.CreateDirectory(destDir);
-				string destPath = Path.Combine(destDir, "avatar_admin_" + CurrentUser.UserID + ".jpg");
-
-				BitmapImage bmp = new BitmapImage();
-				bmp.BeginInit();
-				bmp.UriSource = new Uri(dlg.FileName, UriKind.Absolute);
-				bmp.CacheOption = BitmapCacheOption.OnLoad;
-				bmp.EndInit();
-
-				JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-				encoder.Frames.Add(BitmapFrame.Create(bmp));
-				using (FileStream fs = File.Create(destPath))
-				{
-					encoder.Save(fs);
-				}
-
-				_currentUserProfile.AvatarUrl = destPath.Replace("\\", "/");
-
-				try
-				{
-					UserProfile existing = db.GetProfileByUserId(CurrentUser.UserID);
-					if (existing != null)
-					{
-						db.UpdateProfile(_currentUserProfile);
-					}
-					else
-					{
-						db.InsertProfile(_currentUserProfile);
-					}
-				}
-				catch (Exception)
-				{
-					// Non-fatal: avatar file is saved, DB will sync on next Save
-				}
-
-				LoadAvatarImage(destPath);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Could not save photo: " + ex.Message,
-					"Admin", MessageBoxButton.OK, MessageBoxImage.Warning);
-			}
 		}
 
 		private void SaveProfile_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentUser == null || _currentUserProfile == null)
-			{
-				return;
-			}
-
-			string firstName = "";
-			if (ProfileFirstName.Text != null)
-			{
-				firstName = ProfileFirstName.Text.Trim();
-			}
-
-			string lastName = "";
-			if (ProfileLastName.Text != null)
-			{
-				lastName = ProfileLastName.Text.Trim();
-			}
-
-			string localNumber = "";
-			if (AdminProfilePhone.Text != null)
-			{
-				localNumber = AdminProfilePhone.Text.Trim();
-			}
-
-			string phone;
-			PhoneCountry selectedCountry = AdminPhoneCountryPicker.SelectedItem as PhoneCountry;
-			if (selectedCountry != null && !string.IsNullOrEmpty(localNumber))
-			{
-				phone = selectedCountry.Dial + " " + localNumber;
-			}
-			else
-			{
-				phone = localNumber;
-			}
-
-			_currentUserProfile.FirstName = firstName;
-			_currentUserProfile.LastName = lastName;
-			_currentUserProfile.PhoneNumber = phone;
-
-			try
-			{
-				UserProfile existing = db.GetProfileByUserId(CurrentUser.UserID);
-				if (existing != null)
-				{
-					db.UpdateProfile(_currentUserProfile);
-				}
-				else
-				{
-					db.InsertProfile(_currentUserProfile);
-				}
-
-				ProfileView.Visibility = Visibility.Collapsed;
-				UsersView.Visibility = Visibility.Visible;
-			}
-			catch (Exception ex)
-			{
-				ProfileErrorMessage.Text = "Error saving profile: " + ex.Message;
-				ProfileErrorMessage.Visibility = Visibility.Visible;
-			}
 		}
 
 		private void CreateUser_Click(object sender, RoutedEventArgs e)
@@ -818,9 +593,7 @@ namespace FinancyApplication
 			CreateUserError.Text = "";
 
 			UsersView.Visibility = Visibility.Collapsed;
-			ProfileView.Visibility = Visibility.Collapsed;
 			CreateUserView.Visibility = Visibility.Visible;
-			SetActiveNav(NavCreateUser);
 		}
 
 		private void CreateUserSubmit_Click(object sender, RoutedEventArgs e)

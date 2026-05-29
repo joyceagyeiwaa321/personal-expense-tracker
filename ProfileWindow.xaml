@@ -323,8 +323,6 @@
 
 								<!-- Export / Danger -->
 								<StackPanel Orientation="Horizontal">
-									<Button Content="Export Data" Style="{StaticResource TealButton}"
-                                            Margin="0,0,12,0" Click="ExportData_Click"/>
 									<Button Content="Clear All Data" Style="{StaticResource DangerButton}"
                                             Click="ClearAllData_Click"/>
 								</StackPanel>
