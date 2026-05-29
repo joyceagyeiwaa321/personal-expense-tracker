@@ -430,7 +430,7 @@ namespace FinancyApplication
         {
             ShowDashboardView();
             HighlightNav(NavBudgetBtn);
-            _budgetView = new BudgetPage(CurrentUser);  // ✅ fixed
+            _budgetView = new BudgetPage(CurrentUser);  
             BudgetHost.Content = _budgetView;
             DashboardContent.Visibility = Visibility.Collapsed;
             BudgetHost.Visibility = Visibility.Visible;
@@ -440,7 +440,10 @@ namespace FinancyApplication
         {
             ShowDashboardView();
             HighlightNav(NavGoalsBtn);
-            MessageBox.Show("Goals page coming soon.", "Navigation");
+            _goalsView = new GoalsView(CurrentUser);
+            GoalsHost.Content = _goalsView;
+            DashboardContent.Visibility = Visibility.Collapsed;
+            GoalsHost.Visibility = Visibility.Visible;
         }
 
         private void NavReports_Click(object sender, RoutedEventArgs e)
@@ -481,8 +484,9 @@ namespace FinancyApplication
         private AccountsView _accountsView;
         private ReportsView _reportsView;
         private PrivacyView _privacyView;
-        private BudgetPage _budgetView;   // ✅ new
-        private GroupsView _groupsView;   // ✅ new
+        private BudgetPage _budgetView; 
+        private GroupsView _groupsView;
+        private GoalsView _goalsView;
 
         // ── SHOW DASHBOARD (teardown all hosts) ───────────────────────────
 
@@ -493,8 +497,9 @@ namespace FinancyApplication
             CategoriesHost.Visibility = Visibility.Collapsed; CategoriesHost.Content = null; _categoriesView = null;
             AccountsHost.Visibility = Visibility.Collapsed; AccountsHost.Content = null; _accountsView = null;
             ReportsHost.Visibility = Visibility.Collapsed; ReportsHost.Content = null; _reportsView = null;
-            BudgetHost.Visibility = Visibility.Collapsed; BudgetHost.Content = null; _budgetView = null; // ✅ new
-            GroupsHost.Visibility = Visibility.Collapsed; GroupsHost.Content = null; _groupsView = null; // ✅ new
+            BudgetHost.Visibility = Visibility.Collapsed; BudgetHost.Content = null; _budgetView = null;
+            GroupsHost.Visibility = Visibility.Collapsed; GroupsHost.Content = null; _groupsView = null;
+            GoalsHost.Visibility = Visibility.Collapsed; GoalsHost.Content = null; _goalsView = null; 
 
             if (_privacyView != null) { _privacyView.BackRequested -= PrivacyView_BackRequested; _privacyView = null; }
             PrivacyHost.Visibility = Visibility.Collapsed; PrivacyHost.Content = null;
@@ -531,4 +536,4 @@ namespace FinancyApplication
         private class MonthlyChartPoint { public string Label { get; set; } public decimal Income { get; set; } public decimal Expense { get; set; } }
         private class PieSliceData { public int CategoryId { get; set; } public string Category { get; set; } public decimal Total { get; set; } }
     }
-}      
+}

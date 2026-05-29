@@ -12,12 +12,13 @@ namespace FinancyApplication
 		public int UserID { get; set; }
 		public int AccountID { get; set; }
 		public int CategoryID { get; set; }
-		public int GroupID { get; set; } 
+        public string CategoryName { get; set; }
+        public int GroupID { get; set; } 
 		public int RecurringID { get; set; }
 		public string Type { get; set; }
 		public decimal Amount { get; set; }
 		public string Description { get; set; }
-        public string Status { get; set; } = "Paid";
+        public string Status { get; set; }
         public DateTime Date { get; set; }
 
 		public Transaction() { }
