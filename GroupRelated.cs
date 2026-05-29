@@ -151,4 +151,32 @@ namespace FinancyApplication
 			return "GroupID: " + GroupID + ", UserID: " + UserID + ", JoinedAt: " + JoinedAt;
 		}
 	}
+
+    public class ExpenseSplit
+    {
+        public int ExpenseSplitID { get; set; }
+        public int TransactionID { get; set; }
+        public int UserID { get; set; }
+        public decimal Amount { get; set; }
+        public bool IsPaid { get; set; }
+        public DateTime? PaidAt { get; set; }
+
+        public ExpenseSplit()
+        {
+        }
+
+        public ExpenseSplit(int transactionId, int userId, decimal amount, bool isPaid = false)
+        {
+            TransactionID = transactionId;
+            UserID = userId;
+            Amount = amount;
+            IsPaid = isPaid;
+            PaidAt = isPaid ? DateTime.Now : (DateTime?)null;
+        }
+
+        public override string ToString()
+        {
+            return $"ExpenseSplitID: {ExpenseSplitID}, TransactionID: {TransactionID}, UserID: {UserID}, Amount: {Amount}, IsPaid: {IsPaid}";
+        }
+    }
 }
