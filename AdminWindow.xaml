@@ -10,7 +10,7 @@
 
 	<Window.Resources>
 
-		<!-- ───────────────────────── BASE COLORS / CARD ───────────────────────── -->
+		<!-- ─ BASE COLORS / CARD ─ -->
 		<SolidColorBrush x:Key="TealBrush" Color="#00B894"/>
 		<SolidColorBrush x:Key="TealDarkBrush" Color="#00796B"/>
 		<SolidColorBrush x:Key="TealTintBrush" Color="#E0F2F1"/>
@@ -27,7 +27,7 @@
 			</Setter>
 		</Style>
 
-		<!-- ───────────────────────── BUTTONS (unified palette) ─────────────── -->
+		<!-- ─ BUTTONS (unified palette) ─ -->
 
 		<!-- Primary teal -->
 		<Style x:Key="TealButton" TargetType="Button">
@@ -328,7 +328,7 @@
 			<!-- Body container with three swappable views -->
 			<Grid Grid.Row="1">
 
-				<!-- ─────────────── USERS VIEW ─────────────── -->
+				<!-- ─ USERS VIEW ─ -->
 				<ScrollViewer x:Name="UsersView"
                               VerticalScrollBarVisibility="Auto"
                               Visibility="Visible">
@@ -586,7 +586,7 @@
 					</StackPanel>
 				</ScrollViewer> 
 
-				<!-- ─────────────── CREATE USER VIEW ─────────────── -->
+				<!-- ─ CREATE USER VIEW ─ -->
 				<ScrollViewer x:Name="CreateUserView"
                               VerticalScrollBarVisibility="Auto"
                               Visibility="Collapsed">

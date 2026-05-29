@@ -31,7 +31,7 @@ namespace FinancyApplication
             Loaded += GoalsView_Loaded;
         }
 
-        // ── LOADED ────────────────────────────────────────────────────────
+        // LOADED 
 
         private void GoalsView_Loaded(object sender, RoutedEventArgs e)
         {
@@ -61,7 +61,7 @@ namespace FinancyApplication
             PeriodFilterComboBox.SelectionChanged += Filter_SelectionChanged;
         }
 
-        // ── DATA LOAD ─────────────────────────────────────────────────────
+        // DATA LOAD 
 
         private void RefreshPage()
         {
@@ -129,7 +129,7 @@ namespace FinancyApplication
             DrawPieChart(goals);
         }
 
-        // ── RENDER GOAL CARDS ─────────────────────────────────────────────
+        // RENDER GOAL CARDS 
 
         private void RenderGoalCards(List<Goal> goals)
         {
@@ -327,7 +327,7 @@ namespace FinancyApplication
             return (ControlTemplate)System.Windows.Markup.XamlReader.Parse(xaml);
         }
 
-        // ── BAR CHART: Goal Progress (€) ──────────────────────────────────
+        // BAR CHART: Goal Progress (€) 
 
         private void DrawBarChart(List<Goal> goals)
         {
@@ -456,7 +456,7 @@ namespace FinancyApplication
             DrawBarChart(GetFilteredGoals());
         }
 
-        // ── PIE CHART: Completed vs Ongoing ───────────────────────────────
+        // PIE CHART: Completed vs Ongoing 
 
         private void DrawPieChart(List<Goal> goals)
         {
@@ -568,7 +568,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── ADD / EDIT / DELETE ───────────────────────────────────────────
+        // ADD / EDIT / DELETE 
 
         private void AddGoal_Click(object sender, RoutedEventArgs e)
         {
@@ -616,14 +616,14 @@ namespace FinancyApplication
             }
         }
 
-        // ── EVENT HANDLERS ────────────────────────────────────────────────
+        // EVENT HANDLERS 
 
         private void Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded) ApplyFiltersAndRender();
         }
 
-        // ── HELPERS ───────────────────────────────────────────────────────
+        //  HELPERS
 
         private Point GetCirclePoint(double cx, double cy, double r, double angleDeg)
         {

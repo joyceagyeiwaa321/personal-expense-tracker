@@ -36,7 +36,7 @@ namespace FinancyApplication
             ShowDashboard();
         }
 
-        // ── Navigation ───────────────────────────────────────────────────────
+        //  Navigation
         private void Nav_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn) return;
@@ -133,7 +133,7 @@ namespace FinancyApplication
             PageHost.Content = panel;
         }
 
-        // ── Public navigation (called by child pages) ──────────────────────────
+        //  Public navigation (called by child pages) 
         public void NavigateTo(string page)
         {
             // Find the matching nav button and simulate a click
@@ -151,7 +151,7 @@ namespace FinancyApplication
                 System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
         }
 
-        // ── Nav style helper ─────────────────────────────────────────────────
+        //  Nav style helper─
         private void SetActiveNav(Button btn)
         {
             // Reset previous active button
@@ -162,7 +162,7 @@ namespace FinancyApplication
             _activeNavBtn = btn;
         }
 
-        // ── Window chrome ────────────────────────────────────────────────────
+        //  Window chrome─
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();

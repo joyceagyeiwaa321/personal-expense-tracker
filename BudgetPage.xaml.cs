@@ -57,7 +57,7 @@ namespace FinancyApplication
             Loaded += BudgetPage_Loaded;
         }
 
-        // ── LOADED ────────────────────────────────────────────────────────
+        // LOADED 
 
         private void BudgetPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -67,7 +67,7 @@ namespace FinancyApplication
             RefreshPage();
         }
 
-        // ── SETUP HELPERS ─────────────────────────────────────────────────
+        // SETUP HELPERS 
 
         private void PopulateMonthComboBox()
         {
@@ -112,7 +112,7 @@ namespace FinancyApplication
             CategoryFilterComboBox.SelectionChanged += CategoryFilter_SelectionChanged;
         }
 
-        // ── REFRESH ───────────────────────────────────────────────────────
+        // REFRESH 
 
         private void RefreshPage()
         {
@@ -167,7 +167,7 @@ namespace FinancyApplication
             UpdateKpiCards(filtered);
         }
 
-        // ── RENDER ROWS ───────────────────────────────────────────────────
+        // RENDER ROWS 
 
         private void RenderBudgetRows(List<BudgetRowViewModel> rows)
         {
@@ -349,7 +349,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── KPI CARDS ─────────────────────────────────────────────────────
+        // KPI CARDS 
 
         private void UpdateKpiCards(List<BudgetRowViewModel> rows)
         {
@@ -426,7 +426,7 @@ namespace FinancyApplication
             catch { return 0; }
         }
 
-        // ── CHARTS ────────────────────────────────────────────────────────
+        //  CHARTS 
 
         private void DrawCharts()
         {
@@ -589,7 +589,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── ADD / EDIT / DELETE ───────────────────────────────────────────
+        // ADD / EDIT / DELETE 
 
         private void AddBudget_Click(object sender, RoutedEventArgs e)
         {
@@ -645,7 +645,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── EVENT HANDLERS ────────────────────────────────────────────────
+        // EVENT HANDLERS 
 
         private void MonthComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -657,7 +657,7 @@ namespace FinancyApplication
             if (IsLoaded) ApplyCategoryFilter();
         }
 
-        // ── UTILS ─────────────────────────────────────────────────────────
+        // UTILS 
 
         private string GetSelectedMonth()
         {

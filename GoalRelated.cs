@@ -13,9 +13,7 @@ namespace FinancyApplication
 		public DateTime? Deadline { get; set; }
 		public DateTime CreatedAt { get; set; }
 
-		public Goal()
-		{
-		}
+		public Goal() {}
 
 		public Goal(int goalId, int userId, string name, decimal targetAmount,
 			decimal savedAmount, DateTime? deadline)
@@ -58,10 +56,9 @@ namespace FinancyApplication
 		{
 			if (TargetAmount <= 0) return 0;
 			double pct = (double)(SavedAmount / TargetAmount) * 100.0;
-			if (pct < 0) return 0;
-			if (pct > 100) return 100;
-			return pct;
-		}
+            if (pct > 100) return 100;
+            return pct < 0 ? 0 : pct;
+        }
 
 		public bool IsCompleted()
 		{

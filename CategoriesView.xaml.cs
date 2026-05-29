@@ -75,7 +75,7 @@ namespace FinancyApplication
 			IsDefault = c.IsDefault
 		};
 
-		// ── ADD / EDIT / DELETE ─────────────────────────────────────────────
+		// ADD / EDIT / DELETE
 
 		private void AddCategory_Click(object sender, RoutedEventArgs e)
 		{

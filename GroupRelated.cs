@@ -9,16 +9,13 @@ namespace FinancyApplication
 		public int GroupID { get; set; }
 		public int CreatedByUserID { get; set; }
 		public string Name { get; set; }
-		public string Description { get; set; } // New
-		public string InviteCode { get; set; }  // New
+		public string Description { get; set; } 
+		public string InviteCode { get; set; }  
 		public DateTime CreatedAt { get; set; }
         public int MemberCount { get; set; }
 
-        public Group()
-		{
-		}
+        public Group(){}
 
-		// Updated constructor for creating new groups with a code
 		public Group(int createdByUserId, string name, string description)
 		{
 			CreatedByUserID = createdByUserId;
@@ -46,7 +43,6 @@ namespace FinancyApplication
 			return db.InsertGroup(this);
 		}
 
-		// This is what the "Join" button uses
 		public static int JoinByCode(int userId, string code)
 		{
 			Data db = new Data();
@@ -111,9 +107,7 @@ namespace FinancyApplication
 		public int UserID { get; set; }
 		public DateTime JoinedAt { get; set; }
 
-		public GroupMember()
-		{
-		}
+		public GroupMember(){}
 
 		public GroupMember(int groupId, int userId)
 		{

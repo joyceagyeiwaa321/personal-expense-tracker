@@ -75,7 +75,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── AVATAR ────────────────────────────────────────────────────────
+        // AVATAR 
 
         public void RefreshDashboardAvatar()
         {
@@ -102,7 +102,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── DASHBOARD DATA ────────────────────────────────────────────────
+        //DASHBOARD DATA 
 
         private void RefreshDashboard()
         {
@@ -353,7 +353,7 @@ namespace FinancyApplication
             Canvas.SetLeft(tb, left); Canvas.SetTop(tb, top);
         }
 
-        // ── THEME ─────────────────────────────────────────────────────────
+        // THEME 
 
         private void ThemeToggle_Click(object sender, RoutedEventArgs e) => ThemeManager.Toggle();
 
@@ -374,7 +374,7 @@ namespace FinancyApplication
             if (IsLoaded) LoadCharts();
         }
 
-        // ── NAV HIGHLIGHT ─────────────────────────────────────────────────
+        // NAV HIGHLIGHT 
 
         private static readonly Brush NavMutedBrush = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B));
         private static readonly Brush NavActiveBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xB8, 0x94));
@@ -388,7 +388,7 @@ namespace FinancyApplication
             if (active != null) { active.Foreground = NavActiveBrush; active.FontWeight = FontWeights.Bold; }
         }
 
-        // ── NAV CLICKS ────────────────────────────────────────────────────
+        // NAV CLICKS 
 
         private void NavDashboard_Click(object sender, RoutedEventArgs e)
         {
@@ -477,7 +477,7 @@ namespace FinancyApplication
             ProfileHost.Visibility = Visibility.Visible;
         }
 
-        // ── FIELDS ────────────────────────────────────────────────────────
+        // FIELDS 
 
         private ProfileView _profileView;
         private TransactionsView _transactionsView;
@@ -489,7 +489,7 @@ namespace FinancyApplication
         private GroupsView _groupsView;
         private GoalsView _goalsView;
 
-        // ── SHOW DASHBOARD (teardown all hosts) ───────────────────────────
+        // SHOW DASHBOARD (teardown all hosts) 
 
         private void ShowDashboardView()
         {
@@ -509,7 +509,7 @@ namespace FinancyApplication
             RefreshDashboardAvatar();
         }
 
-        // ── FOOTER / PRIVACY ──────────────────────────────────────────────
+        // FOOTER / PRIVACY
 
         private void FooterPrivacy_Click(object sender, RoutedEventArgs e)
         {
@@ -532,7 +532,7 @@ namespace FinancyApplication
         private void ViewAllTransactions_Click(object sender, RoutedEventArgs e)
             => NavTransactions_Click(sender, e);
 
-        // ── INNER CLASSES ─────────────────────────────────────────────────
+        // INNER CLASSES 
 
         private class MonthlyChartPoint { public string Label { get; set; } public decimal Income { get; set; } public decimal Expense { get; set; } }
         private class PieSliceData { public int CategoryId { get; set; } public string Category { get; set; } public decimal Total { get; set; } }

@@ -72,7 +72,7 @@ namespace FinancyApplication
 			Loaded += (s, e) => LoadAll();
 		}
 
-		// ── LOAD ────────────────────────────────────────────────────────────
+		//  LOAD
 
 		private void LoadAll()
 		{
@@ -152,7 +152,7 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── FILTER ──────────────────────────────────────────────────────────
+		//  FILTER
 
 		private void ApplyFilters()
 		{
@@ -261,7 +261,7 @@ namespace FinancyApplication
 			ApplyFilters();
 		}
 
-		// ── TABS ────────────────────────────────────────────────────────────
+		//  TABS
 
 		private void TabAll_Click(object sender, RoutedEventArgs e)
 		{
@@ -280,9 +280,9 @@ namespace FinancyApplication
 			LoadRecurring();
 		}
 
-		// ── ADD / EDIT / DELETE ─────────────────────────────────────────────
+		//  ADD / EDIT / DELETE 
 
-		        // ── CSV / XLSX IMPORT ─────────────────────────────────────────────
+		        //  CSV / XLSX IMPORT 
         //
         // Imports transactions from a bank CSV or Excel file.
         // If the column headers are not recognized, the AI maps them automatically.
@@ -538,7 +538,7 @@ namespace FinancyApplication
             LoadTransactions();
         }
 
-                // ── IMPORT HELPERS ────────────────────────────────────────────────
+                //  IMPORT HELPERS
 
         private static List<string[]> ReadCsv(string path)
         {
@@ -696,7 +696,7 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── RECURRING ACTIONS ───────────────────────────────────────────────
+		//  RECURRING ACTIONS 
 
 		private void RecurringToggle_Click(object sender, RoutedEventArgs e)
 		{

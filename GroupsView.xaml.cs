@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace FinancyApplication
 {
-    // ── View-models ──────────────────────────────────────────────────────────
+    //  View-models
     public class GroupExpenseRow
     {
         public int TransactionID { get; set; }
@@ -30,7 +30,7 @@ namespace FinancyApplication
             : new SolidColorBrush(Color.FromRgb(153, 27, 27));
     }
 
-    // ── Command helper ───────────────────────────────────────────────────────
+    //  Command helper
     public class RelayCommand : ICommand
     {
         private readonly Action<object> _execute;
@@ -40,7 +40,7 @@ namespace FinancyApplication
         public event EventHandler CanExecuteChanged;
     }
 
-    // ── GroupsView ───────────────────────────────────────────────────────────
+    //  GroupsView─
     public partial class GroupsView : UserControl
     {
         private readonly Data db = new Data();
@@ -106,7 +106,7 @@ namespace FinancyApplication
             LoadGroups();
         }
 
-        // ── Landing ──────────────────────────────────────────────────────────
+        //  Landing
         private void LoadGroups()
         {
             var groups = new List<Group>();
@@ -173,7 +173,7 @@ namespace FinancyApplication
             LoadGroups();
         }
 
-        // ── Create Group ─────────────────────────────────────────────────────
+        //  Create Group
         private void CreateGroup_Click(object sender, RoutedEventArgs e)
         {
             NewGroupName.Text = "";
@@ -212,7 +212,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── Load Expenses ────────────────────────────────────────────────────
+        //  Load Expenses─
         private void LoadGroupExpenses()
         {
             if (_activeGroup == null) return;
@@ -308,7 +308,7 @@ namespace FinancyApplication
             ApplyFilters();
         }
 
-        // ── Add Expense ──────────────────────────────────────────────────────
+        //  Add Expense
         private void AddExpense_Click(object sender, RoutedEventArgs e)
         {
             ExpenseDesc.Text = "";
@@ -494,7 +494,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── Mark Paid ────────────────────────────────────────────────────────
+        //  Mark Paid─
         private void MarkPaid_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button b || b.Tag == null) return;
@@ -511,7 +511,7 @@ namespace FinancyApplication
             catch (Exception ex) { MessageBox.Show("Could not update status: " + ex.Message); }
         }
 
-        // ── Delete Expense ───────────────────────────────────────────────────
+        //  Delete Expense
         private void DeleteExpense_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button b || b.Tag == null) return;
@@ -529,7 +529,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── Settle Up ────────────────────────────────────────────────────────
+        //  Settle Up─
         private void SettleUp_Click(object sender, RoutedEventArgs e)
         {
             var pending = _groupTransactions.Where(t => t.Status == "Pending").ToList();
@@ -556,7 +556,7 @@ namespace FinancyApplication
             catch (Exception ex) { MessageBox.Show("Could not settle: " + ex.Message); }
         }
 
-        // ── Leave Group ──────────────────────────────────────────────────────
+        //  Leave Group
         private void LeaveGroup_Click(object sender, RoutedEventArgs e)
         {
             var res = MessageBox.Show($"Leave \"{_activeGroup.Name}\"?", "Confirm",
@@ -573,7 +573,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── Copy Invite Code (from card) ─────────────────────────────────────
+        //  Copy Invite Code (from card) 
         private void CopyInviteCode_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button b && b.Tag is string code && !string.IsNullOrEmpty(code))
@@ -583,7 +583,7 @@ namespace FinancyApplication
             }
         }
 
-        // ── Group Code Modal ──────────────────────────────────────────────────
+        //  Group Code Modal
         private void CopyGroupCode_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(GroupCodeText.Text))
@@ -596,7 +596,7 @@ namespace FinancyApplication
         private void CloseGroupCode_Click(object sender, RoutedEventArgs e) =>
             GroupCodeModal.Visibility = Visibility.Collapsed;
 
-        // ── Join Group ────────────────────────────────────────────────────────
+        //  Join Group─
         private void JoinGroup_Click(object sender, RoutedEventArgs e)
         {
             JoinCodeInput.Text = "";

@@ -1617,7 +1617,7 @@ namespace FinancyApplication
             catch { return false; }
         }
 
-        // ── GOAL CRUD ─────────────────────────────────────────────────────
+        // GOAL CRUD 
 
         public int InsertGoal(Goal goal)
         {
@@ -1715,7 +1715,7 @@ namespace FinancyApplication
             }
             return goals;
         }
-        // ── EXPENSE SPLIT CRUD ────────────────────────────────────────────
+        // EXPENSE SPLIT CRUD 
 
         public int InsertExpenseSplit(ExpenseSplit split)
         {

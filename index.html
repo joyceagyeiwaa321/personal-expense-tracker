@@ -40,7 +40,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── PAGES ── */
+/*  PAGES  */
 .page { display:none; min-height:100vh; }
 .page.active { display:block; }
 
@@ -910,10 +910,10 @@ body {
 </div>
 
 <script>
-// ── CREDENTIALS ──────────────────────────────────────────────────────────────
+//  CREDENTIALS
 const USERS = { namariq: 'namariq2026', joyce: 'joyce2026' };
 
-// ── DATA ─────────────────────────────────────────────────────────────────────
+//  DATA
 const TODAY = new Date('2026-04-30');
 function parseDeadline(s) {
   const m = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
@@ -1059,7 +1059,7 @@ function buildTaskRow(task,deadline,person) { const st=getStatus(task.id); let t
 function openTaskMenu(taskId,person,row,event) { if(event)event.stopPropagation(); if(currentUser!==person)return; activeTaskId=taskId; activeTaskPerson=person; const popup=document.getElementById('status-popup'); const overlay=document.getElementById('overlay2'); const rect=row.getBoundingClientRect(); popup.style.display='block'; overlay.style.display='block'; popup.classList.add('open'); overlay.classList.add('open'); const popupHeight=popup.offsetHeight||130; const popupWidth=popup.offsetWidth||180; let top=rect.bottom+6; let left=rect.left; if(top+popupHeight>window.innerHeight-10) top=rect.top-popupHeight-6; if(top<10)top=10; if(left+popupWidth>window.innerWidth-10) left=window.innerWidth-popupWidth-10; if(left<10)left=10; popup.style.top=top+'px'; popup.style.left=left+'px'; }
 function closePopup() { document.getElementById('status-popup').classList.remove('open'); document.getElementById('status-popup').style.display='none'; document.getElementById('overlay2').classList.remove('open'); document.getElementById('overlay2').style.display='none'; activeTaskId=null; activeTaskPerson=null; }
 function applyStatus(val) { if(!activeTaskId||!activeTaskPerson)return; const changedPerson=activeTaskPerson; state.status[activeTaskId]=val; saveState(); closePopup(); renderDash(changedPerson); renderStatPills('namariq','home-mini-namariq','mini'); renderStatPills('joyce','home-mini-joyce','mini'); }
-function downloadShareableCopy() { saveState(); let html=document.documentElement.outerHTML; const stateScript='<script>window.COLLAB_BOARD_INITIAL_STATE = '+JSON.stringify(state).replace(/</g,'\u003c')+';<\/script>\n'; if(html.includes('window.COLLAB_BOARD_INITIAL_STATE')) html=html.replace(/<script>window\.COLLAB_BOARD_INITIAL_STATE[\s\S]*?<\/script>\n?/,stateScript); else html=html.replace('<script>\n// ── CREDENTIALS',stateScript+'<script>\n// ── CREDENTIALS'); const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='the_collab_board_saved_with_photos.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+function downloadShareableCopy() { saveState(); let html=document.documentElement.outerHTML; const stateScript='<script>window.COLLAB_BOARD_INITIAL_STATE = '+JSON.stringify(state).replace(/</g,'\u003c')+';<\/script>\n'; if(html.includes('window.COLLAB_BOARD_INITIAL_STATE')) html=html.replace(/<script>window\.COLLAB_BOARD_INITIAL_STATE[\s\S]*?<\/script>\n?/,stateScript); else html=html.replace('<script>\n//  CREDENTIALS',stateScript+'<script>\n//  CREDENTIALS'); const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='the_collab_board_saved_with_photos.html'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
 function addSaveCopyButtons() { document.querySelectorAll('.nav-user').forEach(nav=>{ if(nav.querySelector('.save-copy-btn'))return; const btn=document.createElement('button'); btn.type='button'; btn.className='save-copy-btn'; btn.textContent='Save shareable copy'; btn.addEventListener('click',downloadShareableCopy); const logout=nav.querySelector('[data-action="logout"]'); nav.insertBefore(btn,logout); }); }
 
 loadState();

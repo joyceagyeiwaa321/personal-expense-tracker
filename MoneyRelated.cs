@@ -28,7 +28,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			int id = db.InsertBudget(this);
-			MessageBox.Show("Budget created successfully.");
 			return id;
 		}
 
@@ -37,14 +36,12 @@ namespace FinancyApplication
 			LimitAmount = newLimitAmount;
 			Data db = new Data();
 			db.UpdateBudget(this);
-			MessageBox.Show("Budget updated successfully.");
 		}
 
 		public void Delete()
 		{
 			Data db = new Data();
 			db.DeleteBudget(BudgetId);
-			MessageBox.Show("Budget deleted successfully.");
 		}
 
 		public decimal GetSpentAmount()
@@ -102,7 +99,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			int id = db.InsertRecurringTransaction(this);
-			MessageBox.Show("Recurring transaction created successfully.");
 			return id;
 		}
 
@@ -111,7 +107,6 @@ namespace FinancyApplication
 			IsActive = false;
 			Data db = new Data();
 			db.UpdateRecurringTransaction(this);
-			MessageBox.Show("Recurring transaction paused.");
 		}
 
 		public void Resume()
@@ -119,7 +114,6 @@ namespace FinancyApplication
 			IsActive = true;
 			Data db = new Data();
 			db.UpdateRecurringTransaction(this);
-			MessageBox.Show("Recurring transaction resumed.");
 		}
 
 		public void Cancel()
@@ -127,23 +121,14 @@ namespace FinancyApplication
 			IsActive = false;
 			Data db = new Data();
 			db.DeleteRecurringTransaction(RecurringId);
-			MessageBox.Show("Recurring transaction cancelled.");
 		}
 
 		public void Execute()
 		{
-			if (IsActive)
-			{
+			if (IsActive) return;
 				UpdateNextRunDate();
 				Data db = new Data();
 				db.UpdateRecurringTransaction(this);
-				MessageBox.Show($"Recurring transaction executed: {Type} €{Amount}");
-			}
-			else
-			{
-				MessageBox.Show("Recurring transaction is not active.");
-				return;
-			}
 		}
 
 		public void UpdateNextRunDate()
@@ -163,7 +148,6 @@ namespace FinancyApplication
 					NextRunDate = NextRunDate.AddYears(1);
 					break;
 				default:
-					MessageBox.Show("Invalid frequency.");
 					break;
 			}
 		}
@@ -199,7 +183,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			int id = db.InsertReceipt(this);
-			MessageBox.Show("Receipt uploaded successfully.");
 			return id;
 		}
 
@@ -207,7 +190,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			db.DeleteReceipt(ReceiptID);
-			MessageBox.Show("Receipt deleted successfully.");
 		}
 
 		public string GetDownloadUrl()
