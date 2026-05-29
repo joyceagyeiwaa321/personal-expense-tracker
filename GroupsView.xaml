@@ -127,106 +127,131 @@
 		<ScrollViewer x:Name="LandingView" VerticalScrollBarVisibility="Auto" Padding="24,18,24,24">
 			<StackPanel MaxWidth="600" HorizontalAlignment="Center">
 
-				<!-- Header -->
-				<TextBlock Text="Groups" FontFamily="Segoe UI Black" FontSize="26"
-                           Foreground="#1A2E22" Margin="0,0,0,6"/>
+				<!-- Header row with buttons -->
+				<Grid Margin="0,0,0,6">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+					<TextBlock Grid.Column="0" Text="Groups" FontFamily="Segoe UI Black" FontSize="26"
+							   Foreground="#1A2E22" VerticalAlignment="Center"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+						<Button Style="{StaticResource GreenBtn}" Margin="0,0,8,0"
+								Click="CreateGroup_Click">+ Create Group</Button>
+						<Button Style="{StaticResource OutlineBtn}"
+								Click="JoinGroup_Click">👥 Join Group</Button>
+					</StackPanel>
+				</Grid>
 				<TextBlock Text="Collaborate on shared expenses with friends and family."
-                           FontFamily="Segoe UI" FontSize="13" Foreground="#8FAF9F" Margin="0,0,0,28"/>
+						   FontFamily="Segoe UI" FontSize="13" Foreground="#8FAF9F" Margin="0,0,0,24"/>
 
-				<!-- Your Groups -->
-				<Border Style="{StaticResource Card}" Margin="0,0,0,20">
-					<StackPanel>
-						<Grid Margin="0,0,0,16">
-							<TextBlock Text="Your Groups" FontFamily="Segoe UI Semibold"
-                                       FontSize="15" Foreground="#1A2E22" VerticalAlignment="Center"/>
-							<Button Style="{StaticResource GreenBtn}" HorizontalAlignment="Right"
-                                    Click="CreateGroup_Click">+ Create Group</Button>
-						</Grid>
+				<!-- Groups You Created -->
+				<TextBlock Text="Groups You Created" FontFamily="Segoe UI Semibold"
+						   FontSize="15" Foreground="#1A2E22" Margin="0,0,0,12"/>
+				<ItemsControl x:Name="CreatedGroupsList">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Background="White" CornerRadius="12" Padding="16,14"
+									Margin="0,0,0,10" Cursor="Hand">
+								<Border.Effect>
+									<DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.06"/>
+								</Border.Effect>
+								<Border.InputBindings>
+									<MouseBinding MouseAction="LeftClick"
+												  Command="{Binding DataContext.OpenGroupCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+												  CommandParameter="{Binding}"/>
+								</Border.InputBindings>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<StackPanel Grid.Column="0">
+										<TextBlock Text="{Binding Name}" FontFamily="Segoe UI Semibold"
+												   FontSize="14" Foreground="#1A2E22"/>
+										<TextBlock Text="{Binding Description}" FontFamily="Segoe UI"
+												   FontSize="11.5" Foreground="#8FAF9F" Margin="0,3,0,0"/>
+										<StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+											<TextBlock Text="Members: " FontFamily="Segoe UI"
+													   FontSize="11.5" Foreground="#8FAF9F"/>
+											<TextBlock Text="{Binding MemberCount}" FontFamily="Segoe UI Semibold"
+													   FontSize="11.5" Foreground="#4A6558"/>
+										</StackPanel>
+									</StackPanel>
+									<Button Grid.Column="1" VerticalAlignment="Top"
+											Background="Transparent" BorderThickness="0"
+											Cursor="Hand" ToolTip="Copy invite code"
+											Tag="{Binding InviteCode}"
+											Click="CopyInviteCode_Click">
+										<TextBlock Text="📋" FontSize="18"/>
+									</Button>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+				<StackPanel x:Name="NoCreatedGroupsPanel" Visibility="Collapsed"
+							HorizontalAlignment="Center" Margin="0,4,0,16">
+					<TextBlock Text="You haven't created any groups yet."
+							   FontFamily="Segoe UI" FontSize="12" Foreground="#8FAF9F"/>
+				</StackPanel>
 
-						<ItemsControl x:Name="GroupsList">
-							<ItemsControl.ItemTemplate>
-								<DataTemplate>
-									<Border Background="#F7FAF8" CornerRadius="10"
-                                            Padding="14,12" Margin="0,0,0,8" Cursor="Hand">
-										<Border.InputBindings>
-											<MouseBinding MouseAction="LeftClick"
-                                                          Command="{Binding DataContext.OpenGroupCommand,
-                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                          CommandParameter="{Binding}"/>
-										</Border.InputBindings>
-										<Grid>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="Auto"/>
-												<ColumnDefinition Width="*"/>
-												<ColumnDefinition Width="Auto"/>
-											</Grid.ColumnDefinitions>
-											<Border Width="44" Height="44" CornerRadius="12"
-                                                    Background="#2ECC71" Margin="0,0,14,0">
-												<TextBlock Text="👥" FontSize="20"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"/>
-											</Border>
-											<StackPanel Grid.Column="1" VerticalAlignment="Center">
-												<TextBlock Text="{Binding Name}"
-                                                           FontFamily="Segoe UI Semibold" FontSize="13.5"
-                                                           Foreground="#1A2E22"/>
-												<TextBlock Text="{Binding Description}"
-                                                           FontFamily="Segoe UI" FontSize="11.5"
-                                                           Foreground="#8FAF9F"/>
-											</StackPanel>
-											<StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
-												<TextBlock Text="{Binding MemberCount}"
-														   FontFamily="Segoe UI Semibold" FontSize="12"
-														   Foreground="#2ECC71" HorizontalAlignment="Right"/>
-												<TextBlock Text="members"
-														   FontFamily="Segoe UI" FontSize="10"
-														   Foreground="#8FAF9F" HorizontalAlignment="Right"/>
-											</StackPanel>
-										</Grid>
+				<!-- Groups You're a Member Of -->
+				<TextBlock Text="Groups You're a Member Of" FontFamily="Segoe UI Semibold"
+						   FontSize="15" Foreground="#1A2E22" Margin="0,16,0,12"/>
+				<ItemsControl x:Name="GroupsList">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Background="White" CornerRadius="12" Padding="16,14"
+									Margin="0,0,0,10" Cursor="Hand">
+								<Border.Effect>
+									<DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.06"/>
+								</Border.Effect>
+								<Border.InputBindings>
+									<MouseBinding MouseAction="LeftClick"
+												  Command="{Binding DataContext.OpenGroupCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+												  CommandParameter="{Binding}"/>
+								</Border.InputBindings>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<Border Width="44" Height="44" CornerRadius="12"
+											Background="#2ECC71" Margin="0,0,14,0">
+										<TextBlock Text="👥" FontSize="20"
+												   HorizontalAlignment="Center"
+												   VerticalAlignment="Center"/>
 									</Border>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
-						</ItemsControl>
+									<StackPanel Grid.Column="1" VerticalAlignment="Center">
+										<TextBlock Text="{Binding Name}" FontFamily="Segoe UI Semibold"
+												   FontSize="13.5" Foreground="#1A2E22"/>
+										<TextBlock Text="{Binding Description}" FontFamily="Segoe UI"
+												   FontSize="11.5" Foreground="#8FAF9F"/>
+									</StackPanel>
+									<StackPanel Grid.Column="2" VerticalAlignment="Center"
+												HorizontalAlignment="Right">
+										<TextBlock Text="{Binding MemberCount}" FontFamily="Segoe UI Semibold"
+												   FontSize="12" Foreground="#2ECC71" HorizontalAlignment="Right"/>
+										<TextBlock Text="members" FontFamily="Segoe UI" FontSize="10"
+												   Foreground="#8FAF9F" HorizontalAlignment="Right"/>
+									</StackPanel>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+				<StackPanel x:Name="NoGroupsPanel" Visibility="Collapsed"
+							HorizontalAlignment="Center" Margin="0,16">
+					<TextBlock Text="👥" FontSize="36" HorizontalAlignment="Center"/>
+					<TextBlock Text="You're not in any groups yet"
+							   FontFamily="Segoe UI" FontSize="13" Foreground="#8FAF9F"
+							   HorizontalAlignment="Center" Margin="0,8,0,0"/>
+				</StackPanel>
 
-						<StackPanel x:Name="NoGroupsPanel" Visibility="Collapsed"
-                                    HorizontalAlignment="Center" Margin="0,16">
-							<TextBlock Text="👥" FontSize="36" HorizontalAlignment="Center"/>
-							<TextBlock Text="You're not in any groups yet"
-                                       FontFamily="Segoe UI" FontSize="13" Foreground="#8FAF9F"
-                                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
-						</StackPanel>
-					</StackPanel>
-				</Border>
-
-				<!-- Invite Member -->
-				<Border Style="{StaticResource Card}">
-					<StackPanel>
-						<TextBlock Text="Invite Someone" FontFamily="Segoe UI Semibold"
-								   FontSize="15" Foreground="#1A2E22" Margin="0,0,0,6"/>
-						<TextBlock Text="Enter the username of the person you want to invite."
-								   FontFamily="Segoe UI" FontSize="12" Foreground="#8FAF9F"
-								   Margin="0,0,0,14"/>
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-							<ComboBox x:Name="GroupSelectCombo" Height="40" Margin="0,0,8,0"
-									  FontFamily="Segoe UI" FontSize="13"
-									  BorderBrush="#E0EDE6" BorderThickness="1.5"/>
-						</Grid>
-						<Grid Margin="0,10,0,0">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-							<TextBox x:Name="InviteUsernameInput" Style="{StaticResource Input}"
-									 Margin="0,0,10,0"/>
-							<Button Grid.Column="1" Style="{StaticResource GreenBtn}"
-									Click="SendInvite_Click">Send Invite</Button>
-						</Grid>
-					</StackPanel>
-				</Border>
 			</StackPanel>
 		</ScrollViewer>
 
@@ -256,6 +281,63 @@
                                 Click="CancelCreate_Click">Cancel</Button>
 						<Button Grid.Column="2" Style="{StaticResource GreenBtn}"
                                 Click="ConfirmCreate_Click">Create Group</Button>
+					</Grid>
+				</StackPanel>
+			</Border>
+		</Grid>
+
+		<!-- ══════ GROUP CODE MODAL (shown after creation) ══════ -->
+		<Grid x:Name="GroupCodeModal" Visibility="Collapsed" Background="#88000000">
+			<Border MaxWidth="460" Background="White" CornerRadius="16" Padding="28"
+					HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel>
+					<TextBlock Text="Create a new group" FontFamily="Segoe UI Black"
+							   FontSize="18" Foreground="#1A2E22" Margin="0,0,0,12"/>
+					<TextBlock Text="Your group has been created successfully!&#x0a;Share this code with others to join:"
+							   FontFamily="Segoe UI" FontSize="13" Foreground="#4A6558"
+							   TextWrapping="Wrap" Margin="0,0,0,16"/>
+					<Border BorderBrush="#E0EDE6" BorderThickness="1.5" CornerRadius="8"
+							Background="#FAFAFA" Padding="14,12" Margin="0,0,0,20">
+						<Grid>
+							<TextBlock x:Name="GroupCodeText" FontFamily="Segoe UI Semibold"
+									   FontSize="18" Foreground="#1A2E22" VerticalAlignment="Center"/>
+							<Button HorizontalAlignment="Right" Background="Transparent"
+									BorderThickness="0" Cursor="Hand" ToolTip="Copy code"
+									Click="CopyGroupCode_Click">
+								<TextBlock Text="📋" FontSize="20"/>
+							</Button>
+						</Grid>
+					</Border>
+					<Button Style="{StaticResource GreenBtn}" HorizontalAlignment="Stretch"
+							Click="CloseGroupCode_Click">Close</Button>
+				</StackPanel>
+			</Border>
+		</Grid>
+
+		<!-- ══════ JOIN GROUP MODAL ══════ -->
+		<Grid x:Name="JoinGroupModal" Visibility="Collapsed" Background="#88000000">
+			<Border MaxWidth="460" Background="White" CornerRadius="16" Padding="28"
+					HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel>
+					<TextBlock Text="Join a Group" FontFamily="Segoe UI Black"
+							   FontSize="18" Foreground="#1A2E22" Margin="0,0,0,8"/>
+					<TextBlock Text="Enter the invite code shared with you."
+							   FontFamily="Segoe UI" FontSize="12" Foreground="#8FAF9F"
+							   Margin="0,0,0,20"/>
+					<TextBlock Text="Invite Code" FontFamily="Segoe UI Semibold"
+							   FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
+					<TextBox x:Name="JoinCodeInput" Style="{StaticResource Input}"
+							 Margin="0,0,0,24"/>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="10"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Button Grid.Column="0" Style="{StaticResource OutlineBtn}"
+								Click="CancelJoin_Click">Cancel</Button>
+						<Button Grid.Column="2" Style="{StaticResource GreenBtn}"
+								Click="ConfirmJoin_Click">Join Group</Button>
 					</Grid>
 				</StackPanel>
 			</Border>
@@ -486,10 +568,26 @@
 
 						<TextBlock Text="Account" FontFamily="Segoe UI Semibold"
                                    FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
-						<ComboBox x:Name="ExpenseAccountCombo" Height="40" Margin="0,0,0,24"
+						<ComboBox x:Name="ExpenseAccountCombo" Height="40" Margin="0,0,0,14"
                                   FontFamily="Segoe UI" FontSize="13"
                                   BorderBrush="#E0EDE6" BorderThickness="1.5"/>
-
+						
+						<!-- SPLIT SECTION -->
+						<TextBlock Text="Split Among" FontFamily="Segoe UI Semibold"
+								   FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
+						<Border BorderBrush="#E0EDE6" BorderThickness="1.5" CornerRadius="8"
+								Padding="14,10" Margin="0,0,0,6" Background="#FAFAFA">
+							<StackPanel>
+								<StackPanel x:Name="SplitMembersPanel"/>
+								<Button Content="Split equally" Click="SplitEqual_Click"
+										HorizontalAlignment="Left" Margin="0,8,0,0"
+										Background="Transparent" BorderThickness="0"
+										Foreground="#2ECC71" FontFamily="Segoe UI Semibold"
+										FontSize="12" Cursor="Hand"/>
+							</StackPanel>
+						</Border>
+						<TextBlock x:Name="SplitValidationMsg" Foreground="#E74C3C"
+								   FontSize="11" Margin="0,0,0,18" Visibility="Collapsed"/>
 						<Grid>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*"/>

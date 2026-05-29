@@ -1,0 +1,222 @@
+﻿<UserControl x:Class="FinancyApplication.GoalsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Background="#F4F6F8">
+
+	<UserControl.Resources>
+		<Style x:Key="CardStyle" TargetType="Border">
+			<Setter Property="Background" Value="White"/>
+			<Setter Property="CornerRadius" Value="10"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="Effect">
+				<Setter.Value>
+					<DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.10"/>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="GoalCardStyle" TargetType="Border">
+			<Setter Property="Background" Value="White"/>
+			<Setter Property="CornerRadius" Value="10"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="Margin" Value="0,0,14,14"/>
+			<Setter Property="Effect">
+				<Setter.Value>
+					<DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.08"/>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="GreenButton" TargetType="Button">
+			<Setter Property="Background" Value="#00B894"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="FontSize" Value="13"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Padding" Value="20,10"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="bg" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="bg" Property="Background" Value="#00967A"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="EditButton" TargetType="Button">
+			<Setter Property="Background" Value="#F59E0B"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Width" Value="28"/>
+			<Setter Property="Height" Value="28"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="14">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="bg" Property="Background" Value="#D97706"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="DeleteButton" TargetType="Button">
+			<Setter Property="Background" Value="#EF4444"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Width" Value="28"/>
+			<Setter Property="Height" Value="28"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="14">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="bg" Property="Background" Value="#DC2626"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</UserControl.Resources>
+
+	<Grid>
+		<ScrollViewer VerticalScrollBarVisibility="Auto">
+			<StackPanel Width="880" HorizontalAlignment="Center" Margin="0,40,0,30">
+
+				<!-- HEADER -->
+				<Grid Margin="0,0,0,6">
+					<StackPanel>
+						<TextBlock Text="Goal Tracker"
+                                   FontSize="26" FontWeight="Bold" Foreground="#1F2937"/>
+						<TextBlock Text="Set, track, and achieve your financial targets"
+                                   FontSize="13" Foreground="#64748B" Margin="0,6,0,0"/>
+					</StackPanel>
+					<Button x:Name="AddGoalButton"
+                            Content="+  Add Goal"
+                            Style="{StaticResource GreenButton}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Click="AddGoal_Click"/>
+				</Grid>
+
+				<!-- FILTERS -->
+				<StackPanel Orientation="Horizontal" Margin="0,18,0,22">
+					<ComboBox x:Name="StatusFilterComboBox"
+                              Width="180" Height="36"
+                              FontSize="13" Foreground="#1F2937"
+                              Margin="0,0,12,0"
+                              SelectionChanged="Filter_SelectionChanged"/>
+
+					<ComboBox x:Name="PeriodFilterComboBox"
+                              Width="180" Height="36"
+                              FontSize="13" Foreground="#1F2937"
+                              SelectionChanged="Filter_SelectionChanged"/>
+				</StackPanel>
+
+				<!-- GOAL CARDS GRID -->
+				<TextBlock x:Name="NoGoalsLabel"
+                           Text="No goals yet. Click '+ Add Goal' to create your first one."
+                           Foreground="#64748B" FontSize="13"
+                           Margin="0,4,0,18"
+                           Visibility="Collapsed"/>
+
+				<ItemsControl x:Name="GoalCardsPanel" Margin="0,0,0,16">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<UniformGrid Columns="3"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+
+				<!-- GOAL PROGRESS OVERVIEW -->
+				<TextBlock Text="Goal Progress Overview"
+                           FontSize="18" FontWeight="Bold" Foreground="#1F2937"
+                           Margin="0,16,0,16"/>
+
+				<Grid Margin="0,0,0,30">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1.05*"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
+
+					<!-- Bar chart: Goal Progress (€) -->
+					<Border Grid.Column="0" Style="{StaticResource CardStyle}" Height="320" Margin="0,0,20,0">
+						<StackPanel>
+							<TextBlock Text="Goal Progress (€)"
+                                       FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+
+							<Canvas x:Name="GoalBarCanvas" Height="220" Margin="0,12,0,0"/>
+
+							<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+								<StackPanel Orientation="Horizontal" Margin="10,0">
+									<Border Width="12" Height="12" CornerRadius="2"
+                                            Background="#00B894" VerticalAlignment="Center"/>
+									<TextBlock Text="Saved" Foreground="#1F2937"
+                                               FontSize="12" Margin="6,0,0,0" VerticalAlignment="Center"/>
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Margin="10,0">
+									<Border Width="12" Height="12" CornerRadius="2"
+                                            Background="#E5E7EB" VerticalAlignment="Center"/>
+									<TextBlock Text="Remaining" Foreground="#1F2937"
+                                               FontSize="12" Margin="6,0,0,0" VerticalAlignment="Center"/>
+								</StackPanel>
+							</StackPanel>
+						</StackPanel>
+					</Border>
+
+					<!-- Pie chart: Completed vs Ongoing Goals -->
+					<Border Grid.Column="1" Style="{StaticResource CardStyle}" Height="320">
+						<Grid>
+							<StackPanel>
+								<TextBlock Text="Completed vs Ongoing Goals"
+                                           FontSize="15" FontWeight="Bold" Foreground="#1F2937"/>
+								<Canvas x:Name="GoalPieCanvas"
+                                        Width="190" Height="190"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,16,0,0"/>
+							</StackPanel>
+							<StackPanel x:Name="PieLegendPanel"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Margin="0,30,4,0"/>
+						</Grid>
+					</Border>
+				</Grid>
+
+				<!-- FOOTER -->
+				<Grid Margin="0,4,0,0">
+					<TextBlock Text="© 2026 ExpenseTrack. All rights reserved."
+                               Foreground="#64748B" FontSize="12"/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+						<TextBlock Text="Privacy Policy" Foreground="#64748B" Margin="0,0,25,0"/>
+						<TextBlock Text="Terms of Use"   Foreground="#64748B" Margin="0,0,25,0"/>
+						<TextBlock Text="Contact"        Foreground="#64748B"/>
+					</StackPanel>
+				</Grid>
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

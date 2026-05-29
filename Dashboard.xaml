@@ -287,8 +287,8 @@
 			<ContentControl x:Name="ReportsHost"      Visibility="Collapsed"/>
 			<ContentControl x:Name="PrivacyHost"      Visibility="Collapsed"/>
 			<ContentControl x:Name="BudgetHost"       Visibility="Collapsed"/>
+			<ContentControl x:Name="GoalsHost"        Visibility="Collapsed"/>
 			<ContentControl x:Name="GroupsHost"       Visibility="Collapsed"/>
-
 		</Grid>
 	</DockPanel>
 </Window>

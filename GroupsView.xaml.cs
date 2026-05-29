@@ -50,6 +50,15 @@ namespace FinancyApplication
         private Dictionary<int, string> _categoryNames = new Dictionary<int, string>();
         private Dictionary<int, string> _userNames = new Dictionary<int, string>();
 
+        // Tracks each row in the split picker so we can read values back
+        private class SplitRowUI
+        {
+            public int UserID;
+            public CheckBox Checkbox;
+            public TextBox PercentBox;
+        }
+        private List<SplitRowUI> _splitRows = new List<SplitRowUI>();
+
         public ICommand OpenGroupCommand { get; }
 
         public GroupsView(User user)
@@ -61,7 +70,6 @@ namespace FinancyApplication
             Loaded += (s, e) =>
             {
                 LoadGroups();
-                CheckPendingInvites();
             };
         }
 
@@ -107,15 +115,17 @@ namespace FinancyApplication
                 groups = db.GetGroupsByUser(_currentUser.UserID);
                 foreach (var g in groups)
                     g.MemberCount = db.GetGroupMembers(g.GroupID).Count;
-                GroupsList.ItemsSource = groups;
-                NoGroupsPanel.Visibility = groups.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             }
-            catch { NoGroupsPanel.Visibility = Visibility.Visible; }
-            
-            GroupSelectCombo.Items.Clear();
-            foreach (var g in groups)
-                GroupSelectCombo.Items.Add(new ComboBoxItem { Content = g.Name, Tag = g.GroupID });
-            if (GroupSelectCombo.Items.Count > 0) GroupSelectCombo.SelectedIndex = 0;
+            catch { }
+
+            // All groups you're a member of
+            GroupsList.ItemsSource = groups;
+            NoGroupsPanel.Visibility = groups.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            // Only groups you created
+            var created = groups.Where(g => g.CreatedByUserID == _currentUser.UserID).ToList();
+            CreatedGroupsList.ItemsSource = created;
+            NoCreatedGroupsPanel.Visibility = created.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OpenGroup(Group group)
@@ -193,46 +203,12 @@ namespace FinancyApplication
 
                 CreateGroupModal.Visibility = Visibility.Collapsed;
                 LoadGroups();
-                MessageBox.Show($"Group \"{group.Name}\" created!", "Success");
+                GroupCodeText.Text = group.InviteCode;
+                GroupCodeModal.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Could not create group: " + ex.Message);
-            }
-        }
-
-        // ── Join Group ───────────────────────────────────────────────────────
-        private void SendInvite_Click(object sender, RoutedEventArgs e)
-        {
-            string username = InviteUsernameInput.Text.Trim();
-            if (string.IsNullOrEmpty(username))
-            {
-                MessageBox.Show("Enter a username.", "Validation");
-                return;
-            }
-            if (GroupSelectCombo.SelectedItem == null)
-            {
-                MessageBox.Show("Select a group to invite to.", "Validation");
-                return;
-            }
-
-            try
-            {
-                int groupId = (int)(GroupSelectCombo.SelectedItem as ComboBoxItem).Tag;
-                var targetUser = db.GetUserByUsername(username);
-                if (targetUser == null)
-                {
-                    MessageBox.Show("User not found.", "Not Found");
-                    return;
-                }
-
-                db.CreateGroupInvite(groupId, _currentUser.UserID, targetUser.UserID);
-                InviteUsernameInput.Text = "";
-                MessageBox.Show($"Invite sent to {username}!", "Success");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not send invite: " + ex.Message);
             }
         }
 
@@ -308,7 +284,7 @@ namespace FinancyApplication
                 TransactionID = t.TransactionID,
                 DateDisplay = t.Date.ToString("dd MMM yyyy"),
                 Description = string.IsNullOrWhiteSpace(t.Description) ? "—" : t.Description,
-                CategoryName = db.GetCategoryName(t.CategoryID),
+                CategoryName = string.IsNullOrEmpty(t.CategoryName) ? "—" : t.CategoryName,
                 PaidBy = _userNames.ContainsKey(t.UserID) ? _userNames[t.UserID] : "Unknown",
                 AmountDisplay = $"€{t.Amount:N2}",
                 Amount = t.Amount,
@@ -337,7 +313,85 @@ namespace FinancyApplication
         {
             ExpenseDesc.Text = "";
             ExpenseAmount.Text = "";
+            BuildSplitRows();
             AddExpenseModal.Visibility = Visibility.Visible;
+        }
+
+        private void BuildSplitRows()
+        {
+            SplitMembersPanel.Children.Clear();
+            _splitRows.Clear();
+            SplitValidationMsg.Visibility = Visibility.Collapsed;
+
+            if (_activeGroup == null) return;
+
+            var members = db.GetGroupMembers(_activeGroup.GroupID);
+            int n = members.Count;
+            if (n == 0) return;
+
+            decimal equalPct = Math.Round(100m / n, 2);
+
+            foreach (var m in members)
+            {
+                string username = _userNames.ContainsKey(m.UserID) ? _userNames[m.UserID] : "User " + m.UserID;
+
+                Grid row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(70) });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                CheckBox cb = new CheckBox { IsChecked = true, VerticalAlignment = VerticalAlignment.Center };
+                Grid.SetColumn(cb, 0);
+                row.Children.Add(cb);
+
+                TextBlock name = new TextBlock
+                {
+                    Text = username,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(8, 0, 0, 0),
+                    FontSize = 13,
+                    Foreground = new SolidColorBrush(Color.FromRgb(74, 101, 88))
+                };
+                Grid.SetColumn(name, 1);
+                row.Children.Add(name);
+
+                TextBox percent = new TextBox
+                {
+                    Text = equalPct.ToString("0.##"),
+                    Height = 28,
+                    FontSize = 12,
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    Padding = new Thickness(8, 0, 8, 0),
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(224, 237, 230)),
+                    BorderThickness = new Thickness(1)
+                };
+                Grid.SetColumn(percent, 2);
+                row.Children.Add(percent);
+
+                TextBlock pctLabel = new TextBlock
+                {
+                    Text = "%",
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(4, 0, 0, 0),
+                    Foreground = new SolidColorBrush(Color.FromRgb(143, 175, 159))
+                };
+                Grid.SetColumn(pctLabel, 3);
+                row.Children.Add(pctLabel);
+
+                SplitMembersPanel.Children.Add(row);
+                _splitRows.Add(new SplitRowUI { UserID = m.UserID, Checkbox = cb, PercentBox = percent });
+            }
+        }
+
+        private void SplitEqual_Click(object sender, RoutedEventArgs e)
+        {
+            int checkedCount = _splitRows.Count(r => r.Checkbox.IsChecked == true);
+            if (checkedCount == 0) return;
+
+            decimal equalPct = Math.Round(100m / checkedCount, 2);
+            foreach (var r in _splitRows)
+                r.PercentBox.Text = r.Checkbox.IsChecked == true ? equalPct.ToString("0.##") : "0";
         }
 
         private void CancelExpense_Click(object sender, RoutedEventArgs e) =>
@@ -365,6 +419,38 @@ namespace FinancyApplication
                 MessageBox.Show("You need an account first.", "Validation"); return;
             }
 
+            // Split validation
+            var checkedRows = _splitRows.Where(r => r.Checkbox.IsChecked == true).ToList();
+            if (checkedRows.Count == 0)
+            {
+                SplitValidationMsg.Text = "Select at least one member to split with.";
+                SplitValidationMsg.Visibility = Visibility.Visible;
+                return;
+            }
+
+            decimal totalPct = 0;
+            foreach (var r in checkedRows)
+            {
+                if (!decimal.TryParse(r.PercentBox.Text.Trim(),
+                    System.Globalization.NumberStyles.Number,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out decimal pct) || pct < 0)
+                {
+                    SplitValidationMsg.Text = "Each percentage must be a number ≥ 0.";
+                    SplitValidationMsg.Visibility = Visibility.Visible;
+                    return;
+                }
+                totalPct += pct;
+            }
+
+            if (Math.Abs(totalPct - 100m) > 0.5m)
+            {
+                SplitValidationMsg.Text = $"Percentages must add up to 100% (currently {totalPct:0.##}%).";
+                SplitValidationMsg.Visibility = Visibility.Visible;
+                return;
+            }
+            SplitValidationMsg.Visibility = Visibility.Collapsed;
+
             try
             {
                 int catId = (int)(ExpenseCategoryCombo.SelectedItem as ComboBoxItem).Tag;
@@ -382,7 +468,22 @@ namespace FinancyApplication
                     Date = DateTime.Now,
                     Status = "Pending"
                 };
-                t.Create();
+                if (!t.Create()) return;
+                int txId = t.TransactionID;
+
+                // Insert one split row per included member
+                foreach (var r in checkedRows)
+                {
+                    decimal.TryParse(r.PercentBox.Text.Trim(),
+                        System.Globalization.NumberStyles.Number,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out decimal pct);
+                    decimal shareAmount = Math.Round(amount * pct / 100m, 2);
+                    bool isPayer = r.UserID == _currentUser.UserID;
+
+                    var split = new ExpenseSplit(txId, r.UserID, shareAmount, isPaid: isPayer);
+                    db.InsertExpenseSplit(split);
+                }
 
                 AddExpenseModal.Visibility = Visibility.Collapsed;
                 LoadGroupExpenses();
@@ -469,6 +570,67 @@ namespace FinancyApplication
                     MessageBox.Show("You left the group.", "Done");
                 }
                 catch (Exception ex) { MessageBox.Show("Could not leave group: " + ex.Message); }
+            }
+        }
+
+        // ── Copy Invite Code (from card) ─────────────────────────────────────
+        private void CopyInviteCode_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button b && b.Tag is string code && !string.IsNullOrEmpty(code))
+            {
+                Clipboard.SetText(code);
+                MessageBox.Show("Invite code copied to clipboard!", "Copied");
+            }
+        }
+
+        // ── Group Code Modal ──────────────────────────────────────────────────
+        private void CopyGroupCode_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(GroupCodeText.Text))
+            {
+                Clipboard.SetText(GroupCodeText.Text);
+                MessageBox.Show("Invite code copied to clipboard!", "Copied");
+            }
+        }
+
+        private void CloseGroupCode_Click(object sender, RoutedEventArgs e) =>
+            GroupCodeModal.Visibility = Visibility.Collapsed;
+
+        // ── Join Group ────────────────────────────────────────────────────────
+        private void JoinGroup_Click(object sender, RoutedEventArgs e)
+        {
+            JoinCodeInput.Text = "";
+            JoinGroupModal.Visibility = Visibility.Visible;
+        }
+
+        private void CancelJoin_Click(object sender, RoutedEventArgs e) =>
+            JoinGroupModal.Visibility = Visibility.Collapsed;
+
+        private void ConfirmJoin_Click(object sender, RoutedEventArgs e)
+        {
+            string code = JoinCodeInput.Text.Trim().ToUpper();
+            if (string.IsNullOrEmpty(code))
+            {
+                MessageBox.Show("Enter an invite code.", "Validation");
+                return;
+            }
+            try
+            {
+                int groupId = Group.JoinByCode(_currentUser.UserID, code);
+                if (groupId > 0)
+                {
+                    JoinGroupModal.Visibility = Visibility.Collapsed;
+                    LoadGroups();
+                    MessageBox.Show("You joined the group!", "Success");
+                }
+                else
+                {
+                    MessageBox.Show("Invalid invite code. Please check and try again.", "Not Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not join group: " + ex.Message);
             }
         }
     }
