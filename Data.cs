@@ -318,13 +318,14 @@ namespace FinancyApplication
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                string query = "UPDATE user_profile SET FirstName=@firstName, LastName=@lastName, PhoneNumber=@phone, AvatarURL=@avatar, PreferedCurrency=@currency WHERE UserID = " + profile.UserID;
+                string query = "UPDATE user_profile SET FirstName=@firstName, LastName=@lastName, PhoneNumber=@phone, AvatarURL=@avatar, PreferedCurrency=@currency, NotifGoalReminders=@notifGoal WHERE UserID = " + profile.UserID;
                 MySqlCommand cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@firstName", profile.FirstName);
                 cmd.Parameters.AddWithValue("@lastName", profile.LastName);
                 cmd.Parameters.AddWithValue("@phone", profile.PhoneNumber);
                 cmd.Parameters.AddWithValue("@avatar", profile.AvatarUrl);
                 cmd.Parameters.AddWithValue("@currency", profile.PreferredCurrency);
+                cmd.Parameters.AddWithValue("@notifGoal", profile.NotifGoalReminders ? 1 : 0);
                 try
                 {
                     connection.Open();
@@ -341,7 +342,7 @@ namespace FinancyApplication
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                string query = "INSERT INTO user_profile(UserID, FirstName, LastName, PhoneNumber, AvatarURL, PreferedCurrency) VALUES(@userId, @firstName, @lastName, @phone, @avatar, @currency)";
+                string query = "INSERT INTO user_profile(UserID, FirstName, LastName, PhoneNumber, AvatarURL, PreferedCurrency, NotifGoalReminders) VALUES(@userId, @firstName, @lastName, @phone, @avatar, @currency, 1, 1)";
                 MySqlCommand cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@userId", profile.UserID);
                 cmd.Parameters.AddWithValue("@firstName", profile.FirstName);
@@ -1332,7 +1333,8 @@ namespace FinancyApplication
                                 LastName = reader["LastName"].ToString(),
                                 PhoneNumber = reader["PhoneNumber"].ToString(),
                                 AvatarUrl = reader["AvatarURL"].ToString(),
-                                PreferredCurrency = reader["PreferedCurrency"].ToString()
+                                PreferredCurrency = reader["PreferedCurrency"].ToString(),
+                                NotifGoalReminders = Convert.ToInt32(reader["NotifGoalReminders"]) == 1
                             };
                         }
                     }

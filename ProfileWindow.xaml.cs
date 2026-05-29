@@ -180,7 +180,8 @@ namespace FinancyApplication
 			ApiKeyInput.Text = OpenAiService.LoadApiKey();
 
 			ShowInfoView();
-		}
+            ChkGoalReminders.IsChecked = _profile.NotifGoalReminders;
+        }
 
 		private void PopulateCurrencyDropdown()
 		{
@@ -368,7 +369,8 @@ namespace FinancyApplication
 				_profile.LastName = lastName;
 				_profile.PhoneNumber = phone;
 				_profile.PreferredCurrency = Account.ExtractCurrencyCode(currency);
-				_profile.Save();
+                _profile.NotifGoalReminders = ChkGoalReminders.IsChecked == true;
+                _profile.Save();
 
 				if (username != _currentUser.Username)
 				{
@@ -713,5 +715,16 @@ namespace FinancyApplication
 			}
 			return null;
 		}
+
+		private void NotifCheckbox_Changed(object sender, RoutedEventArgs e)
+{
+    if (_profile == null) return;
+    try
+    {
+        _profile.NotifGoalReminders = ChkGoalReminders.IsChecked == true;
+        _profile.Save();
+    }
+    catch { }
+}
 	}
 }

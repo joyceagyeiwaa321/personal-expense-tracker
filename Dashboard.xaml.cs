@@ -65,6 +65,7 @@ namespace FinancyApplication
             UpdateThemeIcon();
             RefreshDashboardAvatar();
             RefreshDashboard();
+            CheckGoalReminders();
 
             if (Application.Current.Properties.Contains("ShowPrivacyOnLoad") &&
                 Application.Current.Properties["ShowPrivacyOnLoad"] is bool flag && flag)
@@ -535,5 +536,35 @@ namespace FinancyApplication
 
         private class MonthlyChartPoint { public string Label { get; set; } public decimal Income { get; set; } public decimal Expense { get; set; } }
         private class PieSliceData { public int CategoryId { get; set; } public string Category { get; set; } public decimal Total { get; set; } }
+
+        private void CheckGoalReminders()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (CurrentUser == null) return;
+                    var profile = db.GetProfileByUserId(CurrentUser.UserID);
+                    if (profile == null || !profile.NotifGoalReminders) return;
+                    if (string.IsNullOrEmpty(CurrentUser.Email)) return;
+
+                    var goals = db.GetGoalsByUser(CurrentUser.UserID);
+                    var emailService = new EmailService();
+
+                    foreach (var goal in goals)
+                    {
+                        if (goal.IsCompleted()) continue;
+                        emailService.SendGoalReminder(
+                            CurrentUser.Email,
+                            CurrentUser.Username,
+                            goal.Name,
+                            goal.TargetAmount,
+                            goal.SavedAmount
+                        );
+                    }
+                }
+                catch { }
+            });
+        }
     }
 }

@@ -318,6 +318,7 @@ namespace FinancyApplication
         public string PhoneNumber { get; set; }
         public string AvatarUrl { get; set; }
         public string PreferredCurrency { get; set; }
+        public bool NotifGoalReminders { get; set; }
 
         public void Save()
         {
