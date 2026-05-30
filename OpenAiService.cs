@@ -238,15 +238,15 @@ namespace FinancyApplication
 				{ { "Amount", "" }, { "Description", "" }, { "Date", "" } };
 
 			JsonDocument resultDoc = JsonDocument.Parse(reply);
-            foreach (string key in new[] { "Amount", "Description", "Date" })
-            {
-                if (resultDoc.RootElement.TryGetProperty(key, out JsonElement val))
-                    result[key] = val.ValueKind == JsonValueKind.String
-                        ? val.GetString() ?? ""
-                        : val.GetRawText();
-            }
+			foreach (string key in new[] { "Amount", "Description", "Date" })
+			{
+				if (resultDoc.RootElement.TryGetProperty(key, out JsonElement val))
+					result[key] = val.ValueKind == JsonValueKind.String
+						? val.GetString() ?? ""
+						: val.GetRawText();
+			}
 
-            return result;
+			return result;
 		}
 	}
 }

@@ -12,14 +12,54 @@ namespace FinancyApplication
 		public int UserID { get; set; }
 		public int AccountID { get; set; }
 		public int CategoryID { get; set; }
-        public string CategoryName { get; set; }
-        public int GroupID { get; set; } 
+		public string CategoryName { get; set; }
+		public int GroupID { get; set; }
 		public int RecurringID { get; set; }
 		public string Type { get; set; }
 		public decimal Amount { get; set; }
 		public string Description { get; set; }
-        public string Status { get; set; }
-        public DateTime Date { get; set; }
+		public string Status { get; set; }
+		public DateTime Date { get; set; }
+
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Account Account
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Category Category
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Group Group
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public RecurringTransaction RecurringTransaction
+		{
+			get => default;
+			set
+			{
+			}
+		}
 
 		public Transaction() { }
 
@@ -32,7 +72,7 @@ namespace FinancyApplication
 			this.Amount = amount;
 			this.Description = description;
 			this.Date = DateTime.Now;
-			this.GroupID = 0; 
+			this.GroupID = 0;
 		}
 
 		public bool Create()
@@ -149,6 +189,14 @@ namespace FinancyApplication
 		public string Type { get; set; }
 		public bool IsDefault { get; set; }
 
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
 		public Category() { }
 
 		public Category(int userId, string name, string type)
@@ -242,7 +290,7 @@ namespace FinancyApplication
 
 		public static void CreateDefaultCategories(int userId)
 		{
-		
+
 			string[] defaults = { "Food & Dining", "Transport", "Housing", "Health", "Entertainment", "Salary" };
 
 			foreach (string name in defaults)
@@ -258,6 +306,6 @@ namespace FinancyApplication
 				cat.Create();
 			}
 		}
-	
+
 	}
 }

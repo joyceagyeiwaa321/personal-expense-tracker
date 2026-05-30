@@ -282,357 +282,356 @@ namespace FinancyApplication
 
 		//  ADD / EDIT / DELETE 
 
-		        //  CSV / XLSX IMPORT 
-        //
-        // Imports transactions from a bank CSV or Excel file.
-        // If the column headers are not recognized, the AI maps them automatically.
-        // Rows without a matching category also get AI-suggested categories.
-        private async void ImportTransactions_Click(object sender, RoutedEventArgs e)
-        {
-            if (_currentUser == null) return;
+		//  CSV / XLSX IMPORT 
+		//
+		// Imports transactions from a bank CSV or Excel file.
+		// If the column headers are not recognized, the AI maps them automatically.
+		// Rows without a matching category also get AI-suggested categories.
+		private async void ImportTransactions_Click(object sender, RoutedEventArgs e)
+		{
+			if (_currentUser == null) return;
 
-            // Step 1: Let the user pick a file
-            var dlg = new Microsoft.Win32.OpenFileDialog
-            {
-                Title = "Choose a CSV or Excel file to import",
-                Filter = "CSV files (*.csv)|*.csv|Excel files (*.xlsx)|*.xlsx|All supported|*.csv;*.xlsx"
-            };
-            if (dlg.ShowDialog() != true) return;
+			// Step 1: Let the user pick a file
+			var dlg = new Microsoft.Win32.OpenFileDialog
+			{
+				Title = "Choose a CSV or Excel file to import",
+				Filter = "CSV files (*.csv)|*.csv|Excel files (*.xlsx)|*.xlsx|All supported|*.csv;*.xlsx"
+			};
+			if (dlg.ShowDialog() != true) return;
 
-            // Step 2: Read the file into a list of string arrays (one per row)
-            List<string[]> rows;
-            try
-            {
-                string ext = System.IO.Path.GetExtension(dlg.FileName).ToLowerInvariant();
-                rows = ext == ".xlsx" ? ReadXlsx(dlg.FileName) : ReadCsv(dlg.FileName);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Couldn't read the file: " + ex.Message, "Import failed");
-                return;
-            }
+			// Step 2: Read the file into a list of string arrays (one per row)
+			List<string[]> rows;
+			try
+			{
+				string ext = System.IO.Path.GetExtension(dlg.FileName).ToLowerInvariant();
+				rows = ext == ".xlsx" ? ReadXlsx(dlg.FileName) : ReadCsv(dlg.FileName);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Couldn't read the file: " + ex.Message, "Import failed");
+				return;
+			}
 
-            if (rows == null || rows.Count < 2)
-            {
-                MessageBox.Show("File looks empty or has no data rows.", "Import");
-                return;
-            }
+			if (rows == null || rows.Count < 2)
+			{
+				MessageBox.Show("File looks empty or has no data rows.", "Import");
+				return;
+			}
 
-            // Step 3: Try to find column positions from the header row using known names
-            string[] header = rows[0];
-            int iDate     = FindCol(header, "date", "started date", "completed date", "transaction date", "booking date", "value date");
-            int iDesc     = FindCol(header, "description", "desc", "name", "memo");
-            int iAmount   = FindCol(header, "amount", "value");
-            int iType     = FindCol(header, "type");
-            int iCategory = FindCol(header, "category");
-            int iAccount  = FindCol(header, "account");
+			// Step 3: Try to find column positions from the header row using known names
+			string[] header = rows[0];
+			int iDate = FindCol(header, "date", "started date", "completed date", "transaction date", "booking date", "value date");
+			int iDesc = FindCol(header, "description", "desc", "name", "memo");
+			int iAmount = FindCol(header, "amount", "value");
+			int iType = FindCol(header, "type");
+			int iCategory = FindCol(header, "category");
+			int iAccount = FindCol(header, "account");
 
-            // Step 4: If required columns are still missing, ask AI to map them
-            if (iDate < 0 || iAmount < 0)
-            {
-                string apiKey = OpenAiService.LoadApiKey();
+			// Step 4: If required columns are still missing, ask AI to map them
+			if (iDate < 0 || iAmount < 0)
+			{
+				string apiKey = OpenAiService.LoadApiKey();
 
-                if (string.IsNullOrEmpty(apiKey))
-                {
-                    MessageBox.Show(
-                        "Could not find the required columns (Date, Amount) in this file.\n\n" +
-                        "To let AI map columns automatically, add your OpenAI API key in Profile → AI Settings.",
-                        "Import — columns not found");
-                    return;
-                }
+				if (string.IsNullOrEmpty(apiKey))
+				{
+					MessageBox.Show(
+						"Could not find the required columns (Date, Amount) in this file.\n\n" +
+						"To let AI map columns automatically, add your OpenAI API key in Profile → AI Settings.",
+						"Import — columns not found");
+					return;
+				}
 
-                try
-                {
-                    // Send the header row to GPT and get back a column-index mapping
-                    Dictionary<string, int> aiMap = await OpenAiService.MapColumns(header, apiKey);
+				try
+				{
+					// Send the header row to GPT and get back a column-index mapping
+					Dictionary<string, int> aiMap = await OpenAiService.MapColumns(header, apiKey);
 
-                    // Only fill in columns that manual detection didn't find
-                    if (iDate < 0 && aiMap.ContainsKey("Date"))             iDate     = aiMap["Date"];
-                    if (iDesc < 0 && aiMap.ContainsKey("Description"))      iDesc     = aiMap["Description"];
-                    if (iAmount < 0 && aiMap.ContainsKey("Amount"))         iAmount   = aiMap["Amount"];
-                    if (iType < 0 && aiMap.ContainsKey("Type"))             iType     = aiMap["Type"];
-                    if (iCategory < 0 && aiMap.ContainsKey("Category"))     iCategory = aiMap["Category"];
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("AI column mapping failed: " + ex.Message, "AI Error");
-                    return;
-                }
-            }
+					// Only fill in columns that manual detection didn't find
+					if (iDate < 0 && aiMap.ContainsKey("Date")) iDate = aiMap["Date"];
+					if (iDesc < 0 && aiMap.ContainsKey("Description")) iDesc = aiMap["Description"];
+					if (iAmount < 0 && aiMap.ContainsKey("Amount")) iAmount = aiMap["Amount"];
+					if (iType < 0 && aiMap.ContainsKey("Type")) iType = aiMap["Type"];
+					if (iCategory < 0 && aiMap.ContainsKey("Category")) iCategory = aiMap["Category"];
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("AI column mapping failed: " + ex.Message, "AI Error");
+					return;
+				}
+			}
 
-            // After both manual + AI attempts, we still need at least Date and Amount
-            if (iDate < 0 || iAmount < 0)
-            {
-                MessageBox.Show(
-                    "File needs at least a Date column and an Amount column.\n\n" +
-                    "Recognized column names: Date, Description, Amount, Type, Category, Account.",
-                    "Import — missing columns");
-                return;
-            }
+			// After both manual + AI attempts, we still need at least Date and Amount
+			if (iDate < 0 || iAmount < 0)
+			{
+				MessageBox.Show(
+					"File needs at least a Date column and an Amount column.\n\n" +
+					"Recognized column names: Date, Description, Amount, Type, Category, Account.",
+					"Import — missing columns");
+				return;
+			}
 
-            // Show the user something is happening
-            FooterCount.Text = "Reading file...";
+			// Show the user something is happening
+			FooterCount.Text = "Reading file...";
 
-            // Step 5: Load the user's accounts and categories from the database
-            List<Account> accounts = db.GetAccountsByUser(_currentUser.UserID);
-            List<Category> cats    = db.GetCategoriesByUser(_currentUser.UserID);
+			// Step 5: Load the user's accounts and categories from the database
+			List<Account> accounts = db.GetAccountsByUser(_currentUser.UserID);
+			List<Category> cats = db.GetCategoriesByUser(_currentUser.UserID);
 
-            if (accounts == null || accounts.Count == 0)
-            {
-                MessageBox.Show("You need at least one Account before importing transactions.", "Import");
-                return;
-            }
+			if (accounts == null || accounts.Count == 0)
+			{
+				MessageBox.Show("You need at least one Account before importing transactions.", "Import");
+				return;
+			}
 
-            int defaultAccountId  = accounts[0].AccountID;
-            int defaultCategoryId = cats.Count > 0 ? cats[0].CategoryID : 0;
+			int defaultAccountId = accounts[0].AccountID;
+			int defaultCategoryId = cats.Count > 0 ? cats[0].CategoryID : 0;
 
-            // Step 6: Parse every data row into a Transaction object.
-            // Rows where no category name is matched get flagged for AI categorization.
-            var parsedTransactions = new List<Transaction>();
-            var needsAiCategoryAt  = new List<int>();     // indexes in parsedTransactions that need AI
-            var needsAiDesc        = new List<string>();  // their descriptions (sent to AI together)
-            int skipped = 0;
-            var errors  = new List<string>();
+			// Step 6: Parse every data row into a Transaction object.
+			// Rows where no category name is matched get flagged for AI categorization.
+			var parsedTransactions = new List<Transaction>();
+			var needsAiCategoryAt = new List<int>();     // indexes in parsedTransactions that need AI
+			var needsAiDesc = new List<string>();  // their descriptions (sent to AI together)
+			int skipped = 0;
+			var errors = new List<string>();
 
-            for (int r = 1; r < rows.Count; r++)
-            {
-                string[] cells = rows[r];
-                if (cells.Length == 0 || cells.All(string.IsNullOrWhiteSpace)) continue;
+			for (int r = 1; r < rows.Count; r++)
+			{
+				string[] cells = rows[r];
+				if (cells.Length == 0 || cells.All(string.IsNullOrWhiteSpace)) continue;
 
-                string rawDate = SafeGet(cells, iDate);
-                string rawAmt  = SafeGet(cells, iAmount);
+				string rawDate = SafeGet(cells, iDate);
+				string rawAmt = SafeGet(cells, iAmount);
 
-                if (string.IsNullOrWhiteSpace(rawDate) || string.IsNullOrWhiteSpace(rawAmt))
-                {
-                    skipped++;
-                    continue;
-                }
+				if (string.IsNullOrWhiteSpace(rawDate) || string.IsNullOrWhiteSpace(rawAmt))
+				{
+					skipped++;
+					continue;
+				}
 
-                if (!TryParseDate(rawDate, out DateTime date))
-                {
-                    errors.Add("Row " + (r + 1) + ": invalid date '" + rawDate + "'");
-                    skipped++;
-                    continue;
-                }
+				if (!TryParseDate(rawDate, out DateTime date))
+				{
+					errors.Add("Row " + (r + 1) + ": invalid date '" + rawDate + "'");
+					skipped++;
+					continue;
+				}
 
-                if (!TryParseDecimal(rawAmt, out decimal amount))
-                {
-                    errors.Add("Row " + (r + 1) + ": invalid amount '" + rawAmt + "'");
-                    skipped++;
-                    continue;
-                }
+				if (!TryParseDecimal(rawAmt, out decimal amount))
+				{
+					errors.Add("Row " + (r + 1) + ": invalid amount '" + rawAmt + "'");
+					skipped++;
+					continue;
+				}
 
-                // Determine Income vs Expense from the Type column, or fall back to the amount sign
-                string rawType = SafeGet(cells, iType).Trim();
-                string type;
-                if (rawType.Equals("Income", StringComparison.OrdinalIgnoreCase))
-                    type = "Income";
-                else if (rawType.Equals("Expense", StringComparison.OrdinalIgnoreCase))
-                    type = "Expense";
-                else
-                    type = amount < 0 ? "Expense" : "Income";
+				// Determine Income vs Expense from the Type column, or fall back to the amount sign
+				string rawType = SafeGet(cells, iType).Trim();
+				string type;
+				if (rawType.Equals("Income", StringComparison.OrdinalIgnoreCase))
+					type = "Income";
+				else if (rawType.Equals("Expense", StringComparison.OrdinalIgnoreCase))
+					type = "Expense";
+				else
+					type = amount < 0 ? "Expense" : "Income";
 
-                // Bank exports often use negative numbers for expenses — we store positive amounts
-                amount = Math.Abs(amount);
+				// Bank exports often use negative numbers for expenses — we store positive amounts
+				amount = Math.Abs(amount);
 
-                string desc = SafeGet(cells, iDesc).Trim();
-                if (string.IsNullOrWhiteSpace(desc))
-                {
-                    string fallback = SafeGet(cells, iType).Trim();
-                    desc = string.IsNullOrWhiteSpace(fallback) ? "Imported" : fallback;
-                }
+				string desc = SafeGet(cells, iDesc).Trim();
+				if (string.IsNullOrWhiteSpace(desc))
+				{
+					string fallback = SafeGet(cells, iType).Trim();
+					desc = string.IsNullOrWhiteSpace(fallback) ? "Imported" : fallback;
+				}
 
-                // Try to match the category by name. -1 means no match was found.
-                int catId = ResolveByName(cats, SafeGet(cells, iCategory), -1);
-                int accId = ResolveAccountByName(accounts, SafeGet(cells, iAccount), defaultAccountId);
+				// Try to match the category by name. -1 means no match was found.
+				int catId = ResolveByName(cats, SafeGet(cells, iCategory), -1);
+				int accId = ResolveAccountByName(accounts, SafeGet(cells, iAccount), defaultAccountId);
 
-                Transaction tx = new Transaction
-                {
-                    UserID      = _currentUser.UserID,
-                    AccountID   = accId,
-                    CategoryID  = catId < 0 ? defaultCategoryId : catId,
-                    Type        = type,
-                    Amount      = amount,
-                    Description = desc,
-                    Date        = date
-                };
+				Transaction tx = new Transaction
+				{
+					UserID = _currentUser.UserID,
+					AccountID = accId,
+					CategoryID = catId < 0 ? defaultCategoryId : catId,
+					Type = type,
+					Amount = amount,
+					Description = desc,
+					Date = date
+				};
 
-                // If no category was matched, add it to the AI queue.
-                // We include the type in brackets so GPT has more context (e.g. "Netflix [Expense]")
-                if (catId < 0)
-                {
-                    needsAiCategoryAt.Add(parsedTransactions.Count);
-                    needsAiDesc.Add(desc + " [" + type + "]");
-                }
+				// Type in brackets gives the AI categoriser more context (e.g. "Netflix [Expense]")
+				if (catId < 0)
+				{
+					needsAiCategoryAt.Add(parsedTransactions.Count);
+					needsAiDesc.Add(desc + " [" + type + "]");
+				}
 
-                parsedTransactions.Add(tx);
-            }
+				parsedTransactions.Add(tx);
+			}
 
-            // Step 7: Use AI to fill in categories for rows that didn't have a match
-            FooterCount.Text = "AI is categorizing transactions...";
-            int aiCategorized = 0;
-            if (needsAiCategoryAt.Count > 0)
-            {
-                string apiKey = OpenAiService.LoadApiKey();
-                if (!string.IsNullOrEmpty(apiKey))
-                {
-                    try
-                    {
-                        // Build the list of category names to offer GPT
-                        List<string> catNames = new List<string>();
-                        foreach (Category c in cats)
-                        {
-                            catNames.Add(c.Name);
-                        }
+			// Step 7: Use AI to fill in categories for rows that didn't have a match
+			FooterCount.Text = "AI is categorizing transactions...";
+			int aiCategorized = 0;
+			if (needsAiCategoryAt.Count > 0)
+			{
+				string apiKey = OpenAiService.LoadApiKey();
+				if (!string.IsNullOrEmpty(apiKey))
+				{
+					try
+					{
+						// Build the list of category names to offer GPT
+						List<string> catNames = new List<string>();
+						foreach (Category c in cats)
+						{
+							catNames.Add(c.Name);
+						}
 
-                        // Send all unmatched descriptions at once (one API call)
-                        List<string> suggested = await OpenAiService.SuggestCategories(needsAiDesc, catNames, apiKey);
+						// Send all unmatched descriptions at once (one API call)
+						List<string> suggested = await OpenAiService.SuggestCategories(needsAiDesc, catNames, apiKey);
 
-                        // Apply the AI suggestions back to the correct transactions
-                        for (int i = 0; i < needsAiCategoryAt.Count && i < suggested.Count; i++)
-                        {
-                            int txIndex = needsAiCategoryAt[i];
-                            int catId   = ResolveByName(cats, suggested[i], defaultCategoryId);
-                            parsedTransactions[txIndex].CategoryID = catId;
-                            aiCategorized++;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Non-fatal: rows will just keep the default category
-                        MessageBox.Show("AI category suggestion failed: " + ex.Message + "\nUsing default categories.", "AI Warning");
-                    }
-                }
-            }
+						// Apply the AI suggestions back to the correct transactions
+						for (int i = 0; i < needsAiCategoryAt.Count && i < suggested.Count; i++)
+						{
+							int txIndex = needsAiCategoryAt[i];
+							int catId = ResolveByName(cats, suggested[i], defaultCategoryId);
+							parsedTransactions[txIndex].CategoryID = catId;
+							aiCategorized++;
+						}
+					}
+					catch (Exception ex)
+					{
+						// Non-fatal: rows will just keep the default category
+						MessageBox.Show("AI category suggestion failed: " + ex.Message + "\nUsing default categories.", "AI Warning");
+					}
+				}
+			}
 
-            // Step 8: Insert all parsed transactions into the database
-            FooterCount.Text = "Inserting transactions...";
-            int imported = 0;
-            foreach (Transaction tx in parsedTransactions)
-            {
-                try
-                {
-                    db.InsertTransaction(tx);
-                    imported++;
-                }
-                catch (Exception ex)
-                {
-                    errors.Add(ex.Message);
-                    skipped++;
-                }
-            }
+			// Step 8: Insert all parsed transactions into the database
+			FooterCount.Text = "Inserting transactions...";
+			int imported = 0;
+			foreach (Transaction tx in parsedTransactions)
+			{
+				try
+				{
+					db.InsertTransaction(tx);
+					imported++;
+				}
+				catch (Exception ex)
+				{
+					errors.Add(ex.Message);
+					skipped++;
+				}
+			}
 
-            // Step 9: Show a summary of what happened
-            string summary = "Imported:  " + imported + "\nSkipped:   " + skipped;
-            if (aiCategorized > 0)
-            {
-                summary += "\nAI categorized: " + aiCategorized + " transactions";
-            }
-            if (errors.Count > 0)
-            {
-                summary += "\n\nFirst issues:\n  " + string.Join("\n  ", errors.Take(5));
-            }
-            MessageBox.Show(summary, "Import complete");
+			// Step 9: Show a summary of what happened
+			string summary = "Imported:  " + imported + "\nSkipped:   " + skipped;
+			if (aiCategorized > 0)
+			{
+				summary += "\nAI categorized: " + aiCategorized + " transactions";
+			}
+			if (errors.Count > 0)
+			{
+				summary += "\n\nFirst issues:\n  " + string.Join("\n  ", errors.Take(5));
+			}
+			MessageBox.Show(summary, "Import complete");
 
-            // Refresh the list so the new rows show up immediately
-            LoadTransactions();
-        }
+			// Refresh the list so the new rows show up immediately
+			LoadTransactions();
+		}
 
-                //  IMPORT HELPERS
+		//  IMPORT HELPERS
 
-        private static List<string[]> ReadCsv(string path)
-        {
-            var rows = new List<string[]>();
-            foreach (string line in System.IO.File.ReadAllLines(path))
-            {
-                if (string.IsNullOrWhiteSpace(line)) continue;
-                // Simple split — bank CSVs rarely contain commas inside quoted fields,
-                // but we handle the common quoted case.
-                var cells = new List<string>();
-                bool inQuote = false;
-                var sb = new System.Text.StringBuilder();
-                foreach (char c in line)
-                {
-                    if (c == '"') inQuote = !inQuote;
-                    else if (c == ',' && !inQuote) { cells.Add(sb.ToString()); sb.Clear(); }
-                    else sb.Append(c);
-                }
-                cells.Add(sb.ToString());
-                rows.Add(cells.Select(s => s.Trim()).ToArray());
-            }
-            return rows;
-        }
+		private static List<string[]> ReadCsv(string path)
+		{
+			var rows = new List<string[]>();
+			foreach (string line in System.IO.File.ReadAllLines(path))
+			{
+				if (string.IsNullOrWhiteSpace(line)) continue;
+				// Simple split — bank CSVs rarely contain commas inside quoted fields,
+				// but we handle the common quoted case.
+				var cells = new List<string>();
+				bool inQuote = false;
+				var sb = new System.Text.StringBuilder();
+				foreach (char c in line)
+				{
+					if (c == '"') inQuote = !inQuote;
+					else if (c == ',' && !inQuote) { cells.Add(sb.ToString()); sb.Clear(); }
+					else sb.Append(c);
+				}
+				cells.Add(sb.ToString());
+				rows.Add(cells.Select(s => s.Trim()).ToArray());
+			}
+			return rows;
+		}
 
-        private static List<string[]> ReadXlsx(string path)
-        {
-            var rows = new List<string[]>();
-            using (var wb = new ClosedXML.Excel.XLWorkbook(path))
-            {
-                var ws = wb.Worksheet(1);
-                foreach (var row in ws.RowsUsed())
-                {
-                    int last = row.LastCellUsed()?.Address.ColumnNumber ?? 0;
-                    var cells = new string[last];
-                    for (int c = 1; c <= last; c++)
-                        cells[c - 1] = row.Cell(c).GetString().Trim();
-                    rows.Add(cells);
-                }
-            }
-            return rows;
-        }
+		private static List<string[]> ReadXlsx(string path)
+		{
+			var rows = new List<string[]>();
+			using (var wb = new ClosedXML.Excel.XLWorkbook(path))
+			{
+				var ws = wb.Worksheet(1);
+				foreach (var row in ws.RowsUsed())
+				{
+					int last = row.LastCellUsed()?.Address.ColumnNumber ?? 0;
+					var cells = new string[last];
+					for (int c = 1; c <= last; c++)
+						cells[c - 1] = row.Cell(c).GetString().Trim();
+					rows.Add(cells);
+				}
+			}
+			return rows;
+		}
 
-        private static int FindCol(string[] header, params string[] names)
-        {
-            for (int i = 0; i < header.Length; i++)
-            {
-                string h = (header[i] ?? "").Trim().ToLowerInvariant();
-                foreach (string n in names)
-                    if (h == n) return i;
-            }
-            return -1;
-        }
+		private static int FindCol(string[] header, params string[] names)
+		{
+			for (int i = 0; i < header.Length; i++)
+			{
+				string h = (header[i] ?? "").Trim().ToLowerInvariant();
+				foreach (string n in names)
+					if (h == n) return i;
+			}
+			return -1;
+		}
 
-        private static string SafeGet(string[] cells, int index)
-        {
-            if (index < 0 || index >= cells.Length) return "";
-            return cells[index] ?? "";
-        }
+		private static string SafeGet(string[] cells, int index)
+		{
+			if (index < 0 || index >= cells.Length) return "";
+			return cells[index] ?? "";
+		}
 
-        private static bool TryParseDate(string s, out DateTime date)
-        {
-            string[] formats = { "yyyy-MM-dd", "yyyy/MM/dd", "dd/MM/yyyy", "MM/dd/yyyy", "dd-MM-yyyy", "d/M/yyyy" };
-            if (DateTime.TryParseExact(s, formats, System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.None, out date)) return true;
-            return DateTime.TryParse(s, out date);
-        }
+		private static bool TryParseDate(string s, out DateTime date)
+		{
+			string[] formats = { "yyyy-MM-dd", "yyyy/MM/dd", "dd/MM/yyyy", "MM/dd/yyyy", "dd-MM-yyyy", "d/M/yyyy" };
+			if (DateTime.TryParseExact(s, formats, System.Globalization.CultureInfo.InvariantCulture,
+				System.Globalization.DateTimeStyles.None, out date)) return true;
+			return DateTime.TryParse(s, out date);
+		}
 
-        private static bool TryParseDecimal(string s, out decimal value)
-        {
-            s = (s ?? "").Replace("€", "").Replace("$", "").Replace(" ", "").Trim();
-            // Handle European decimals (comma)
-            if (s.Contains(",") && !s.Contains("."))
-                s = s.Replace(",", ".");
-            return decimal.TryParse(s, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out value);
-        }
+		private static bool TryParseDecimal(string s, out decimal value)
+		{
+			s = (s ?? "").Replace("€", "").Replace("$", "").Replace(" ", "").Trim();
+			// Handle European decimals (comma)
+			if (s.Contains(",") && !s.Contains("."))
+				s = s.Replace(",", ".");
+			return decimal.TryParse(s, System.Globalization.NumberStyles.Any,
+				System.Globalization.CultureInfo.InvariantCulture, out value);
+		}
 
-        private static int ResolveByName(List<Category> cats, string name, int fallback)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return fallback;
-            var match = cats.FirstOrDefault(c =>
-                string.Equals(c.Name?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase));
-            return match != null ? match.CategoryID : fallback;
-        }
+		private static int ResolveByName(List<Category> cats, string name, int fallback)
+		{
+			if (string.IsNullOrWhiteSpace(name)) return fallback;
+			var match = cats.FirstOrDefault(c =>
+				string.Equals(c.Name?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase));
+			return match != null ? match.CategoryID : fallback;
+		}
 
-        private static int ResolveAccountByName(List<Account> accs, string name, int fallback)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return fallback;
-            var match = accs.FirstOrDefault(a =>
-                string.Equals(a.Name?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase));
-            return match != null ? match.AccountID : fallback;
-        }
+		private static int ResolveAccountByName(List<Account> accs, string name, int fallback)
+		{
+			if (string.IsNullOrWhiteSpace(name)) return fallback;
+			var match = accs.FirstOrDefault(a =>
+				string.Equals(a.Name?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase));
+			return match != null ? match.AccountID : fallback;
+		}
 
-        private void AddTransaction_Click(object sender, RoutedEventArgs e)
+		private void AddTransaction_Click(object sender, RoutedEventArgs e)
 		{
 			ShowTransactionForm(null);
 		}

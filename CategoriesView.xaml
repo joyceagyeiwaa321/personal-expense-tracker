@@ -133,13 +133,24 @@
 													</Border>
 												</StackPanel>
 
-												<StackPanel Grid.Column="1" Orientation="Horizontal">
+												<StackPanel Grid.Column="1" Orientation="Horizontal"
+																Visibility="{Binding EditDeleteVisibility}">
 													<Button Content="Edit"
                                                             Tag="{Binding CategoryID}"
                                                             Click="EditCategory_Click"
                                                             Background="Transparent"
                                                             BorderThickness="0"
                                                             Foreground="#00796B"
+                                                            FontSize="12"
+                                                            FontWeight="SemiBold"
+                                                            Cursor="Hand"
+                                                            Padding="8,4"/>
+													<Button Content="Delete"
+                                                            Tag="{Binding CategoryID}"
+                                                            Click="DeleteCategory_Click"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Foreground="#EF4444"
                                                             FontSize="12"
                                                             FontWeight="SemiBold"
                                                             Cursor="Hand"
@@ -207,13 +218,24 @@
 													</Border>
 												</StackPanel>
 
-												<StackPanel Grid.Column="1" Orientation="Horizontal">
+												<StackPanel Grid.Column="1" Orientation="Horizontal"
+																Visibility="{Binding EditDeleteVisibility}">
 													<Button Content="Edit"
                                                             Tag="{Binding CategoryID}"
                                                             Click="EditCategory_Click"
                                                             Background="Transparent"
                                                             BorderThickness="0"
                                                             Foreground="#00796B"
+                                                            FontSize="12"
+                                                            FontWeight="SemiBold"
+                                                            Cursor="Hand"
+                                                            Padding="8,4"/>
+													<Button Content="Delete"
+                                                            Tag="{Binding CategoryID}"
+                                                            Click="DeleteCategory_Click"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Foreground="#EF4444"
                                                             FontSize="12"
                                                             FontWeight="SemiBold"
                                                             Cursor="Hand"
@@ -236,7 +258,7 @@
 					</Border>
 				</Grid>
 
-				<TextBlock Text="Default categories can be renamed but not deleted."
+				<TextBlock Text="Default categories cannot be edited or deleted."
                            FontSize="12"
                            Foreground="{DynamicResource TextMutedBrush}"
                            Margin="0,16,0,0"

@@ -247,7 +247,28 @@
 							<Button Content="Edit Profile" Style="{StaticResource TealButton}"
                                     Width="220" Click="EditProfile_Click" Margin="0,0,0,10"/>
 							<Button Content="Change Password" Style="{StaticResource GrayButton}"
-                                    Width="220" Click="ShowChangePassword_Click"/>
+                                    Width="220" Click="ShowChangePassword_Click" Margin="0,0,0,10"/>
+							<Button Width="220" Height="38" Cursor="Hand"
+									Background="#EF4444" Foreground="White"
+									BorderThickness="0" Click="SignOut_Click">
+								<Button.Template>
+									<ControlTemplate TargetType="Button">
+										<Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="8">
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+												<TextBlock Text="&#xE7E8;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+														   Foreground="White" Margin="0,0,7,0" VerticalAlignment="Center"/>
+												<TextBlock Text="Sign Out" FontFamily="Segoe UI" FontSize="13"
+														   FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+											</StackPanel>
+										</Border>
+										<ControlTemplate.Triggers>
+											<Trigger Property="IsMouseOver" Value="True">
+												<Setter TargetName="bg" Property="Background" Value="#DC2626"/>
+											</Trigger>
+										</ControlTemplate.Triggers>
+									</ControlTemplate>
+								</Button.Template>
+							</Button>
 						</StackPanel>
 					</Border>
 
@@ -311,7 +332,7 @@
 								<!-- Notification Preferences -->
 								<TextBlock Text="Notification Preferences" FontSize="15" FontWeight="Bold"
                                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,14"/>
-								
+
 								<StackPanel Margin="0,0,0,24">
 									<CheckBox x:Name="ChkGoalReminders"
 											  Content="Goal Reminders"
@@ -325,6 +346,7 @@
 								<StackPanel Orientation="Horizontal">
 									<Button Content="Clear All Data" Style="{StaticResource DangerButton}"
                                             Click="ClearAllData_Click"/>
+
 								</StackPanel>
 
 								<!-- AI SETTINGS -->
@@ -499,6 +521,47 @@
 				</StackPanel>
 			</Grid>
 		</Border>
+
+
+		<!-- CLEAR ALL — Step 1 -->
+		<Grid x:Name="ClearConfirmOverlay1" Visibility="Collapsed"
+			  Grid.RowSpan="2" Background="#88000000">
+			<Border MaxWidth="420" Background="White" CornerRadius="14" Padding="28"
+					HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel>
+					<TextBlock Text="Clear All Data?" FontSize="17" FontWeight="Bold"
+							   Foreground="#1A2E22" Margin="0,0,0,10"/>
+					<TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4A6558" Margin="0,0,0,24"
+							   Text="This will permanently delete all your transactions and cannot be undone."/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Content="Cancel" Style="{StaticResource GrayButton}"
+								Width="100" Margin="0,0,10,0" Click="ClearConfirm1_No"/>
+						<Button Content="Yes, continue" Style="{StaticResource DangerButton}"
+								Width="140" Click="ClearConfirm1_Yes"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Grid>
+
+		<!-- CLEAR ALL — Step 2 (final warning) -->
+		<Grid x:Name="ClearConfirmOverlay2" Visibility="Collapsed"
+			  Grid.RowSpan="2" Background="#AA000000">
+			<Border MaxWidth="420" Background="White" CornerRadius="14" Padding="28"
+					HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel>
+					<TextBlock Text="⚠️ Final Warning" FontSize="17" FontWeight="Bold"
+							   Foreground="#DC2626" Margin="0,0,0,10"/>
+					<TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4A6558" Margin="0,0,0,24"
+							   Text="You are about to permanently delete ALL your transactions. This action is irreversible. Are you absolutely sure?"/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Content="Cancel" Style="{StaticResource GrayButton}"
+								Width="100" Margin="0,0,10,0" Click="ClearConfirm2_No"/>
+						<Button Content="Delete everything" Style="{StaticResource DangerButton}"
+								Width="160" Click="ClearConfirm2_Yes"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Grid>
 
 	</Grid>
 </UserControl>

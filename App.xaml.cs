@@ -10,10 +10,7 @@ namespace FinancyApplication
 		{
 			base.OnStartup(e);
 
-			// Restore the user's last theme choice before any window opens
-			// so they don't see a flash of light theme.
-			bool wasDark = ThemeManager.LoadPreference();
-			ThemeManager.ApplyTheme(wasDark);
+			ThemeManager.ApplyTheme();
 		}
 	}
 }

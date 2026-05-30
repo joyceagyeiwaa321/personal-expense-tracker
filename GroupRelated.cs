@@ -9,12 +9,20 @@ namespace FinancyApplication
 		public int GroupID { get; set; }
 		public int CreatedByUserID { get; set; }
 		public string Name { get; set; }
-		public string Description { get; set; } 
-		public string InviteCode { get; set; }  
+		public string Description { get; set; }
+		public string InviteCode { get; set; }
 		public DateTime CreatedAt { get; set; }
-        public int MemberCount { get; set; }
+		public int MemberCount { get; set; }
 
-        public Group(){}
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Group() { }
 
 		public Group(int createdByUserId, string name, string description)
 		{
@@ -107,7 +115,23 @@ namespace FinancyApplication
 		public int UserID { get; set; }
 		public DateTime JoinedAt { get; set; }
 
-		public GroupMember(){}
+		public Group Group
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public GroupMember() { }
 
 		public GroupMember(int groupId, int userId)
 		{
@@ -146,31 +170,47 @@ namespace FinancyApplication
 		}
 	}
 
-    public class ExpenseSplit
-    {
-        public int ExpenseSplitID { get; set; }
-        public int TransactionID { get; set; }
-        public int UserID { get; set; }
-        public decimal Amount { get; set; }
-        public bool IsPaid { get; set; }
-        public DateTime? PaidAt { get; set; }
+	public class ExpenseSplit
+	{
+		public int ExpenseSplitID { get; set; }
+		public int TransactionID { get; set; }
+		public int UserID { get; set; }
+		public decimal Amount { get; set; }
+		public bool IsPaid { get; set; }
+		public DateTime? PaidAt { get; set; }
 
-        public ExpenseSplit()
-        {
-        }
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
 
-        public ExpenseSplit(int transactionId, int userId, decimal amount, bool isPaid = false)
-        {
-            TransactionID = transactionId;
-            UserID = userId;
-            Amount = amount;
-            IsPaid = isPaid;
-            PaidAt = isPaid ? DateTime.Now : (DateTime?)null;
-        }
+		public Transaction Transaction
+		{
+			get => default;
+			set
+			{
+			}
+		}
 
-        public override string ToString()
-        {
-            return $"ExpenseSplitID: {ExpenseSplitID}, TransactionID: {TransactionID}, UserID: {UserID}, Amount: {Amount}, IsPaid: {IsPaid}";
-        }
-    }
+		public ExpenseSplit()
+		{
+		}
+
+		public ExpenseSplit(int transactionId, int userId, decimal amount, bool isPaid = false)
+		{
+			TransactionID = transactionId;
+			UserID = userId;
+			Amount = amount;
+			IsPaid = isPaid;
+			PaidAt = isPaid ? DateTime.Now : (DateTime?)null;
+		}
+
+		public override string ToString()
+		{
+			return $"ExpenseSplitID: {ExpenseSplitID}, TransactionID: {TransactionID}, UserID: {UserID}, Amount: {Amount}, IsPaid: {IsPaid}";
+		}
+	}
 }

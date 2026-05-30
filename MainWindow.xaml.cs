@@ -15,13 +15,13 @@ namespace FinancyApplication
 		private DispatcherTimer regResendTimer;
 		private int secondsRemaining = 30;
 		private int regSecondsRemaining = 30;
-		private Data db = new Data();
+		private readonly Data db = new Data();
 
-		// In-memory expiry for password reset codes — email -> issue time (UTC). Survives only the app session.
+		// email -> issue time (UTC); reset code expiry, session-only
 		private static readonly Dictionary<string, DateTime> _resetTokenIssuedAt = new Dictionary<string, DateTime>();
 		private static readonly TimeSpan ResetTokenLifetime = TimeSpan.FromMinutes(15);
 
-		// Track show/hide state for each password field
+		// password field visibility state
 		private bool loginPassVisible = false;
 		private bool regPassVisible = false;
 		private bool regConfirmPassVisible = false;

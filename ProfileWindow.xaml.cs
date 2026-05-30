@@ -11,7 +11,7 @@ namespace FinancyApplication
 {
 	public partial class ProfileView : UserControl
 	{
-		private Data db = new Data();
+		private readonly Data db = new Data();
 		private User _currentUser;
 		private UserProfile _profile;
 
@@ -180,8 +180,8 @@ namespace FinancyApplication
 			ApiKeyInput.Text = OpenAiService.LoadApiKey();
 
 			ShowInfoView();
-            ChkGoalReminders.IsChecked = _profile.NotifGoalReminders;
-        }
+			ChkGoalReminders.IsChecked = _profile.NotifGoalReminders;
+		}
 
 		private void PopulateCurrencyDropdown()
 		{
@@ -351,6 +351,16 @@ namespace FinancyApplication
 				phone = localNumber;
 			}
 
+			if (!string.IsNullOrEmpty(firstName) && !Regex.IsMatch(firstName, @"^[a-zA-Z\s\-']+$"))
+			{
+				ShowEditFeedback("First name can only contain letters.", true);
+				return;
+			}
+			if (!string.IsNullOrEmpty(lastName) && !Regex.IsMatch(lastName, @"^[a-zA-Z\s\-']+$"))
+			{
+				ShowEditFeedback("Last name can only contain letters.", true);
+				return;
+			}
 			if (string.IsNullOrWhiteSpace(username))
 			{
 				ShowEditFeedback("Username cannot be empty.", true);
@@ -369,8 +379,8 @@ namespace FinancyApplication
 				_profile.LastName = lastName;
 				_profile.PhoneNumber = phone;
 				_profile.PreferredCurrency = Account.ExtractCurrencyCode(currency);
-                _profile.NotifGoalReminders = ChkGoalReminders.IsChecked == true;
-                _profile.Save();
+				_profile.NotifGoalReminders = ChkGoalReminders.IsChecked == true;
+				_profile.Save();
 
 				if (username != _currentUser.Username)
 				{
@@ -481,45 +491,45 @@ namespace FinancyApplication
 			}
 		}
 
-        private void ClearAllData_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult first = MessageBox.Show(
-                "Are you sure you want to clear all your transaction data?\n\nThis will permanently delete all your transactions and cannot be undone.",
-                "Clear All Data",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+		private void ClearAllData_Click(object sender, RoutedEventArgs e)
+		{
+			ClearConfirmOverlay1.Visibility = Visibility.Visible;
+		}
 
-            if (first != MessageBoxResult.Yes) return;
+		private void ClearConfirm1_Yes(object sender, RoutedEventArgs e)
+		{
+			ClearConfirmOverlay1.Visibility = Visibility.Collapsed;
+			ClearConfirmOverlay2.Visibility = Visibility.Visible;
+		}
 
-            MessageBoxResult second = MessageBox.Show(
-                "⚠️ FINAL WARNING\n\nYou are about to permanently delete ALL your transactions.\n\nThis action is irreversible. Are you absolutely sure?",
-                "Confirm Permanent Deletion",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Stop);
+		private void ClearConfirm1_No(object sender, RoutedEventArgs e)
+		{
+			ClearConfirmOverlay1.Visibility = Visibility.Collapsed;
+		}
 
-            if (second != MessageBoxResult.Yes) return;
+		private void ClearConfirm2_Yes(object sender, RoutedEventArgs e)
+		{
+			ClearConfirmOverlay2.Visibility = Visibility.Collapsed;
+			try
+			{
+				// Delete receipts first (FK constraint), then transactions
+				db.ExecuteSimple("DELETE FROM receipt WHERE TransactionID IN (SELECT TransactionID FROM `transaction` WHERE UserID = " + _currentUser.UserID + ")");
+				db.ExecuteSimple("DELETE FROM `transaction` WHERE UserID = " + _currentUser.UserID);
+				MessageBox.Show("All transaction data has been cleared successfully.",
+					"Done", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Error clearing data: " + ex.Message);
+			}
+		}
 
-            try
-            {
-                List<Account> accounts = db.GetAccountsByUser(_currentUser.UserID);
-                foreach (Account acc in accounts)
-                {
-                    List<Transaction> transactions = db.GetTransactionsByAccount(acc.AccountID);
-                    foreach (Transaction t in transactions)
-                    {
-                        db.DeleteTransaction(t.TransactionID);
-                    }
-                }
-                MessageBox.Show("All transaction data has been cleared successfully.",
-                    "Done", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error clearing data: " + ex.Message);
-            }
-        }
+		private void ClearConfirm2_No(object sender, RoutedEventArgs e)
+		{
+			ClearConfirmOverlay2.Visibility = Visibility.Collapsed;
+		}
 
-        private void AvatarButton_Click(object sender, RoutedEventArgs e)
+		private void AvatarButton_Click(object sender, RoutedEventArgs e)
 		{
 			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 			dlg.Title = "Choose profile photo";
@@ -725,14 +735,20 @@ namespace FinancyApplication
 		}
 
 		private void NotifCheckbox_Changed(object sender, RoutedEventArgs e)
-{
-    if (_profile == null) return;
-    try
-    {
-        _profile.NotifGoalReminders = ChkGoalReminders.IsChecked == true;
-        _profile.Save();
-    }
-    catch { }
-}
+		{
+			if (_profile == null) return;
+			try
+			{
+				_profile.NotifGoalReminders = ChkGoalReminders.IsChecked == true;
+				_profile.Save();
+			}
+			catch (Exception ex) { MessageBox.Show("Could not save preferences: " + ex.Message); }
+		}
+
+		private void SignOut_Click(object sender, RoutedEventArgs e)
+		{
+			new MainWindow().Show();
+			Window.GetWindow(this)?.Close();
+		}
 	}
 }

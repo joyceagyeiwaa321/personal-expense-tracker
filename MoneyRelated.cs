@@ -11,6 +11,22 @@ namespace FinancyApplication
 		public decimal LimitAmount { get; set; }
 		public string Month { get; set; }
 
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Category Category
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
 		public Budget()
 		{
 		}
@@ -78,6 +94,22 @@ namespace FinancyApplication
 		public DateTime NextRunDate { get; set; }
 		public bool IsActive { get; set; }
 
+		public Account Account
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Category Category
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
 		public RecurringTransaction()
 		{
 		}
@@ -123,12 +155,31 @@ namespace FinancyApplication
 			db.DeleteRecurringTransaction(RecurringId);
 		}
 
-		public void Execute()
+		public void Execute(int userId)
 		{
-			if (IsActive) return;
+			if (!IsActive) return;
+
+			Data db = new Data();
+
+			// Insert one transaction per missed occurrence
+			while (NextRunDate <= DateTime.Now)
+			{
+				Transaction t = new Transaction
+				{
+					UserID = userId,
+					AccountID = AccountId,
+					CategoryID = CategoryId,
+					Type = Type,
+					Amount = Amount,
+					Description = "Recurring (" + Frequency + ")",
+					Date = NextRunDate,
+					GroupID = 0
+				};
+				db.InsertTransaction(t);
 				UpdateNextRunDate();
-				Data db = new Data();
-				db.UpdateRecurringTransaction(this);
+			}
+
+			db.UpdateRecurringTransaction(this);
 		}
 
 		public void UpdateNextRunDate()
@@ -165,6 +216,14 @@ namespace FinancyApplication
 		public string FilePath { get; set; }
 		public string FileType { get; set; }
 		public DateTime UploadedAt { get; set; }
+
+		public Transaction Transaction
+		{
+			get => default;
+			set
+			{
+			}
+		}
 
 		public Receipt()
 		{
