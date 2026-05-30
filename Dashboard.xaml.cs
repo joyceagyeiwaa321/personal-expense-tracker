@@ -288,6 +288,18 @@ namespace FinancyApplication
                 IncomeExpenseCanvas.Children.Add(new Line { X1 = getX(i), Y1 = getY(points[i].Expense), X2 = getX(i + 1), Y2 = getY(points[i + 1].Expense), Stroke = expenseBrush, StrokeThickness = 2 });
             }
             for (int i = 0; i < n; i++)
+            {
+                var incDot = new Ellipse { Width = 7, Height = 7, Fill = incomeBrush };
+                IncomeExpenseCanvas.Children.Add(incDot);
+                Canvas.SetLeft(incDot, getX(i) - 3.5);
+                Canvas.SetTop(incDot, getY(points[i].Income) - 3.5);
+
+                var expDot = new Ellipse { Width = 7, Height = 7, Fill = expenseBrush };
+                IncomeExpenseCanvas.Children.Add(expDot);
+                Canvas.SetLeft(expDot, getX(i) - 3.5);
+                Canvas.SetTop(expDot, getY(points[i].Expense) - 3.5);
+            }
+            for (int i = 0; i < n; i++)
                 AddCanvasText(IncomeExpenseCanvas, points[i].Label, getX(i) - 12, h - padB + 5, mutedBrush, 10);
         }
 
