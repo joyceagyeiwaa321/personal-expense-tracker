@@ -150,6 +150,28 @@ namespace FinancyApplication
             {
                 var members = db.GetGroupMembers(group.GroupID);
                 members = members.GroupBy(m => m.UserID).Select(g => g.First()).ToList();
+
+                // make sure all members have their name there
+                foreach (var m in members.Where(m => !_userNames.ContainsKey(m.UserID)))
+                {
+                    var u = db.GetUserById(m.UserID);
+                    if (u != null) _userNames[m.UserID] = u.Username;
+                }
+                // populate Paid By
+                ExpensePaidByCombo.Items.Clear();
+                foreach (var m in members)
+                {
+                    string uname = _userNames.ContainsKey(m.UserID) ? _userNames[m.UserID] : "User " + m.UserID;
+                    ExpensePaidByCombo.Items.Add(new ComboBoxItem
+                    {
+                        Content = uname + (m.UserID == _currentUser.UserID ? " (me)" : ""),
+                        Tag = m.UserID
+                    });
+                }
+                var meItem = ExpensePaidByCombo.Items.Cast<ComboBoxItem>()
+                    .FirstOrDefault(i => (int)i.Tag == _currentUser.UserID);
+                if (meItem != null) ExpensePaidByCombo.SelectedItem = meItem;
+                else if (ExpensePaidByCombo.Items.Count > 0) ExpensePaidByCombo.SelectedIndex = 0;
                 GroupMembersLabel.Text = $"· {members.Count} member{(members.Count == 1 ? "" : "s")}";
 
                 _userNames.Clear();
@@ -511,9 +533,13 @@ namespace FinancyApplication
                 int catId = (int)(ExpenseCategoryCombo.SelectedItem as ComboBoxItem).Tag;
                 int accId = (int)(ExpenseAccountCombo.SelectedItem as ComboBoxItem).Tag;
 
+                int payerUserId = _currentUser.UserID;
+                if (ExpensePaidByCombo.SelectedItem is ComboBoxItem payerItem && payerItem.Tag != null)
+                    payerUserId = (int)payerItem.Tag;
+
                 var t = new Transaction
                 {
-                    UserID = _currentUser.UserID,
+                    UserID = payerUserId,
                     AccountID = accId,
                     CategoryID = catId,
                     GroupID = _activeGroup.GroupID,
@@ -533,7 +559,7 @@ namespace FinancyApplication
                         System.Globalization.CultureInfo.InvariantCulture,
                         out decimal pct);
                     decimal shareAmount = Math.Round(amount * pct / 100m, 2);
-                    bool isPayer = r.UserID == _currentUser.UserID;
+                    bool isPayer = r.UserID == payerUserId;
 
                     var split = new ExpenseSplit(txId, r.UserID, shareAmount, isPaid: isPayer);
                     db.InsertExpenseSplit(split);

@@ -588,6 +588,11 @@
 						<ComboBox x:Name="ExpenseAccountCombo" Height="40" Margin="0,0,0,14"
                                   FontFamily="Segoe UI" FontSize="13"
                                   BorderBrush="#E0EDE6" BorderThickness="1.5"/>
+						<TextBlock Text="Paid By" FontFamily="Segoe UI Semibold"
+           FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
+						<ComboBox x:Name="ExpensePaidByCombo" Height="40" Margin="0,0,0,14"
+								  FontFamily="Segoe UI" FontSize="13"
+								  BorderBrush="#E0EDE6" BorderThickness="1.5"/>
 						<TextBlock Text="Split Among" FontFamily="Segoe UI Semibold"
 								   FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 						<Border BorderBrush="#E0EDE6" BorderThickness="1.5" CornerRadius="8"
