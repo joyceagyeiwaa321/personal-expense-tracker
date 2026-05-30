@@ -8,7 +8,7 @@ namespace FinancyApplication
 	public partial class AccountDialog : UserControl
 	{
 		private readonly User _currentUser;
-		private readonly Account _existing; // null = add mode
+		private readonly Account _existing; 
 
 		public event Action<bool> Closed;
 

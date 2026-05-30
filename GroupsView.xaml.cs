@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,7 +8,32 @@ using System.Windows.Media;
 
 namespace FinancyApplication
 {
-    //  View-models
+    public class MemberBalanceRow
+    {
+        public int UserID { get; set; }
+        public string Name { get; set; }
+        public decimal Balance { get; set; }
+        public string Initial => Name?.Length > 0 ? Name.Substring(0, 1).ToUpper() : "?";
+        public string BalanceDisplay
+        {
+            get
+            {
+                if (Balance > 0) return $"Receives €{Balance:N2}";
+                if (Balance < 0) return $"Has to pay €{Math.Abs(Balance):N2}";
+                return "Settled up ✓";
+            }
+        }
+        public Brush BalanceColor
+        {
+            get
+            {
+                if (Balance > 0) return new SolidColorBrush(Color.FromRgb(22, 163, 74));
+                if (Balance < 0) return new SolidColorBrush(Color.FromRgb(220, 38, 38));
+                return new SolidColorBrush(Color.FromRgb(107, 114, 128));
+            }
+        }
+    }
+
     public class GroupExpenseRow
     {
         public int TransactionID { get; set; }
@@ -30,7 +54,6 @@ namespace FinancyApplication
             : new SolidColorBrush(Color.FromRgb(153, 27, 27));
     }
 
-    //  Command helper
     public class RelayCommand : ICommand
     {
         private readonly Action<object> _execute;
@@ -40,7 +63,6 @@ namespace FinancyApplication
         public event EventHandler CanExecuteChanged;
     }
 
-    //  GroupsView─
     public partial class GroupsView : UserControl
     {
         private readonly Data db = new Data();
@@ -50,7 +72,6 @@ namespace FinancyApplication
         private Dictionary<int, string> _categoryNames = new Dictionary<int, string>();
         private Dictionary<int, string> _userNames = new Dictionary<int, string>();
 
-        // Tracks each row in the split picker so we can read values back
         private class SplitRowUI
         {
             public int UserID;
@@ -67,10 +88,7 @@ namespace FinancyApplication
             _currentUser = user;
             DataContext = this;
             OpenGroupCommand = new RelayCommand(g => OpenGroup(g as Group));
-            Loaded += (s, e) =>
-            {
-                LoadGroups();
-            };
+            Loaded += (s, e) => LoadGroups();
         }
 
         public void CheckPendingInvites()
@@ -85,9 +103,7 @@ namespace FinancyApplication
 
                     var result = MessageBox.Show(
                         $"{from?.Username} invited you to join \"{group?.Name}\".\nDo you want to accept?",
-                        "Group Invite",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
+                        "Group Invite", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                     db.RespondToInvite(inv.InviteID, result == MessageBoxResult.Yes);
 
@@ -102,11 +118,9 @@ namespace FinancyApplication
             {
                 MessageBox.Show("Could not load invites: " + ex.Message);
             }
-
             LoadGroups();
         }
 
-        //  Landing
         private void LoadGroups()
         {
             var groups = new List<Group>();
@@ -118,11 +132,9 @@ namespace FinancyApplication
             }
             catch { }
 
-            // All groups you're a member of
             GroupsList.ItemsSource = groups;
             NoGroupsPanel.Visibility = groups.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
-            // Only groups you created
             var created = groups.Where(g => g.CreatedByUserID == _currentUser.UserID).ToList();
             CreatedGroupsList.ItemsSource = created;
             NoCreatedGroupsPanel.Visibility = created.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -132,16 +144,14 @@ namespace FinancyApplication
         {
             if (group == null) return;
             _activeGroup = group;
-
             GroupNameTitle.Text = group.Name;
 
-            // Member count
             try
             {
                 var members = db.GetGroupMembers(group.GroupID);
+                members = members.GroupBy(m => m.UserID).Select(g => g.First()).ToList();
                 GroupMembersLabel.Text = $"· {members.Count} member{(members.Count == 1 ? "" : "s")}";
 
-                // Build username lookup
                 _userNames.Clear();
                 foreach (var m in members)
                 {
@@ -151,12 +161,7 @@ namespace FinancyApplication
             }
             catch { }
 
-            // Categories
-            try
-            {
-                _categoryNames = db.GetAllCategoriesRaw();
-            }
-            catch { }
+            try { _categoryNames = db.GetAllCategoriesRaw(); } catch { }
 
             PopulateCategoryFilter();
             LoadGroupExpenses();
@@ -173,7 +178,6 @@ namespace FinancyApplication
             LoadGroups();
         }
 
-        //  Create Group
         private void CreateGroup_Click(object sender, RoutedEventArgs e)
         {
             NewGroupName.Text = "";
@@ -197,7 +201,6 @@ namespace FinancyApplication
                 var group = new Group(_currentUser.UserID, name, NewGroupDesc.Text.Trim());
                 int groupId = group.Create();
 
-                // Auto-join as member
                 var member = new GroupMember(groupId, _currentUser.UserID);
                 member.Join();
 
@@ -212,7 +215,6 @@ namespace FinancyApplication
             }
         }
 
-        //  Load Expenses─
         private void LoadGroupExpenses()
         {
             if (_activeGroup == null) return;
@@ -221,7 +223,55 @@ namespace FinancyApplication
                 _groupTransactions = db.GetTransactionsByGroup(_activeGroup.GroupID);
             }
             catch { _groupTransactions = new List<Transaction>(); }
+
             ApplyFilters();
+            LoadMemberBalances();
+        }
+
+        private void LoadMemberBalances()
+        {
+            if (_activeGroup == null || MemberBalancesList == null) return;
+
+            // Load all splits for all group transactions
+            var allSplits = new List<ExpenseSplit>();
+            foreach (var t in _groupTransactions)
+            {
+                try
+                {
+                    allSplits.AddRange(db.GetSplitsByTransaction(t.TransactionID));
+                }
+                catch { }
+            }
+
+            var balances = new List<MemberBalanceRow>();
+            var members = db.GetGroupMembers(_activeGroup.GroupID);
+
+            foreach (var m in members)
+            {
+                string name = _userNames.ContainsKey(m.UserID) ? _userNames[m.UserID] : "User " + m.UserID;
+
+                // How much this member paid for the group
+                decimal paid = _groupTransactions
+                    .Where(t => t.UserID == m.UserID)
+                    .Sum(t => t.Amount);
+
+                // Their total share across all splits
+                decimal share = allSplits
+                    .Where(s => s.UserID == m.UserID)
+                    .Sum(s => s.Amount);
+
+                // Positive = receives money, Negative = owes money
+                decimal balance = paid - share;
+
+                balances.Add(new MemberBalanceRow
+                {
+                    UserID = m.UserID,
+                    Name = name,
+                    Balance = balance
+                });
+            }
+
+            MemberBalancesList.ItemsSource = balances;
         }
 
         private void PopulateCategoryFilter()
@@ -232,13 +282,11 @@ namespace FinancyApplication
                 CategoryFilter.Items.Add(new ComboBoxItem { Content = kv.Value, Tag = kv.Key });
             CategoryFilter.SelectedIndex = 0;
 
-            // Also populate the add-expense combo
             ExpenseCategoryCombo.Items.Clear();
             foreach (var kv in _categoryNames)
                 ExpenseCategoryCombo.Items.Add(new ComboBoxItem { Content = kv.Value, Tag = kv.Key });
             if (ExpenseCategoryCombo.Items.Count > 0) ExpenseCategoryCombo.SelectedIndex = 0;
 
-            // Account combo
             ExpenseAccountCombo.Items.Clear();
             var accounts = db.GetAccountsByUser(_currentUser.UserID);
             foreach (var a in accounts)
@@ -252,7 +300,6 @@ namespace FinancyApplication
 
             IEnumerable<Transaction> q = _groupTransactions;
 
-            // Period
             if (PeriodFilter.SelectedItem is ComboBoxItem p)
             {
                 DateTime now = DateTime.Today;
@@ -265,32 +312,42 @@ namespace FinancyApplication
                 }
             }
 
-            // Category
             if (CategoryFilter.SelectedItem is ComboBoxItem cat && cat.Tag != null)
                 q = q.Where(t => t.CategoryID == (int)cat.Tag);
 
-            // Type
             if (TypeFilter.SelectedItem is ComboBoxItem type && type.Content.ToString() != "All Types")
                 q = q.Where(t => t.Type == type.Content.ToString());
 
-            // Sort
             string sort = (SortFilter.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Newest First";
             q = sort == "Oldest First" ? q.OrderBy(t => t.Date)
               : sort == "Highest Amount" ? q.OrderByDescending(t => t.Amount)
               : q.OrderByDescending(t => t.Date);
 
-            var rows = q.Select(t => new GroupExpenseRow
+            var rows = new List<GroupExpenseRow>();
+            foreach (var t in q)
             {
-                TransactionID = t.TransactionID,
-                DateDisplay = t.Date.ToString("dd MMM yyyy"),
-                Description = string.IsNullOrWhiteSpace(t.Description) ? "—" : t.Description,
-                CategoryName = string.IsNullOrEmpty(t.CategoryName) ? "—" : t.CategoryName,
-                PaidBy = _userNames.ContainsKey(t.UserID) ? _userNames[t.UserID] : "Unknown",
-                AmountDisplay = $"€{t.Amount:N2}",
-                Amount = t.Amount,
-                Status = t.Status ?? "Pending",
-                Type = t.Type
-            }).ToList();
+                List<ExpenseSplit> splits = new List<ExpenseSplit>();
+                try { splits = db.GetSplitsByTransaction(t.TransactionID); } catch { }
+
+                var mySplit = splits.FirstOrDefault(s => s.UserID == _currentUser.UserID);
+                string amountDisplay = mySplit != null ? $"€{mySplit.Amount:N2}" : $"€{t.Amount:N2}";
+                string status = mySplit != null
+                    ? (mySplit.IsPaid ? "Paid" : "Pending")
+                    : (t.Status ?? "Pending");
+
+                rows.Add(new GroupExpenseRow
+                {
+                    TransactionID = t.TransactionID,
+                    DateDisplay = t.Date.ToString("dd MMM yyyy"),
+                    Description = string.IsNullOrWhiteSpace(t.Description) ? "—" : t.Description,
+                    CategoryName = string.IsNullOrEmpty(t.CategoryName) ? "—" : t.CategoryName,
+                    PaidBy = _userNames.ContainsKey(t.UserID) ? _userNames[t.UserID] : "Unknown",
+                    AmountDisplay = amountDisplay,
+                    Amount = t.Amount,
+                    Status = status,
+                    Type = t.Type
+                });
+            }
 
             ExpensesTable.ItemsSource = rows;
             NoExpensesPanel.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -308,7 +365,6 @@ namespace FinancyApplication
             ApplyFilters();
         }
 
-        //  Add Expense
         private void AddExpense_Click(object sender, RoutedEventArgs e)
         {
             ExpenseDesc.Text = "";
@@ -419,7 +475,6 @@ namespace FinancyApplication
                 MessageBox.Show("You need an account first.", "Validation"); return;
             }
 
-            // Split validation
             var checkedRows = _splitRows.Where(r => r.Checkbox.IsChecked == true).ToList();
             if (checkedRows.Count == 0)
             {
@@ -471,7 +526,6 @@ namespace FinancyApplication
                 if (!t.Create()) return;
                 int txId = t.TransactionID;
 
-                // Insert one split row per included member
                 foreach (var r in checkedRows)
                 {
                     decimal.TryParse(r.PercentBox.Text.Trim(),
@@ -494,15 +548,13 @@ namespace FinancyApplication
             }
         }
 
-        //  Mark Paid─
         private void MarkPaid_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button b || b.Tag == null) return;
             int id = (int)b.Tag;
             try
             {
-                // Find current status and toggle it
-                var row = (ExpensesTable.ItemsSource as System.Collections.Generic.List<GroupExpenseRow>)
+                var row = (ExpensesTable.ItemsSource as List<GroupExpenseRow>)
                           ?.FirstOrDefault(r => r.TransactionID == id);
                 string newStatus = row?.Status == "Paid" ? "Pending" : "Paid";
                 db.UpdateTransactionStatus(id, newStatus);
@@ -511,7 +563,6 @@ namespace FinancyApplication
             catch (Exception ex) { MessageBox.Show("Could not update status: " + ex.Message); }
         }
 
-        //  Delete Expense
         private void DeleteExpense_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button b || b.Tag == null) return;
@@ -529,12 +580,29 @@ namespace FinancyApplication
             }
         }
 
-        //  Settle Up─
         private void SettleUp_Click(object sender, RoutedEventArgs e)
         {
-            var pending = _groupTransactions.Where(t => t.Status == "Pending").ToList();
-            SettlePendingCount.Text = pending.Count.ToString();
-            SettlePendingAmount.Text = $"€{pending.Sum(t => t.Amount):N2}";
+            // Show only the current user's unpaid splits
+            decimal totalOwed = 0;
+            int splitCount = 0;
+
+            foreach (var t in _groupTransactions)
+            {
+                try
+                {
+                    var splits = db.GetSplitsByTransaction(t.TransactionID);
+                    var mine = splits.FirstOrDefault(s => s.UserID == _currentUser.UserID && !s.IsPaid);
+                    if (mine != null)
+                    {
+                        totalOwed += mine.Amount;
+                        splitCount++;
+                    }
+                }
+                catch { }
+            }
+
+            SettlePendingCount.Text = splitCount.ToString();
+            SettlePendingAmount.Text = $"€{totalOwed:N2}";
             SettleUpModal.Visibility = Visibility.Visible;
         }
 
@@ -545,18 +613,32 @@ namespace FinancyApplication
         {
             try
             {
-                var pending = _groupTransactions.Where(t => t.Status == "Pending").ToList();
-                foreach (var t in pending)
-                    db.UpdateTransactionStatus(t.TransactionID, "Paid");
+                // Mark all current user's unpaid splits as paid
+                foreach (var t in _groupTransactions)
+                {
+                    if (t.UserID == _currentUser.UserID) continue;
+                    db.MarkSplitsBetweenUsersPaid(_activeGroup.GroupID, t.UserID, _currentUser.UserID);
+                }
+
+                // Update transaction status for any fully settled transactions
+                foreach (var t in _groupTransactions)
+                {
+                    try
+                    {
+                        var splits = db.GetSplitsByTransaction(t.TransactionID);
+                        if (splits.Count > 0 && splits.All(s => s.IsPaid))
+                            db.UpdateTransactionStatus(t.TransactionID, "Paid");
+                    }
+                    catch { }
+                }
 
                 SettleUpModal.Visibility = Visibility.Collapsed;
                 LoadGroupExpenses();
-                MessageBox.Show($"Settled {pending.Count} expense(s)!", "Done");
+                MessageBox.Show("Your shares have been settled!", "Done");
             }
             catch (Exception ex) { MessageBox.Show("Could not settle: " + ex.Message); }
         }
 
-        //  Leave Group
         private void LeaveGroup_Click(object sender, RoutedEventArgs e)
         {
             var res = MessageBox.Show($"Leave \"{_activeGroup.Name}\"?", "Confirm",
@@ -573,7 +655,6 @@ namespace FinancyApplication
             }
         }
 
-        //  Copy Invite Code (from card) 
         private void CopyInviteCode_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button b && b.Tag is string code && !string.IsNullOrEmpty(code))
@@ -583,7 +664,6 @@ namespace FinancyApplication
             }
         }
 
-        //  Group Code Modal
         private void CopyGroupCode_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(GroupCodeText.Text))
@@ -596,7 +676,6 @@ namespace FinancyApplication
         private void CloseGroupCode_Click(object sender, RoutedEventArgs e) =>
             GroupCodeModal.Visibility = Visibility.Collapsed;
 
-        //  Join Group─
         private void JoinGroup_Click(object sender, RoutedEventArgs e)
         {
             JoinCodeInput.Text = "";

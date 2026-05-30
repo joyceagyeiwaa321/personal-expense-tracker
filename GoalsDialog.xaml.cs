@@ -7,7 +7,7 @@ namespace FinancyApplication
     {
         private readonly Data db = new Data();
         private readonly User _currentUser;
-        private readonly Goal _existingGoal; // null = add mode
+        private readonly Goal _existingGoal; 
 
         public GoalDialog(User currentUser, Goal existingGoal)
         {
@@ -55,7 +55,7 @@ namespace FinancyApplication
                 return;
             }
 
-            // Saved (defaults to 0)
+            // Saved
             decimal saved = 0;
             if (!string.IsNullOrWhiteSpace(SavedInput.Text))
             {

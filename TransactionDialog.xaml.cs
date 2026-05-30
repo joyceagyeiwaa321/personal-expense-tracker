@@ -10,13 +10,12 @@ namespace FinancyApplication
     {
         private readonly Data db = new Data();
         private readonly User _currentUser;
-        private readonly Transaction _existing; // null = add mode
+        private readonly Transaction _existing; 
 
         private List<Category> _allCategories = new List<Category>();
         private string _selectedReceiptPath = null;
 
-        // Raised once the form closes. didSave == true if the user saved a new/edited
-        // transaction; false if they cancelled. Parent should remove this control.
+        // fires when form closes
         public event Action<bool> Closed;
 
         public TransactionDialog(User currentUser, Transaction existing)
@@ -44,7 +43,6 @@ namespace FinancyApplication
                 DialogTitle.Text = "Edit Transaction";
                 SaveButton.Content = "Update Transaction";
 
-                // Type — set this first so the Category dropdown is built for the right type
                 foreach (ComboBoxItem item in TypeComboBox.Items)
                 {
                     if (item.Content.ToString().Equals(_existing.Type, StringComparison.OrdinalIgnoreCase))
@@ -54,8 +52,6 @@ namespace FinancyApplication
                     }
                 }
 
-                // SelectionChanged will have already repopulated the category list for the
-                // correct type; now select the existing IDs.
                 SelectComboByTag(AccountComboBox, _existing.AccountID);
                 SelectComboByTag(CategoryComboBox, _existing.CategoryID);
 
@@ -91,8 +87,7 @@ namespace FinancyApplication
 
         private void PopulateCategoriesForType(string type)
         {
-            // Guard: this can fire from SelectionChanged during XAML init before the rest
-            // of the form exists.
+            // just in case
             if (CategoryComboBox == null) return;
 
             CategoryComboBox.Items.Clear();
@@ -105,7 +100,7 @@ namespace FinancyApplication
             {
                 CategoryComboBox.Items.Add(new ComboBoxItem
                 {
-                    Content = c.Name,   // no "(income)" suffix — Type field already conveys this
+                    Content = c.Name,   
                     Tag = c.CategoryID
                 });
             }
@@ -216,11 +211,8 @@ namespace FinancyApplication
                         if (receiptId > 0)
                             db.AttachReceiptToTransaction(savedTransactionId, receiptId);
                     }
-                    catch { /* receipt is optional — don't block the save if it fails */ }
+                    catch {  }
                 }
-
-                // Only check budget alerts for expense transactions
-                if (type.Equals("Expense", StringComparison.OrdinalIgnoreCase))
 
                 Closed?.Invoke(true);
             }

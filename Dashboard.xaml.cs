@@ -102,7 +102,7 @@ namespace FinancyApplication
             }
         }
 
-        //DASHBOARD DATA 
+        // DASHBOARD DATA 
 
         private void RefreshDashboard()
         {

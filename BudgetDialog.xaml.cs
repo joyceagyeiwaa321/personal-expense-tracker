@@ -10,7 +10,7 @@ namespace FinancyApplication
         private readonly Data db = new Data();
         private readonly User _currentUser;
         private readonly Dictionary<int, string> _categoryNames;
-        private readonly Budget _existingBudget; // null = add mode
+        private readonly Budget _existingBudget; 
         private readonly string _month;
 
         public BudgetDialog(User currentUser, Dictionary<int, string> categoryNames,

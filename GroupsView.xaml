@@ -4,7 +4,6 @@
              Background="#F4F8F5">
 
 	<UserControl.Resources>
-		<!-- Card -->
 		<Style x:Key="Card" TargetType="Border">
 			<Setter Property="Background" Value="White"/>
 			<Setter Property="CornerRadius" Value="14"/>
@@ -16,7 +15,6 @@
 			</Setter>
 		</Style>
 
-		<!-- Green Button -->
 		<Style x:Key="GreenBtn" TargetType="Button">
 			<Setter Property="Background" Value="#2ECC71"/>
 			<Setter Property="Foreground" Value="White"/>
@@ -43,7 +41,6 @@
 			</Setter>
 		</Style>
 
-		<!-- Outline Button -->
 		<Style x:Key="OutlineBtn" TargetType="Button">
 			<Setter Property="Background" Value="White"/>
 			<Setter Property="Foreground" Value="#1A5C38"/>
@@ -73,13 +70,11 @@
 			</Setter>
 		</Style>
 
-		<!-- Red Outline Button -->
 		<Style x:Key="RedBtn" TargetType="Button" BasedOn="{StaticResource OutlineBtn}">
 			<Setter Property="Foreground" Value="#E74C3C"/>
 			<Setter Property="BorderBrush" Value="#E74C3C"/>
 		</Style>
 
-		<!-- Input Style -->
 		<Style x:Key="Input" TargetType="TextBox">
 			<Setter Property="Height" Value="40"/>
 			<Setter Property="Padding" Value="12,0"/>
@@ -110,7 +105,6 @@
 			</Setter>
 		</Style>
 
-		<!-- ComboBox Style -->
 		<Style x:Key="FilterCombo" TargetType="ComboBox">
 			<Setter Property="Height" Value="36"/>
 			<Setter Property="Padding" Value="10,0"/>
@@ -123,11 +117,10 @@
 	</UserControl.Resources>
 
 	<Grid>
-		<!-- ══════ LANDING VIEW (no group selected) ══════ -->
+		<!-- LANDING VIEW -->
 		<ScrollViewer x:Name="LandingView" VerticalScrollBarVisibility="Auto" Padding="24,18,24,24">
 			<StackPanel MaxWidth="600" HorizontalAlignment="Center">
 
-				<!-- Header row with buttons -->
 				<Grid Margin="0,0,0,6">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="*"/>
@@ -145,7 +138,6 @@
 				<TextBlock Text="Collaborate on shared expenses with friends and family."
 						   FontFamily="Segoe UI" FontSize="13" Foreground="#8FAF9F" Margin="0,0,0,24"/>
 
-				<!-- Groups You Created -->
 				<TextBlock Text="Groups You Created" FontFamily="Segoe UI Semibold"
 						   FontSize="15" Foreground="#1A2E22" Margin="0,0,0,12"/>
 				<ItemsControl x:Name="CreatedGroupsList">
@@ -197,7 +189,6 @@
 							   FontFamily="Segoe UI" FontSize="12" Foreground="#8FAF9F"/>
 				</StackPanel>
 
-				<!-- Groups You're a Member Of -->
 				<TextBlock Text="Groups You're a Member Of" FontFamily="Segoe UI Semibold"
 						   FontSize="15" Foreground="#1A2E22" Margin="0,16,0,12"/>
 				<ItemsControl x:Name="GroupsList">
@@ -255,22 +246,19 @@
 			</StackPanel>
 		</ScrollViewer>
 
-		<!-- ══════ CREATE GROUP MODAL ══════ -->
+		<!-- CREATE GROUP MODAL -->
 		<Grid x:Name="CreateGroupModal" Visibility="Collapsed" Background="#88000000">
 			<Border MaxWidth="460" Background="White" CornerRadius="16" Padding="28"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
 				<StackPanel>
 					<TextBlock Text="Create New Group" FontFamily="Segoe UI Black"
                                FontSize="18" Foreground="#1A2E22" Margin="0,0,0,20"/>
-
 					<TextBlock Text="Group Name" FontFamily="Segoe UI Semibold"
                                FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 					<TextBox x:Name="NewGroupName" Style="{StaticResource Input}" Margin="0,0,0,16"/>
-
 					<TextBlock Text="Description (optional)" FontFamily="Segoe UI Semibold"
                                FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 					<TextBox x:Name="NewGroupDesc" Style="{StaticResource Input}" Margin="0,0,0,24"/>
-
 					<Grid>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*"/>
@@ -286,7 +274,7 @@
 			</Border>
 		</Grid>
 
-		<!-- ══════ GROUP CODE MODAL (shown after creation) ══════ -->
+		<!-- GROUP CODE MODAL -->
 		<Grid x:Name="GroupCodeModal" Visibility="Collapsed" Background="#88000000">
 			<Border MaxWidth="460" Background="White" CornerRadius="16" Padding="28"
 					HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -314,7 +302,7 @@
 			</Border>
 		</Grid>
 
-		<!-- ══════ JOIN GROUP MODAL ══════ -->
+		<!-- JOIN GROUP MODAL -->
 		<Grid x:Name="JoinGroupModal" Visibility="Collapsed" Background="#88000000">
 			<Border MaxWidth="460" Background="White" CornerRadius="16" Padding="28"
 					HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -326,8 +314,7 @@
 							   Margin="0,0,0,20"/>
 					<TextBlock Text="Invite Code" FontFamily="Segoe UI Semibold"
 							   FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
-					<TextBox x:Name="JoinCodeInput" Style="{StaticResource Input}"
-							 Margin="0,0,0,24"/>
+					<TextBox x:Name="JoinCodeInput" Style="{StaticResource Input}" Margin="0,0,0,24"/>
 					<Grid>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*"/>
@@ -343,12 +330,17 @@
 			</Border>
 		</Grid>
 
-		<!-- ══════ GROUP EXPENSES VIEW ══════ -->
+		<!-- GROUP EXPENSES VIEW -->
 		<Grid x:Name="GroupExpensesView" Visibility="Collapsed">
-			<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,18,24,24">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="260"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- Left: Expenses -->
+			<ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="24,18,8,24">
 				<StackPanel>
 
-					<!-- Header -->
 					<Grid Margin="0,0,0,16">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*"/>
@@ -358,9 +350,7 @@
 							<StackPanel Orientation="Horizontal">
 								<Button Background="Transparent" BorderThickness="0"
                                         Foreground="#2ECC71" FontSize="13" Cursor="Hand"
-                                        Click="BackToGroups_Click" Margin="0,0,8,0">
-									← Back
-								</Button>
+                                        Click="BackToGroups_Click" Margin="0,0,8,0">← Back</Button>
 								<TextBlock x:Name="GroupNameTitle" Text="Group Expenses"
                                            FontFamily="Segoe UI Black" FontSize="22"
                                            Foreground="#1A2E22" VerticalAlignment="Center"/>
@@ -368,9 +358,7 @@
 							<TextBlock x:Name="GroupMembersLabel" Text=""
 										FontFamily="Segoe UI" FontSize="12"
 										Foreground="#8FAF9F" Margin="0,4,0,0"/>
-						   </StackPanel>
-
-						<!-- Action Buttons -->
+						</StackPanel>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Style="{StaticResource OutlineBtn}" Margin="0,0,8,0"
                                     Click="AddExpense_Click">+ Add Expense</Button>
@@ -421,7 +409,6 @@
 					<!-- Expenses Table -->
 					<Border Style="{StaticResource Card}" Padding="20,16">
 						<StackPanel>
-							<!-- Table Header -->
 							<Border BorderBrush="#E0EDE6" BorderThickness="0,0,0,1" Padding="0,0,0,10" Margin="0,0,0,4">
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -431,20 +418,18 @@
 										<ColumnDefinition Width="110"/>
 										<ColumnDefinition Width="90"/>
 										<ColumnDefinition Width="90"/>
-										<ColumnDefinition Width="90"/>
 										<ColumnDefinition Width="80"/>
 									</Grid.ColumnDefinitions>
 									<TextBlock Grid.Column="0" Text="Date" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5"/>
 									<TextBlock Grid.Column="1" Text="Description" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5"/>
 									<TextBlock Grid.Column="2" Text="Category" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5"/>
 									<TextBlock Grid.Column="3" Text="Paid By" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5"/>
-									<TextBlock Grid.Column="4" Text="Amount" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5" HorizontalAlignment="Right"/>
+									<TextBlock Grid.Column="4" Text="Your Share" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5" HorizontalAlignment="Right"/>
 									<TextBlock Grid.Column="5" Text="Status" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5" HorizontalAlignment="Center"/>
 									<TextBlock Grid.Column="6" Text="Actions" Foreground="#8FAF9F" FontFamily="Segoe UI Semibold" FontSize="11.5" HorizontalAlignment="Center"/>
 								</Grid>
 							</Border>
 
-							<!-- Rows -->
 							<ItemsControl x:Name="ExpensesTable">
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
@@ -455,7 +440,6 @@
 													<ColumnDefinition Width="*"/>
 													<ColumnDefinition Width="120"/>
 													<ColumnDefinition Width="110"/>
-													<ColumnDefinition Width="90"/>
 													<ColumnDefinition Width="90"/>
 													<ColumnDefinition Width="90"/>
 													<ColumnDefinition Width="80"/>
@@ -479,7 +463,7 @@
 															   FontFamily="Segoe UI Semibold" FontSize="11"
 															   Foreground="{Binding StatusFg}"/>
 												</Border>
-												<StackPanel Grid.Column="7" Orientation="Horizontal"
+												<StackPanel Grid.Column="6" Orientation="Horizontal"
 															HorizontalAlignment="Center" VerticalAlignment="Center">
 													<Button Tag="{Binding TransactionID}"
                                                             Background="#FFF3E0" BorderThickness="0"
@@ -526,7 +510,6 @@
 								</ItemsControl.ItemTemplate>
 							</ItemsControl>
 
-							<!-- Empty State -->
 							<StackPanel x:Name="NoExpensesPanel" Visibility="Collapsed"
                                         HorizontalAlignment="Center" Margin="0,24">
 								<TextBlock Text="💸" FontSize="36" HorizontalAlignment="Center"/>
@@ -535,7 +518,6 @@
                                            HorizontalAlignment="Center" Margin="0,8,0,0"/>
 							</StackPanel>
 
-							<!-- Footer -->
 							<TextBlock x:Name="FooterCount" Text=""
                                        FontFamily="Segoe UI" FontSize="11.5" Foreground="#8FAF9F"
                                        Margin="0,12,0,0"/>
@@ -544,35 +526,68 @@
 				</StackPanel>
 			</ScrollViewer>
 
+			<!-- Right: Member Balances -->
+			<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Padding="0,18,24,24">
+				<Border Background="White" CornerRadius="14" Padding="16">
+					<Border.Effect>
+						<DropShadowEffect BlurRadius="16" ShadowDepth="2" Color="#1A5C38" Opacity="0.05" Direction="270"/>
+					</Border.Effect>
+					<StackPanel>
+						<TextBlock Text="Group Members" FontFamily="Segoe UI Black"
+								   FontSize="14" Foreground="#1A2E22" Margin="0,0,0,14"/>
+						<ItemsControl x:Name="MemberBalancesList">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Border Background="#F4F8F5" CornerRadius="10"
+											Padding="12,10" Margin="0,0,0,8">
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="36"/>
+												<ColumnDefinition Width="*"/>
+											</Grid.ColumnDefinitions>
+											<Border Width="32" Height="32" CornerRadius="16" Background="#2ECC71">
+												<TextBlock Text="{Binding Initial}" FontFamily="Segoe UI Semibold"
+														   FontSize="14" Foreground="White"
+														   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+											</Border>
+											<StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+												<TextBlock Text="{Binding Name}" FontFamily="Segoe UI Semibold"
+														   FontSize="12.5" Foreground="#1A2E22"/>
+												<TextBlock Text="{Binding BalanceDisplay}" FontFamily="Segoe UI Semibold"
+														   FontSize="11.5" Foreground="{Binding BalanceColor}"/>
+											</StackPanel>
+										</Grid>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</Border>
+			</ScrollViewer>
+
 			<!-- Add Expense Modal -->
-			<Grid x:Name="AddExpenseModal" Visibility="Collapsed" Background="#88000000">
+			<Grid Grid.ColumnSpan="2" x:Name="AddExpenseModal" Visibility="Collapsed" Background="#88000000">
 				<Border MaxWidth="480" Background="White" CornerRadius="16" Padding="28"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
 					<StackPanel>
 						<TextBlock Text="Add Group Expense" FontFamily="Segoe UI Black"
                                    FontSize="18" Foreground="#1A2E22" Margin="0,0,0,20"/>
-
 						<TextBlock Text="Description" FontFamily="Segoe UI Semibold"
                                    FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 						<TextBox x:Name="ExpenseDesc" Style="{StaticResource Input}" Margin="0,0,0,14"/>
-
 						<TextBlock Text="Amount (€)" FontFamily="Segoe UI Semibold"
                                    FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 						<TextBox x:Name="ExpenseAmount" Style="{StaticResource Input}" Margin="0,0,0,14"/>
-
 						<TextBlock Text="Category" FontFamily="Segoe UI Semibold"
                                    FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 						<ComboBox x:Name="ExpenseCategoryCombo" Height="40" Margin="0,0,0,14"
                                   FontFamily="Segoe UI" FontSize="13"
                                   BorderBrush="#E0EDE6" BorderThickness="1.5"/>
-
 						<TextBlock Text="Account" FontFamily="Segoe UI Semibold"
                                    FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 						<ComboBox x:Name="ExpenseAccountCombo" Height="40" Margin="0,0,0,14"
                                   FontFamily="Segoe UI" FontSize="13"
                                   BorderBrush="#E0EDE6" BorderThickness="1.5"/>
-						
-						<!-- SPLIT SECTION -->
 						<TextBlock Text="Split Among" FontFamily="Segoe UI Semibold"
 								   FontSize="12" Foreground="#4A6558" Margin="0,0,0,6"/>
 						<Border BorderBrush="#E0EDE6" BorderThickness="1.5" CornerRadius="8"
@@ -604,35 +619,33 @@
 			</Grid>
 
 			<!-- Settle Up Modal -->
-			<Grid x:Name="SettleUpModal" Visibility="Collapsed" Background="#88000000">
+			<Grid Grid.ColumnSpan="2" x:Name="SettleUpModal" Visibility="Collapsed" Background="#88000000">
 				<Border MaxWidth="460" Background="White" CornerRadius="16" Padding="28"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
 					<StackPanel>
 						<TextBlock Text="💰 Settle Up" FontFamily="Segoe UI Black"
                                    FontSize="18" Foreground="#1A2E22" Margin="0,0,0,8"/>
-						<TextBlock Text="Mark all pending expenses as paid."
+						<TextBlock Text="Mark your pending shares as paid."
                                    FontFamily="Segoe UI" FontSize="12" Foreground="#8FAF9F"
                                    Margin="0,0,0,20"/>
-
 						<Border Background="#E8F5EE" CornerRadius="10" Padding="16" Margin="0,0,0,20">
 							<StackPanel>
-								<TextBlock Text="Summary" FontFamily="Segoe UI Semibold"
+								<TextBlock Text="Your Summary" FontFamily="Segoe UI Semibold"
                                            FontSize="13" Foreground="#1A5C38" Margin="0,0,0,8"/>
 								<Grid>
-									<TextBlock Text="Total Pending:" FontFamily="Segoe UI" FontSize="12" Foreground="#4A6558"/>
+									<TextBlock Text="Total you owe:" FontFamily="Segoe UI" FontSize="12" Foreground="#4A6558"/>
 									<TextBlock x:Name="SettlePendingAmount" Text="€0.00"
                                                FontFamily="Segoe UI Semibold" FontSize="12"
                                                Foreground="#E74C3C" HorizontalAlignment="Right"/>
 								</Grid>
 								<Grid Margin="0,6,0,0">
-									<TextBlock Text="Pending Expenses:" FontFamily="Segoe UI" FontSize="12" Foreground="#4A6558"/>
+									<TextBlock Text="Pending splits:" FontFamily="Segoe UI" FontSize="12" Foreground="#4A6558"/>
 									<TextBlock x:Name="SettlePendingCount" Text="0"
                                                FontFamily="Segoe UI Semibold" FontSize="12"
                                                Foreground="#1A2E22" HorizontalAlignment="Right"/>
 								</Grid>
 							</StackPanel>
 						</Border>
-
 						<Grid>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*"/>
@@ -642,7 +655,7 @@
 							<Button Grid.Column="0" Style="{StaticResource OutlineBtn}"
                                     Click="CancelSettle_Click">Cancel</Button>
 							<Button Grid.Column="2" Style="{StaticResource GreenBtn}"
-                                    Click="ConfirmSettle_Click">Mark All Paid</Button>
+                                    Click="ConfirmSettle_Click">Settle My Shares</Button>
 						</Grid>
 					</StackPanel>
 				</Border>

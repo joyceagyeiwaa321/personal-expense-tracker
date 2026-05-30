@@ -167,7 +167,7 @@ namespace FinancyApplication
 
             StackPanel content = new StackPanel();
 
-            // Header row: name + actions
+            // Header row
             Grid headerRow = new Grid();
             headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -309,7 +309,6 @@ namespace FinancyApplication
         private ControlTemplate MakeRoundButtonTemplate(double radius)
         {
             // Builds a simple round-corner template programmatically.
-            // We do this in code so action buttons keep their colored hover effect
             // without duplicating XAML styles.
             string xaml =
                 "<ControlTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
@@ -342,7 +341,7 @@ namespace FinancyApplication
             double canvasWidth = GoalBarCanvas.ActualWidth > 0 ? GoalBarCanvas.ActualWidth : 440;
             double canvasHeight = 220;
 
-            // Wait for size if not yet measured
+            // for size
             if (GoalBarCanvas.ActualWidth <= 0)
             {
                 GoalBarCanvas.SizeChanged += BarCanvas_SizeChanged;
@@ -360,7 +359,7 @@ namespace FinancyApplication
             decimal maxValue = goals.Max(g => g.TargetAmount);
             if (maxValue <= 0) maxValue = 1;
 
-            // Y-axis grid + labels (5 ticks)
+            // Y-axis grid + labels
             int ticks = 4;
             for (int i = 0; i <= ticks; i++)
             {
@@ -426,7 +425,7 @@ namespace FinancyApplication
                 Canvas.SetTop(remRect, topPad + plotH - remainingH);
                 GoalBarCanvas.Children.Add(remRect);
 
-                // X-axis label (goal name) — truncated, can wrap to two lines
+                // X-axis label (goal name) — truncated
                 string label = g.Name ?? "";
                 string[] words = label.Split(' ');
                 string line1 = "";
