@@ -352,7 +352,7 @@ namespace FinancyApplication
 		{
 			using (MySqlConnection connection = new MySqlConnection(connectionString))
 			{
-				string query = "INSERT INTO user_profile(UserID, FirstName, LastName, PhoneNumber, AvatarURL, PreferedCurrency, NotifGoalReminders) VALUES(@userId, @firstName, @lastName, @phone, @avatar, @currency, 1, 1)";
+				string query = "INSERT INTO user_profile(UserID, FirstName, LastName, PhoneNumber, AvatarURL, PreferedCurrency, NotifGoalReminders) VALUES(@userId, @firstName, @lastName, @phone, @avatar, @currency, 1)";
 				MySqlCommand cmd = new MySqlCommand(query, connection);
 				cmd.Parameters.AddWithValue("@userId", profile.UserID);
 				cmd.Parameters.AddWithValue("@firstName", profile.FirstName);

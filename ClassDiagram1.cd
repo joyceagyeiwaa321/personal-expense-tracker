@@ -73,14 +73,6 @@
         <Point X="16.5" Y="8.5" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Category" Type="FinancyApplication.Category" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="11.312" Y="12.5" />
-        <Point X="11.312" Y="12.125" />
-        <Point X="11.375" Y="12.125" />
-        <Point X="11.375" Y="11.738" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAQBAAAAhEAAAgAEAABAAAgAAAEAgEAEAAAAAAAACAA=</HashCode>
       <FileName>MoneyRelated.cs</FileName>
@@ -151,7 +143,7 @@
         <Point X="12.625" Y="9.5" />
         <Point X="12.625" Y="9.562" />
         <Point X="14.734" Y="9.562" Type="JumpStart" />
-        <Point X="14.901" Y="9.562" Type="JumpEnd" />
+        <Point X="14.9" Y="9.562" Type="JumpEnd" />
         <Point X="16.5" Y="9.562" />
       </Path>
     </AssociationLine>
@@ -181,7 +173,7 @@
       <Path>
         <Point X="5.625" Y="6.25" />
         <Point X="5.625" Y="3.5" />
-        <Point X="8.604" Y="3.5" Type="JumpStart" />
+        <Point X="8.605" Y="3.5" Type="JumpStart" />
         <Point X="8.771" Y="3.5" Type="JumpEnd" />
         <Point X="17.5" Y="3.5" />
         <Point X="17.5" Y="5.834" />
@@ -198,7 +190,7 @@
         <Point X="10.75" Y="10.25" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Group" Type="FinancyApplication.Group" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Group" Type="FinancyApplication.Group" ManuallyRouted="true">
       <Path>
         <Point X="6.5" Y="8.813" />
         <Point X="6.875" Y="8.813" />
@@ -240,14 +232,6 @@
   </Class>
   <Class Name="FinancyApplication.Group">
     <Position X="16.75" Y="12.25" Width="1.5" />
-    <AssociationLine Name="User" Type="FinancyApplication.User" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="17.75" Y="12.25" />
-        <Point X="17.75" Y="11.875" />
-        <Point X="17.312" Y="11.875" />
-        <Point X="17.312" Y="10.699" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAQBAAAAAAAgAAAEACAAAAQAASkkIEAAAAgAAAQAQAA=</HashCode>
       <FileName>GroupRelated.cs</FileName>
@@ -258,12 +242,6 @@
   </Class>
   <Class Name="FinancyApplication.GroupMember">
     <Position X="20.5" Y="12" Width="1.5" />
-    <AssociationLine Name="Group" Type="FinancyApplication.Group" FixedToPoint="true">
-      <Path>
-        <Point X="20.5" Y="13.75" />
-        <Point X="18.25" Y="13.75" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="User" Type="FinancyApplication.User" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="20.5" Y="13.312" />
@@ -294,14 +272,6 @@
   </Class>
   <Class Name="FinancyApplication.GroupInvite">
     <Position X="17" Y="18.5" Width="1.5" />
-    <AssociationLine Name="Group" Type="FinancyApplication.Group" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="17.625" Y="18.5" />
-        <Point X="17.625" Y="18.125" />
-        <Point X="17.5" Y="18.125" />
-        <Point X="17.5" Y="16.882" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAQAAEAEAIAEAAAAAAAIAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>GroupInvite.cs</FileName>

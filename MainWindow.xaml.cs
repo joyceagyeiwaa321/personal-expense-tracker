@@ -327,7 +327,7 @@ namespace FinancyApplication
 			{
 				Username = username,
 				Email = Application.Current.Properties["RegEmail"] as string,
-				Role = UserRole.User,
+				Role = db.GetUserCount() == 0 ? UserRole.Admin : UserRole.User,
 				CreatedAt = DateTime.Now,
 				IsActive = true
 			};

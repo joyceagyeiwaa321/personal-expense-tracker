@@ -36,7 +36,7 @@ namespace FinancyApplication
 		public bool CanEdit { get; set; }
 	}
 
-	// Simple class to hold phone country info for the dropdown
+	// Simple class to hold phone country info for the dropdown # NOT USED
 	public class PhoneCountry
 	{
 		public string Flag { get; set; }
@@ -58,7 +58,7 @@ namespace FinancyApplication
 		private List<User> _allUsers = new List<User>();
 		private UserProfile _currentUserProfile;
 
-		private static readonly List<PhoneCountry> _countries = BuildCountryList();
+		private static readonly List<PhoneCountry> _countries = BuildCountryList(); //NOT USED
 
 		private static List<PhoneCountry> BuildCountryList()
 		{
@@ -83,7 +83,7 @@ namespace FinancyApplication
 			countries.Add(new PhoneCountry("🇸🇪", "+46", "SE"));
 			countries.Add(new PhoneCountry("🇺🇸", "+1", "US"));
 			return countries;
-		}
+		} //NOT USED
 
 		public AdminWindow()
 		{
@@ -532,8 +532,7 @@ namespace FinancyApplication
 
 		private void AdminAvatar_Click(object sender, RoutedEventArgs e)
 		{
-		}
-
+		}     // NOT USED
 		private void LoadAvatarImage(string path)
 		{
 			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
@@ -560,7 +559,7 @@ namespace FinancyApplication
 			{
 				navBg.Visibility = Visibility.Collapsed;
 			}
-		}
+		} // ONLY FROM DB
 
 		private void BackToUsers_Click(object sender, RoutedEventArgs e)
 		{
@@ -601,11 +600,11 @@ namespace FinancyApplication
 
 		private void AdminAvatarUpload_Click(object sender, RoutedEventArgs e)
 		{
-		}
+		} //NOT USED
 
 		private void SaveProfile_Click(object sender, RoutedEventArgs e)
 		{
-		}
+		} //NOT USED
 
 		private void CreateUser_Click(object sender, RoutedEventArgs e)
 		{
