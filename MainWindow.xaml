@@ -263,7 +263,7 @@
                                 Click="ShowReset_Click" HorizontalAlignment="Right"
                                 Margin="0,0,0,22" FontSize="12"/>
 						<Button Style="{StaticResource MainGreenButton}" Content="SIGN IN"
-                                Click="Login_Click" IsDefault="True"/>
+                                Click="Login_Click"/>
 						<Button Style="{StaticResource TextButton}" Content="Create an account"
                                 Click="ShowRegister_Click" Margin="0,18,0,0" FontSize="13"/>
 					</StackPanel>
@@ -331,7 +331,7 @@
 						</Grid>
 
 						<Button Style="{StaticResource MainGreenButton}" Content="CONTINUE"
-                                Click="RegisterStep1_Click" IsDefault="True"/>
+                                Click="RegisterStep1_Click"/>
 						<Button Style="{StaticResource TextButton}" Content="Back to Login"
                                 Click="ShowLogin_Click" Margin="0,16,0,0" FontSize="13"/>
 					</StackPanel>
@@ -347,7 +347,7 @@
                                  FontSize="26" FontWeight="Bold" MaxLength="6"
                                  Style="{StaticResource InputBox}" Padding="0"/>
 						<Button Style="{StaticResource MainGreenButton}" Content="VERIFY EMAIL"
-                                Click="RegisterStep2_Click" IsDefault="True"/>
+                                Click="RegisterStep2_Click"/>
 						<Button x:Name="RegResendBtn" Style="{StaticResource TextButton}"
                                 Content="Resend Code" Click="RegisterStep1_Click" Margin="0,14,0,0"/>
 						<TextBlock x:Name="RegTimerText" HorizontalAlignment="Center"
@@ -371,7 +371,7 @@
 							</TextBox>
 						</Grid>
 						<Button Style="{StaticResource MainGreenButton}" Content="FINISH SIGNUP"
-                                Click="RegisterStep3_Click" IsDefault="True"/>
+                                Click="RegisterStep3_Click"/>
 						<Button Style="{StaticResource TextButton}" Content="Back"
                                 Click="RegisterStep2_Back_Click" Margin="0,14,0,0" FontSize="13"/>
 					</StackPanel>
@@ -391,7 +391,7 @@
 							</TextBox>
 						</Grid>
 						<Button Style="{StaticResource MainGreenButton}" Content="SEND RESET CODE"
-                                Click="SendReset_Click" IsDefault="True"/>
+                                Click="SendReset_Click"/>
 						<Button Style="{StaticResource TextButton}" Content="Back to Sign In"
                                 Click="ShowLogin_Click" Margin="0,16,0,0" FontSize="13"/>
 					</StackPanel>
@@ -407,7 +407,7 @@
                                  FontSize="26" FontWeight="Bold" MaxLength="6"
                                  Style="{StaticResource InputBox}" Padding="0"/>
 						<Button Style="{StaticResource MainGreenButton}" Content="VERIFY"
-                                Click="VerifyCode_Click" IsDefault="True"/>
+                                Click="VerifyCode_Click"/>
 						<Button x:Name="SendCodeBtn" Style="{StaticResource TextButton}"
                                 Content="Resend Code" Click="SendReset_Click" Margin="0,14,0,0"/>
 						<TextBlock x:Name="TimerText" HorizontalAlignment="Center"
@@ -452,7 +452,7 @@
 						</Grid>
 
 						<Button Style="{StaticResource MainGreenButton}" Content="UPDATE PASSWORD"
-                                Click="FinalReset_Click" IsDefault="True"/>
+                                Click="FinalReset_Click"/>
 					</StackPanel>
 
 				</Grid>

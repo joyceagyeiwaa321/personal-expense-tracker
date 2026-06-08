@@ -15,13 +15,13 @@ namespace FinancyApplication
 		private DispatcherTimer regResendTimer;
 		private int secondsRemaining = 30;
 		private int regSecondsRemaining = 30;
-		private Data db = new Data();
+		private readonly Data db = new Data();
 
-		// In-memory expiry for password reset codes — email -> issue time (UTC). Survives only the app session.
+		// email -> issue time (UTC); reset code expiry, session-only
 		private static readonly Dictionary<string, DateTime> _resetTokenIssuedAt = new Dictionary<string, DateTime>();
 		private static readonly TimeSpan ResetTokenLifetime = TimeSpan.FromMinutes(15);
 
-		// Track show/hide state for each password field
+		// password field visibility state
 		private bool loginPassVisible = false;
 		private bool regPassVisible = false;
 		private bool regConfirmPassVisible = false;
@@ -34,7 +34,7 @@ namespace FinancyApplication
 			SetupTimers();
 		}
 
-		// ── WINDOW CONTROLS ──────────────────────────────────────────────
+		//  WINDOW CONTROLS ─
 		private void Minimize_Click(object sender, RoutedEventArgs e) =>
 			this.WindowState = WindowState.Minimized;
 
@@ -49,7 +49,7 @@ namespace FinancyApplication
 			if (e.ChangedButton == MouseButton.Left) this.DragMove();
 		}
 
-		// ── SHOW / HIDE PASSWORD TOGGLES ─────────────────────────────────
+		//  SHOW / HIDE PASSWORD TOGGLES 
 		private void LoginTogglePass_Click(object sender, RoutedEventArgs e)
 		{
 			loginPassVisible = !loginPassVisible;
@@ -135,7 +135,7 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── PASSWORD STRENGTH ─────────────────────────────────────────────
+		//  PASSWORD STRENGTH 
 		// Industry standard: 8+ chars, uppercase, lowercase, number, special char
 		private (int score, string label, Color color) GetPasswordStrength(string password)
 		{
@@ -224,7 +224,7 @@ namespace FinancyApplication
 		private void RegPassVisible_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) =>
 			UpdateStrengthUI(RegPassVisible.Text);
 
-		// ── LOGIN ─────────────────────────────────────────────────────────
+		//  LOGIN
 		private void Login_Click(object sender, RoutedEventArgs e)
 		{
 			string email = EmailInput.Text.Trim();
@@ -259,7 +259,7 @@ namespace FinancyApplication
 			}
 		}
 
-		// ── REGISTRATION ──────────────────────────────────────────────────
+		//  REGISTRATION
 		private void RegisterStep1_Click(object sender, RoutedEventArgs e)
 		{
 			string email = RegEmail.Text.Trim();
@@ -327,7 +327,7 @@ namespace FinancyApplication
 			{
 				Username = username,
 				Email = Application.Current.Properties["RegEmail"] as string,
-				Role = UserRole.User,
+				Role = db.GetUserCount() == 0 ? UserRole.Admin : UserRole.User,
 				CreatedAt = DateTime.Now,
 				IsActive = true
 			};
@@ -361,7 +361,7 @@ namespace FinancyApplication
 			RegVerifyView.Visibility = Visibility.Visible;
 		}
 
-		// ── PASSWORD RESET ────────────────────────────────────────────────
+		//  PASSWORD RESET
 		private void SendReset_Click(object sender, RoutedEventArgs e)
 		{
 			string email = ResetEmailInput.Text.Trim();
@@ -438,7 +438,7 @@ namespace FinancyApplication
 			ShowLogin_Click(null, null);
 		}
 
-		// ── VIEW NAVIGATION ───────────────────────────────────────────────
+		//  VIEW NAVIGATION 
 		private void HideAllViews()
 		{
 			LoginView.Visibility = RegisterView.Visibility = RegVerifyView.Visibility =
@@ -463,7 +463,7 @@ namespace FinancyApplication
 		}
 		private void ShowLogin_Click(object sender, RoutedEventArgs e) { HideAllViews(); LoginView.Visibility = Visibility.Visible; }
 
-		// ── TIMERS ────────────────────────────────────────────────────────
+		//  TIMERS─
 		private void SetupTimers()
 		{
 			resendTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -501,7 +501,7 @@ namespace FinancyApplication
 			regResendTimer.Start();
 		}
 
-		// ── NOTIFICATIONS ─────────────────────────────────────────────────
+		//  NOTIFICATIONS─
 		private async void ShowNotification(string message, bool isError = false)
 		{
 			NotificationText.Text = message;

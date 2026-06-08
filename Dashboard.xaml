@@ -112,17 +112,12 @@
 					<Button x:Name="NavGroupsBtn" Content="Group"
 							Style="{StaticResource NavButtonStyle}"
 							Click="NavGroups_Click"/>
+
 				</StackPanel>
 
 				<!-- RIGHT ICONS -->
 				<StackPanel Grid.Column="2" Orientation="Horizontal"
 							HorizontalAlignment="Right" VerticalAlignment="Center">
-					<Button Style="{StaticResource IconButtonStyle}" Click="ThemeToggle_Click">
-						<TextBlock x:Name="ThemeIcon"
-								   FontFamily="Segoe Fluent Icons"
-								   Text="&#xE706;" FontSize="23"
-								   Foreground="{DynamicResource TextSecondaryBrush}"/>
-					</Button>
 					<Button Style="{StaticResource IconButtonStyle}" Click="NavProfile_Click">
 						<Border Width="38" Height="38" CornerRadius="19"
 								Background="#00B894" ClipToBounds="True">
@@ -135,6 +130,7 @@
 							</Grid>
 						</Border>
 					</Button>
+
 				</StackPanel>
 			</Grid>
 		</Border>

@@ -8,7 +8,7 @@ namespace FinancyApplication
 	{
 		private readonly Data db = new Data();
 		private readonly User _currentUser;
-		private readonly Category _existing; // null = add mode
+		private readonly Category _existing;
 
 		public event Action<bool> Closed;
 

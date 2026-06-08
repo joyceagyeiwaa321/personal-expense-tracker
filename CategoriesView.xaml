@@ -133,7 +133,8 @@
 													</Border>
 												</StackPanel>
 
-												<StackPanel Grid.Column="1" Orientation="Horizontal">
+												<StackPanel Grid.Column="1" Orientation="Horizontal"
+																Visibility="{Binding EditDeleteVisibility}">
 													<Button Content="Edit"
                                                             Tag="{Binding CategoryID}"
                                                             Click="EditCategory_Click"
@@ -147,7 +148,6 @@
 													<Button Content="Delete"
                                                             Tag="{Binding CategoryID}"
                                                             Click="DeleteCategory_Click"
-                                                            IsEnabled="{Binding CanDelete}"
                                                             Background="Transparent"
                                                             BorderThickness="0"
                                                             Foreground="#EF4444"
@@ -218,7 +218,8 @@
 													</Border>
 												</StackPanel>
 
-												<StackPanel Grid.Column="1" Orientation="Horizontal">
+												<StackPanel Grid.Column="1" Orientation="Horizontal"
+																Visibility="{Binding EditDeleteVisibility}">
 													<Button Content="Edit"
                                                             Tag="{Binding CategoryID}"
                                                             Click="EditCategory_Click"
@@ -232,7 +233,6 @@
 													<Button Content="Delete"
                                                             Tag="{Binding CategoryID}"
                                                             Click="DeleteCategory_Click"
-                                                            IsEnabled="{Binding CanDelete}"
                                                             Background="Transparent"
                                                             BorderThickness="0"
                                                             Foreground="#EF4444"
@@ -258,7 +258,7 @@
 					</Border>
 				</Grid>
 
-				<TextBlock Text="Default categories can be renamed but not deleted."
+				<TextBlock Text="Default categories cannot be edited or deleted."
                            FontSize="12"
                            Foreground="{DynamicResource TextMutedBrush}"
                            Margin="0,16,0,0"

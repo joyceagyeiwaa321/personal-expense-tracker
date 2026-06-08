@@ -11,6 +11,22 @@ namespace FinancyApplication
 		public decimal LimitAmount { get; set; }
 		public string Month { get; set; }
 
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Category Category
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
 		public Budget()
 		{
 		}
@@ -28,7 +44,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			int id = db.InsertBudget(this);
-			MessageBox.Show("Budget created successfully.");
 			return id;
 		}
 
@@ -37,14 +52,12 @@ namespace FinancyApplication
 			LimitAmount = newLimitAmount;
 			Data db = new Data();
 			db.UpdateBudget(this);
-			MessageBox.Show("Budget updated successfully.");
 		}
 
 		public void Delete()
 		{
 			Data db = new Data();
 			db.DeleteBudget(BudgetId);
-			MessageBox.Show("Budget deleted successfully.");
 		}
 
 		public decimal GetSpentAmount()
@@ -81,6 +94,22 @@ namespace FinancyApplication
 		public DateTime NextRunDate { get; set; }
 		public bool IsActive { get; set; }
 
+		public Account Account
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Category Category
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
 		public RecurringTransaction()
 		{
 		}
@@ -102,7 +131,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			int id = db.InsertRecurringTransaction(this);
-			MessageBox.Show("Recurring transaction created successfully.");
 			return id;
 		}
 
@@ -111,7 +139,6 @@ namespace FinancyApplication
 			IsActive = false;
 			Data db = new Data();
 			db.UpdateRecurringTransaction(this);
-			MessageBox.Show("Recurring transaction paused.");
 		}
 
 		public void Resume()
@@ -119,7 +146,6 @@ namespace FinancyApplication
 			IsActive = true;
 			Data db = new Data();
 			db.UpdateRecurringTransaction(this);
-			MessageBox.Show("Recurring transaction resumed.");
 		}
 
 		public void Cancel()
@@ -127,23 +153,33 @@ namespace FinancyApplication
 			IsActive = false;
 			Data db = new Data();
 			db.DeleteRecurringTransaction(RecurringId);
-			MessageBox.Show("Recurring transaction cancelled.");
 		}
 
-		public void Execute()
+		public void Execute(int userId)
 		{
-			if (IsActive)
+			if (!IsActive) return;
+
+			Data db = new Data();
+
+			// Insert one transaction per missed occurrence
+			while (NextRunDate <= DateTime.Now)
 			{
+				Transaction t = new Transaction
+				{
+					UserID = userId,
+					AccountID = AccountId,
+					CategoryID = CategoryId,
+					Type = Type,
+					Amount = Amount,
+					Description = "Recurring (" + Frequency + ")",
+					Date = NextRunDate,
+					GroupID = 0
+				};
+				db.InsertTransaction(t);
 				UpdateNextRunDate();
-				Data db = new Data();
-				db.UpdateRecurringTransaction(this);
-				MessageBox.Show($"Recurring transaction executed: {Type} €{Amount}");
 			}
-			else
-			{
-				MessageBox.Show("Recurring transaction is not active.");
-				return;
-			}
+
+			db.UpdateRecurringTransaction(this);
 		}
 
 		public void UpdateNextRunDate()
@@ -163,7 +199,6 @@ namespace FinancyApplication
 					NextRunDate = NextRunDate.AddYears(1);
 					break;
 				default:
-					MessageBox.Show("Invalid frequency.");
 					break;
 			}
 		}
@@ -182,6 +217,14 @@ namespace FinancyApplication
 		public string FileType { get; set; }
 		public DateTime UploadedAt { get; set; }
 
+		public Transaction Transaction
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
 		public Receipt()
 		{
 		}
@@ -199,7 +242,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			int id = db.InsertReceipt(this);
-			MessageBox.Show("Receipt uploaded successfully.");
 			return id;
 		}
 
@@ -207,7 +249,6 @@ namespace FinancyApplication
 		{
 			Data db = new Data();
 			db.DeleteReceipt(ReceiptID);
-			MessageBox.Show("Receipt deleted successfully.");
 		}
 
 		public string GetDownloadUrl()

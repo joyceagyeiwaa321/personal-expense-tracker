@@ -9,16 +9,21 @@ namespace FinancyApplication
 		public int GroupID { get; set; }
 		public int CreatedByUserID { get; set; }
 		public string Name { get; set; }
-		public string Description { get; set; } // New
-		public string InviteCode { get; set; }  // New
+		public string Description { get; set; }
+		public string InviteCode { get; set; }
 		public DateTime CreatedAt { get; set; }
-        public int MemberCount { get; set; }
+		public int MemberCount { get; set; }
 
-        public Group()
+		public User User
 		{
+			get => default;
+			set
+			{
+			}
 		}
 
-		// Updated constructor for creating new groups with a code
+		public Group() { }
+
 		public Group(int createdByUserId, string name, string description)
 		{
 			CreatedByUserID = createdByUserId;
@@ -46,7 +51,6 @@ namespace FinancyApplication
 			return db.InsertGroup(this);
 		}
 
-		// This is what the "Join" button uses
 		public static int JoinByCode(int userId, string code)
 		{
 			Data db = new Data();
@@ -111,9 +115,23 @@ namespace FinancyApplication
 		public int UserID { get; set; }
 		public DateTime JoinedAt { get; set; }
 
-		public GroupMember()
+		public Group Group
 		{
+			get => default;
+			set
+			{
+			}
 		}
+
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public GroupMember() { }
 
 		public GroupMember(int groupId, int userId)
 		{
@@ -149,6 +167,50 @@ namespace FinancyApplication
 		public override string ToString()
 		{
 			return "GroupID: " + GroupID + ", UserID: " + UserID + ", JoinedAt: " + JoinedAt;
+		}
+	}
+
+	public class ExpenseSplit
+	{
+		public int ExpenseSplitID { get; set; }
+		public int TransactionID { get; set; }
+		public int UserID { get; set; }
+		public decimal Amount { get; set; }
+		public bool IsPaid { get; set; }
+		public DateTime? PaidAt { get; set; }
+
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public Transaction Transaction
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public ExpenseSplit()
+		{
+		}
+
+		public ExpenseSplit(int transactionId, int userId, decimal amount, bool isPaid = false)
+		{
+			TransactionID = transactionId;
+			UserID = userId;
+			Amount = amount;
+			IsPaid = isPaid;
+			PaidAt = isPaid ? DateTime.Now : (DateTime?)null;
+		}
+
+		public override string ToString()
+		{
+			return $"ExpenseSplitID: {ExpenseSplitID}, TransactionID: {TransactionID}, UserID: {UserID}, Amount: {Amount}, IsPaid: {IsPaid}";
 		}
 	}
 }

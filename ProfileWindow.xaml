@@ -188,31 +188,31 @@
 						<StackPanel>
 							<!-- Avatar circle with initial -->
 							<Button x:Name="AvatarButton" Width="80" Height="80"
-        HorizontalAlignment="Center" Margin="0,0,0,16"
-        Cursor="Hand" Click="AvatarButton_Click"
-        Background="Transparent" BorderThickness="0" Padding="0">
+                                    HorizontalAlignment="Center" Margin="0,0,0,16"
+                                    Cursor="Hand" Click="AvatarButton_Click"
+                                    Background="Transparent" BorderThickness="0" Padding="0">
 								<Button.Template>
 									<ControlTemplate TargetType="Button">
 										<Grid>
 											<!-- Teal initial circle (shown when no photo) -->
 											<Border x:Name="AvatarCircle" Width="80" Height="80" CornerRadius="40"
-                        Background="#00B894">
+                                                    Background="#00B894">
 												<TextBlock x:Name="AvatarInitialText" Text="U"
-                               FontSize="32" FontWeight="Bold" Foreground="White"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                           FontSize="32" FontWeight="Bold" Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 											</Border>
 
 											<!-- Photo (shown when uploaded) -->
 											<Border Width="80" Height="80" CornerRadius="40" ClipToBounds="True">
 												<Image x:Name="AvatarImage" Stretch="UniformToFill"
-                           Visibility="Collapsed"/>
+                                                       Visibility="Collapsed"/>
 											</Border>
 
 											<!-- Hover overlay -->
 											<Border x:Name="AvatarOverlay" Width="80" Height="80" CornerRadius="40"
-                        Background="#80000000" Visibility="Collapsed">
+                                                    Background="#80000000" Visibility="Collapsed">
 												<TextBlock Text="📷" FontSize="22"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 											</Border>
 										</Grid>
 										<ControlTemplate.Triggers>
@@ -223,6 +223,7 @@
 									</ControlTemplate>
 								</Button.Template>
 							</Button>
+
 							<TextBlock x:Name="DisplayName" Text="Your Name"
                                        FontSize="17" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
                                        HorizontalAlignment="Center" Margin="0,0,0,4"/>
@@ -230,9 +231,9 @@
                                        FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
                                        HorizontalAlignment="Center" Margin="0,0,0,6"/>
 							<Border x:Name="RoleBadge" Background="#E0F2F1" CornerRadius="10" Padding="10,4"
-							 HorizontalAlignment="Center" Margin="0,0,0,20">
+                                    HorizontalAlignment="Center" Margin="0,0,0,20">
 								<TextBlock x:Name="DisplayRole" Text="User"
-								FontSize="11" FontWeight="SemiBold" Foreground="#00695C"/>
+                                           FontSize="11" FontWeight="SemiBold" Foreground="#00695C"/>
 							</Border>
 							<Border Background="#F9FAFB" CornerRadius="8" Padding="12,10" Margin="0,0,0,20">
 								<StackPanel>
@@ -246,7 +247,28 @@
 							<Button Content="Edit Profile" Style="{StaticResource TealButton}"
                                     Width="220" Click="EditProfile_Click" Margin="0,0,0,10"/>
 							<Button Content="Change Password" Style="{StaticResource GrayButton}"
-                                    Width="220" Click="ShowChangePassword_Click"/>
+                                    Width="220" Click="ShowChangePassword_Click" Margin="0,0,0,10"/>
+							<Button Width="220" Height="38" Cursor="Hand"
+									Background="#EF4444" Foreground="White"
+									BorderThickness="0" Click="SignOut_Click">
+								<Button.Template>
+									<ControlTemplate TargetType="Button">
+										<Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="8">
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+												<TextBlock Text="&#xE7E8;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+														   Foreground="White" Margin="0,0,7,0" VerticalAlignment="Center"/>
+												<TextBlock Text="Sign Out" FontFamily="Segoe UI" FontSize="13"
+														   FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+											</StackPanel>
+										</Border>
+										<ControlTemplate.Triggers>
+											<Trigger Property="IsMouseOver" Value="True">
+												<Setter TargetName="bg" Property="Background" Value="#DC2626"/>
+											</Trigger>
+										</ControlTemplate.Triggers>
+									</ControlTemplate>
+								</Button.Template>
+							</Button>
 						</StackPanel>
 					</Border>
 
@@ -307,88 +329,24 @@
                                                FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"/>
 								</StackPanel>
 
-								<!-- Notification Preferences (display) -->
+								<!-- Notification Preferences -->
 								<TextBlock Text="Notification Preferences" FontSize="15" FontWeight="Bold"
                                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,14"/>
 
 								<StackPanel Margin="0,0,0,24">
-									<CheckBox x:Name="ChkBudgetAlerts" Content="Budget Limit Alerts"
-                                              IsEnabled="False" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8">
-										<CheckBox.Style>
-											<Style TargetType="CheckBox">
-												<Setter Property="Template">
-													<Setter.Value>
-														<ControlTemplate TargetType="CheckBox">
-															<StackPanel Orientation="Horizontal">
-																<Border Width="18" Height="18" CornerRadius="4"
-                                                                        Background="#00B894" Margin="0,0,8,0">
-																	<TextBlock Text="✓" FontSize="11" FontWeight="Bold"
-                                                                               Foreground="White"
-                                                                               HorizontalAlignment="Center"
-                                                                               VerticalAlignment="Center"/>
-																</Border>
-																<ContentPresenter VerticalAlignment="Center"/>
-															</StackPanel>
-														</ControlTemplate>
-													</Setter.Value>
-												</Setter>
-											</Style>
-										</CheckBox.Style>
-									</CheckBox>
-									<CheckBox x:Name="ChkGoalReminders" Content="Goal Reminders"
-                                              IsEnabled="False" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8">
-										<CheckBox.Style>
-											<Style TargetType="CheckBox">
-												<Setter Property="Template">
-													<Setter.Value>
-														<ControlTemplate TargetType="CheckBox">
-															<StackPanel Orientation="Horizontal">
-																<Border Width="18" Height="18" CornerRadius="4"
-                                                                        Background="#00B894" Margin="0,0,8,0">
-																	<TextBlock Text="✓" FontSize="11" FontWeight="Bold"
-                                                                               Foreground="White"
-                                                                               HorizontalAlignment="Center"
-                                                                               VerticalAlignment="Center"/>
-																</Border>
-																<ContentPresenter VerticalAlignment="Center"/>
-															</StackPanel>
-														</ControlTemplate>
-													</Setter.Value>
-												</Setter>
-											</Style>
-										</CheckBox.Style>
-									</CheckBox>
-									<CheckBox x:Name="ChkWeeklySummary" Content="Weekly Summary Emails"
-                                              IsEnabled="False" Foreground="{DynamicResource TextPrimaryBrush}">
-										<CheckBox.Style>
-											<Style TargetType="CheckBox">
-												<Setter Property="Template">
-													<Setter.Value>
-														<ControlTemplate TargetType="CheckBox">
-															<StackPanel Orientation="Horizontal">
-																<Border Width="18" Height="18" CornerRadius="4"
-                                                                        Background="#00B894" Margin="0,0,8,0">
-																	<TextBlock Text="✓" FontSize="11" FontWeight="Bold"
-                                                                               Foreground="White"
-                                                                               HorizontalAlignment="Center"
-                                                                               VerticalAlignment="Center"/>
-																</Border>
-																<ContentPresenter VerticalAlignment="Center"/>
-															</StackPanel>
-														</ControlTemplate>
-													</Setter.Value>
-												</Setter>
-											</Style>
-										</CheckBox.Style>
-									</CheckBox>
+									<CheckBox x:Name="ChkGoalReminders"
+											  Content="Goal Reminders"
+											  FontSize="13"
+											  Foreground="{DynamicResource TextPrimaryBrush}"
+											  Checked="NotifCheckbox_Changed"
+											  Unchecked="NotifCheckbox_Changed"/>
 								</StackPanel>
 
 								<!-- Export / Danger -->
 								<StackPanel Orientation="Horizontal">
-									<Button Content="Export Data" Style="{StaticResource TealButton}"
-                                            Margin="0,0,12,0" Click="ExportData_Click"/>
 									<Button Content="Clear All Data" Style="{StaticResource DangerButton}"
                                             Click="ClearAllData_Click"/>
+
 								</StackPanel>
 
 								<!-- AI SETTINGS -->
@@ -453,31 +411,32 @@
 
 										<!-- Country code picker -->
 										<ComboBox x:Name="PhoneCountryPicker"
-                  Grid.Column="0"
-                  Height="40" Width="110"
-                  FontSize="13"
-                  Background="#F9FAFB"
-                  BorderBrush="{DynamicResource BorderBrush}"
-                  Margin="0,0,6,0"
-                  SelectionChanged="PhoneCountryPicker_SelectionChanged"
-                  Cursor="Hand">
+                                                  Grid.Column="0"
+                                                  Height="40" Width="110"
+                                                  FontSize="13"
+                                                  Background="#F9FAFB"
+                                                  BorderBrush="{DynamicResource BorderBrush}"
+                                                  Margin="0,0,6,0"
+                                                  SelectionChanged="PhoneCountryPicker_SelectionChanged"
+                                                  Cursor="Hand">
 											<ComboBox.ItemTemplate>
 												<DataTemplate>
 													<StackPanel Orientation="Horizontal">
 														<TextBlock Text="{Binding Flag}" FontSize="15" Margin="0,0,5,0"
-                                   VerticalAlignment="Center"/>
+                                                                   VerticalAlignment="Center"/>
 														<TextBlock Text="{Binding Dial}" FontSize="13"
-                                   VerticalAlignment="Center"/>
+                                                                   VerticalAlignment="Center"/>
 													</StackPanel>
 												</DataTemplate>
 											</ComboBox.ItemTemplate>
 										</ComboBox>
 
-										<!-- Number field (no country code — it's separate) -->
+										<!-- Number field -->
 										<TextBox x:Name="EditPhone" Grid.Column="1"
-                 Style="{StaticResource InputField}"/>
+                                                 Style="{StaticResource InputField}"/>
 									</Grid>
 								</StackPanel>
+
 								<StackPanel Margin="0,0,0,20">
 									<TextBlock Text="Preferred Currency" Style="{StaticResource FieldLabel}"/>
 									<ComboBox x:Name="EditCurrency" Height="40" FontSize="13"
@@ -533,7 +492,7 @@
 									<PasswordBox x:Name="ConfirmNewPass" Style="{StaticResource PassField}"/>
 								</StackPanel>
 
-																<TextBlock x:Name="PassFeedback" FontSize="12" Margin="0,0,0,12"
+								<TextBlock x:Name="PassFeedback" FontSize="12" Margin="0,0,0,12"
                                            Visibility="Collapsed"/>
 
 								<StackPanel Orientation="Horizontal">
@@ -562,6 +521,47 @@
 				</StackPanel>
 			</Grid>
 		</Border>
+
+
+		<!-- CLEAR ALL — Step 1 -->
+		<Grid x:Name="ClearConfirmOverlay1" Visibility="Collapsed"
+			  Grid.RowSpan="2" Background="#88000000">
+			<Border MaxWidth="420" Background="White" CornerRadius="14" Padding="28"
+					HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel>
+					<TextBlock Text="Clear All Data?" FontSize="17" FontWeight="Bold"
+							   Foreground="#1A2E22" Margin="0,0,0,10"/>
+					<TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4A6558" Margin="0,0,0,24"
+							   Text="This will permanently delete all your transactions and cannot be undone."/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Content="Cancel" Style="{StaticResource GrayButton}"
+								Width="100" Margin="0,0,10,0" Click="ClearConfirm1_No"/>
+						<Button Content="Yes, continue" Style="{StaticResource DangerButton}"
+								Width="140" Click="ClearConfirm1_Yes"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Grid>
+
+		<!-- CLEAR ALL — Step 2 (final warning) -->
+		<Grid x:Name="ClearConfirmOverlay2" Visibility="Collapsed"
+			  Grid.RowSpan="2" Background="#AA000000">
+			<Border MaxWidth="420" Background="White" CornerRadius="14" Padding="28"
+					HorizontalAlignment="Center" VerticalAlignment="Center">
+				<StackPanel>
+					<TextBlock Text="⚠️ Final Warning" FontSize="17" FontWeight="Bold"
+							   Foreground="#DC2626" Margin="0,0,0,10"/>
+					<TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4A6558" Margin="0,0,0,24"
+							   Text="You are about to permanently delete ALL your transactions. This action is irreversible. Are you absolutely sure?"/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Content="Cancel" Style="{StaticResource GrayButton}"
+								Width="100" Margin="0,0,10,0" Click="ClearConfirm2_No"/>
+						<Button Content="Delete everything" Style="{StaticResource DangerButton}"
+								Width="160" Click="ClearConfirm2_Yes"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Grid>
 
 	</Grid>
 </UserControl>

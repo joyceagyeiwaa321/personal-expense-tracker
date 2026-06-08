@@ -4,8 +4,6 @@ using System.Windows;
 
 namespace FinancyApplication
 {
-	/// <summary>
-	/// </summary>
 	public partial class ConsentDialog : Window
 	{
 		public bool Accepted { get; private set; }

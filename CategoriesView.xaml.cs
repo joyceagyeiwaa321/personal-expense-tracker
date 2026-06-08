@@ -17,6 +17,8 @@ namespace FinancyApplication
 		public bool CanDelete => !IsDefault;
 		public Visibility DefaultBadgeVisibility =>
 			IsDefault ? Visibility.Visible : Visibility.Collapsed;
+		public Visibility EditDeleteVisibility =>
+			IsDefault ? Visibility.Collapsed : Visibility.Visible;
 	}
 
 	public partial class CategoriesView : UserControl
@@ -75,7 +77,7 @@ namespace FinancyApplication
 			IsDefault = c.IsDefault
 		};
 
-		// ── ADD / EDIT / DELETE ─────────────────────────────────────────────
+		// ADD / EDIT / DELETE
 
 		private void AddCategory_Click(object sender, RoutedEventArgs e)
 		{

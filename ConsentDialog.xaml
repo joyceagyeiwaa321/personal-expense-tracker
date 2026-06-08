@@ -11,19 +11,19 @@
         AllowsTransparency="True"
         Background="Transparent">
 
-    <Border Background="{DynamicResource SurfaceBrush}"
+	<Border Background="{DynamicResource SurfaceBrush}"
             CornerRadius="14"
             Padding="32">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.30"/>
-        </Border.Effect>
+		<Border.Effect>
+			<DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.30"/>
+		</Border.Effect>
 
-        <StackPanel>
-            <TextBlock Text="Welcome to Financy Application"
+		<StackPanel>
+			<TextBlock Text="Welcome to Financy Application"
                        FontSize="22"
                        FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"/>
-            <TextBlock Text="Before you start, a quick heads-up:"
+			<TextBlock Text="Before you start, a quick heads-up:"
                        FontSize="13"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        Margin="0,6,0,18"/>
@@ -40,17 +40,17 @@
                        Margin="0,12,0,0">
                 If you later enable optional AI features (insights, receipt scan), those send only the specific data
                 you trigger them with — never your name, email, or full transaction history.
-            </TextBlock>
+			</TextBlock>
 
-            <TextBlock TextWrapping="Wrap"
+			<TextBlock TextWrapping="Wrap"
                        FontSize="12"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        Margin="0,18,0,22">
                 By clicking Accept, you acknowledge this and agree to use the app at your own discretion.
-            </TextBlock>
+			</TextBlock>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Decline &amp; Exit"
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+				<Button Content="Decline &amp; Exit"
                         Width="130" Height="36"
                         Background="Transparent"
                         BorderBrush="{DynamicResource BorderBrush}"
@@ -60,7 +60,7 @@
                         Cursor="Hand"
                         Margin="0,0,10,0"
                         Click="Decline_Click"/>
-                <Button Content="Accept &amp; Continue"
+				<Button Content="Accept &amp; Continue"
                         Width="160" Height="36"
                         Background="{DynamicResource AccentBrush}"
                         BorderThickness="0"
@@ -69,7 +69,7 @@
                         FontWeight="SemiBold"
                         Cursor="Hand"
                         Click="Accept_Click"/>
-            </StackPanel>
-        </StackPanel>
-    </Border>
+			</StackPanel>
+		</StackPanel>
+	</Border>
 </Window>

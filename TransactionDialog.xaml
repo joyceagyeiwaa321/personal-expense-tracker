@@ -117,7 +117,28 @@
 				<TextBox x:Name="DescriptionInput" Margin="0,0,0,14"/>
 
 				<TextBlock Text="Date" Style="{StaticResource FieldLabel}"/>
-				<DatePicker x:Name="DatePickerInput" Height="38" Margin="0,0,0,22"/>
+				<DatePicker x:Name="DatePickerInput" Height="38" Margin="0,0,0,16"/>
+
+				<!-- Receipt -->
+				<TextBlock Text="Receipt (optional)" Style="{StaticResource FieldLabel}"/>
+				<Grid Margin="0,0,0,22">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+					<Border Grid.Column="0" Background="#F8FAFC" BorderBrush="#E5E7EB"
+							BorderThickness="1.5" CornerRadius="6" Padding="10,0"
+							Height="38" Margin="0,0,8,0">
+						<TextBlock x:Name="ReceiptFileLabel" Text="PNG or JPG only"
+								   Foreground="#9CA3AF" FontSize="12"
+								   VerticalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"/>
+					</Border>
+					<Button Grid.Column="1" Style="{StaticResource GrayButton}"
+							Width="130" Click="AttachReceipt_Click">
+						📎 Attach File
+					</Button>
+				</Grid>
 
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 					<Button Content="Cancel"

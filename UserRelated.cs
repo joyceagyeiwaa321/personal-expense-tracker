@@ -318,8 +318,17 @@ namespace FinancyApplication
         public string PhoneNumber { get; set; }
         public string AvatarUrl { get; set; }
         public string PreferredCurrency { get; set; }
+        public bool NotifGoalReminders { get; set; }
 
-        public void Save()
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		public void Save()
         {
             try
             {
@@ -359,7 +368,15 @@ namespace FinancyApplication
             this.username = username;
         }
 
-        private List<Transaction> GetMonthlyTransactions(int month, int year)
+		public User User
+		{
+			get => default;
+			set
+			{
+			}
+		}
+
+		private List<Transaction> GetMonthlyTransactions(int month, int year)
         {
             return data.GetTransactionsByUser(this.userID, month, year);
         }
@@ -404,7 +421,7 @@ namespace FinancyApplication
                 double y = margin;
                 double pageWidth = page.Width.Point - margin * 2;
 
-                gfx.DrawString("Financy — Monthly Report", titleFont,
+                gfx.DrawString("Financy - Monthly Report", titleFont,
                     new XSolidBrush(green), new XRect(margin, y, pageWidth, 30), XStringFormats.TopLeft);
                 y += 30;
 
@@ -466,7 +483,7 @@ namespace FinancyApplication
                     gfx.DrawString(t.Date.ToString("yyyy-MM-dd"), normalFont, new XSolidBrush(dark),
                         new XRect(col1 + 4, y + 1, 75, 14), XStringFormats.TopLeft);
                     gfx.DrawString(
-                        string.IsNullOrWhiteSpace(t.Description) ? "—" : t.Description,
+                        string.IsNullOrWhiteSpace(t.Description) ? "" : t.Description,
                         normalFont, new XSolidBrush(dark),
                         new XRect(col2 + 4, y + 1, 195, 14), XStringFormats.TopLeft);
                     gfx.DrawString(t.Type, normalFont, new XSolidBrush(dark),
